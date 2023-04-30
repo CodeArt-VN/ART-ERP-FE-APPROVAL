@@ -109,9 +109,35 @@ export class RequestDetailPage extends PageBase {
 
     checkCanApprove(){
         let ignoredStatus = ['Draft', 'Approved', 'Denied'];
+        let lockStatus = ['Approved', 'Denied', 'Forward']
         this.pageConfig.canApprove = false;
         if (ignoredStatus.findIndex(d => d == this.item.Status) == -1) {
             this.pageConfig.canApprove = this.item._Approvers.findIndex(d => d.Id == this.env.user.StaffID) > -1;
+        }
+        if (this.item.ApprovalMode == 'SequentialApprovals' && this.pageConfig.canApprove) {
+
+            let ApproverIdx = this.item._Approvers.findIndex(d => d.Id == this.env.user.StaffID);
+
+            if (ApproverIdx != 0) {
+                for (let index = 0; index < ApproverIdx; index++) {
+                    const Approver = this.item._Approvers[index];
+                    if (Approver.Status == 'Approved' || Approver.Status == 'Forward') {
+                        this.pageConfig.canApprove = this.item._Logs.findIndex(d => d.Id == Approver.Id) > -1;
+                    }
+                    else {
+                        this.pageConfig.canApprove = false;
+                        return;
+                    }
+                }
+            }
+            else {
+                if (lockStatus.findIndex(d => d == this.item._Approvers[ApproverIdx].Status) != -1 ) {
+                    this.pageConfig.canApprove = false;
+                }
+                else {
+                    this.pageConfig.canApprove = this.item._Approvers.findIndex(d => d.Id == this.env.user.StaffID) > -1;
+                }
+            }
         }
     }
 
