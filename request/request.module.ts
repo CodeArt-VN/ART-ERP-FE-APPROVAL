@@ -5,9 +5,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ShareModule } from 'src/app/share.module';
 import { FileUploadModule } from 'ng2-file-upload';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { NgOptionHighlightModule } from '@ng-select/ng-option-highlight';
-import { NgxMaskModule } from 'ngx-mask';
 import { RequestPage } from './request.page';
 import { RequestModalPage } from '../request-modal/request-modal.page';
 
@@ -18,10 +15,7 @@ import { RequestModalPage } from '../request-modal/request-modal.page';
     IonicModule,
     ReactiveFormsModule,
     FileUploadModule,
-    NgSelectModule,
-    NgOptionHighlightModule,
     ShareModule,
-    NgxMaskModule.forRoot(),
     RouterModule.forChild([{ path: '', component: RequestPage }])
   ],
   declarations: [RequestPage,RequestModalPage]
