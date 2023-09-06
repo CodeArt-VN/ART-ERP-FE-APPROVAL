@@ -24,15 +24,15 @@
 			<header class="filter" *ngIf="pageConfig.isShowSearch">
 				<div class="col-checkbox cell"></div>
 				<div class="col-id cell">
-					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Id" class="c-input" [ngClass]="{active: query.Id}" type="text">
+					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Id" class="c-input" [ngClass]="{active: query.Id}" type="text" placeholder="{{'Id' | translate}}">
 					<ion-icon class="min-btn" (click)="query.Id=''; refresh()" *ngIf="query.Id" name="close-circle-outline"></ion-icon>
 				</div>
 				<div class="col-code cell">
-					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Code" class="c-input" [ngClass]="{active: query.Code}" type="text">
+					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Code" class="c-input" [ngClass]="{active: query.Code}" type="text" placeholder="{{'Code' | translate}}">
 					<ion-icon class="min-btn" (click)="query.Code=''; refresh()" *ngIf="query.Code" name="close-circle-outline"></ion-icon>
 				</div>
 				<div class="col-name cell">
-					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Name" class="c-input" [ngClass]="{active: query.Name}" type="text">
+					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Name" class="c-input" [ngClass]="{active: query.Name}" type="text" placeholder="{{'Name' | translate }}">
 					<ion-icon class="min-btn" (click)="query.Name=''; refresh()" *ngIf="query.Name" name="close-circle-outline"></ion-icon>
 				</div>
 				<div class="col-remark cell"></div>
@@ -46,52 +46,48 @@
 	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 	<div *ngIf="items.length && pageConfig.showSpinner==false">
 		<section class="table">
-			<ion-virtual-scroll [items]="items" approxItemHeight="27px">
-				<ng-container *virtualItem="let i; let itemBounds = bounds; let j = index;">
-					<div class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-						<div class="col-checkbox cell">
-							<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
-						</div>
+			<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+				<div class="col-checkbox cell">
+					<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
+				</div>
 
-						<div (click)="showModal(i)" class="col-id cell" *ngIf="i.Status=='Draft'">
-							{{i.Id}} <ion-icon name="pencil"></ion-icon>
-						</div>
-						<div (click)="nav('request/'+i.Id,'forward')" class="col-id cell" *ngIf="i.Status!='Draft'">
-							{{i.Id}}
-						</div>
-						<div class="col-staff cell">
-							<ion-avatar class="avatar" slot="start">
-								<ion-img #img [src]="imgPath + i._Staff.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
-							</ion-avatar>
-							{{i._Staff.FullName}}
-						</div>
+				<div (click)="showModal(i)" class="col-id cell" *ngIf="i.Status=='Draft'">
+					{{i.Id}} <ion-icon name="pencil"></ion-icon>
+				</div>
+				<div (click)="nav('request/'+i.Id,'forward')" class="col-id cell" *ngIf="i.Status!='Draft'">
+					{{i.Id}}
+				</div>
+				<div class="col-staff cell">
+					<ion-avatar class="avatar" slot="start">
+						<ion-img #img [src]="imgPath + i._Staff.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+					</ion-avatar>
+					{{i._Staff.FullName}}
+				</div>
 
-						<div (click)="nav('request/'+i.Id,'forward')" class="col-code cell">
-							<span>{{i._Type.Name}}</span>
-						</div>
-						<div class="col-date cell">
-							{{i.StartText}}-{{i.EndText}}
-						</div>
-						<div (click)="nav('request/'+i.Id,'forward')" class="col-name cell">
-							{{i.Name}}
-						</div>
-						<div (click)="nav('request/'+i.Id,'forward')" class="col-remark cell">{{i.Remark}}</div>
-						<div (click)="nav('request/'+i.Id,'forward')" class="col-number cell">
-							<ion-text color="primary">
-								<b>{{i.AmountText}}</b>	
-							</ion-text>
-						</div>
-						<div (click)="nav('request/'+i.Id,'forward')" class="col-status cell">
-							<span class="bar-holder">
-								<ion-text class="bar-title" *ngIf="i._Status" [color]="i._Status.Color">{{i._Status.Name}}</ion-text>
-								<span class="bar" [ngClass]="{active: s.Code==i.Status}" [ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}" *ngFor="let s of statusList" [title]="s.Name"></span>
-							</span>
-						</div>
-						<hr>
+				<div (click)="nav('request/'+i.Id,'forward')" class="col-code cell">
+					<span>{{i._Type.Name}}</span>
+				</div>
+				<div class="col-date cell">
+					{{i.StartText}}-{{i.EndText}}
+				</div>
+				<div (click)="nav('request/'+i.Id,'forward')" class="col-name cell">
+					{{i.Name}}
+				</div>
+				<div (click)="nav('request/'+i.Id,'forward')" class="col-remark cell">{{i.Remark}}</div>
+				<div (click)="nav('request/'+i.Id,'forward')" class="col-number cell">
+					<ion-text color="primary">
+						<b>{{i.AmountText}}</b>
+					</ion-text>
+				</div>
+				<div (click)="nav('request/'+i.Id,'forward')" class="col-status cell">
+					<span class="bar-holder">
+						<ion-text class="bar-title" *ngIf="i._Status" [color]="i._Status.Color">{{i._Status.Name}}</ion-text>
+						<span class="bar" [ngClass]="{active: s.Code==i.Status}" [ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}" *ngFor="let s of statusList" [title]="s.Name"></span>
+					</span>
+				</div>
+				<hr>
 
-					</div>
-				</ng-container>
-			</ion-virtual-scroll>
+			</div>
 		</section>
 	</div>
 	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
