@@ -19,7 +19,7 @@
 
 		</header>
 		
-		<div *ngFor="let i of ApprovalRule; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+		<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
 			<div class="col-checkbox cell">
 				<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
 			</div>
@@ -35,54 +35,6 @@
 		<!-- <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
 
 	</section>
-	<!-- <ion-row class="hr-group" *ngFor="let i of ApprovalRule">
-		<ion-col size="12" size-md="12" size-lg="12" size-xl="12">
-			<ion-toolbar >
-				<ion-title class="ion-text-start ion-no-padding"color="primary">{{i.Remark}}</ion-title>
-			</ion-toolbar>
-		</ion-col>	
-		<ion-col class="ion-padding-start" size="12" size-md="12" size-lg="12" size-xl="4" *ngFor="let j of i.level" >
-				<ion-item class="ion-no-padding" lines="none" >
-					<ion-label class="ion-text-wrap">
-						<label class="c-label"  *ngIf="j.Remark">{{j.Remark}}</label>
-						<p [attr.for]="j.IsActive" *ngIf="j.IsActive">Active</p>
-						<p [attr.for]="j.IsActive" *ngIf="!j.IsActive">In-Active</p>
-					</ion-label>
-					<ion-toggle slot="end" (click)="changeTogge(j)" color="primary"></ion-toggle>
-				</ion-item>
-				<ion-item  class="ion-no-padding" lines="none" *ngIf="!j.IsActive">
-					
-				</ion-item>
-				<ion-item  class="ion-no-padding" lines="none" *ngIf="j.IsActive">
-					<ion-button slot="end"(click)="nav('approval-rule/'+j.Id,'forward')">
-						Edit Rule
-					</ion-button>
-				</ion-item>
-		  </ion-col>
-
-	  </ion-row> -->
-
-	<!-- <ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
-		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
-	</ion-infinite-scroll>
-	
-
-	<div class="ion-padding" style="padding-bottom: 0;" *ngIf="selectedBranch">
-
-
-		<div class="c-control">
-			<label class="c-label" for="IDBranch">{{'erp.app.pages.admin.permission.id-branch' | translate}}</label>
-			<ng-select class="c-input multiple" (change)="updateBranch();" appendTo="" #IDBranch labelForId="IDBranch" [items]="env.branchList" [(ngModel)]="selectedBranch.CanViewDataInObject" [multiple]="true" [closeOnSelect]="false" bindLabel="Name" bindValue="Id" placeholder="{{'erp.app.pages.admin.permission.unit-placeholder' | translate}}">
-				<ng-template ng-option-tmp let-i="item" let-i$="item$" let-search="searchTerm">
-					<div *ngIf="i">
-						<div> <input type="checkbox" [ngModel]="i$.selected" /> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-							<ion-text [color]=" i.Type == 'Company'? 'primary':'dark'" [ngOptionHighlight]="search">{{i.Name}}</ion-text>
-						</div>
-					</div>
-				</ng-template>
-			</ng-select>
-		</div>
-
-	</div> -->
 
 </ion-content>
+	

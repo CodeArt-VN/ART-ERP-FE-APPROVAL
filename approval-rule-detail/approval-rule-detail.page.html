@@ -2,16 +2,13 @@
 	<app-list-toolbar pageTitle="Danh sách" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
 </ion-header>
 <ion-content>
-	<app-filter #appFilter [item]="filter.Filter" (message)="showMessage($event)" (submit)='saveConfig($event)' [schema]="schema"></app-filter>
+		<ng-container *ngFor="let i of item.Filters" [ngTemplateOutlet]="filterTemplate" [ngTemplateOutletContext]="{ filter: i.Filter, schema:schemaList[0]}"></ng-container>
 </ion-content>
-<ion-footer> 
-	<ion-toolbar>
-		<ion-grid>
-			<ion-row  class="ion-justify-content-center">
-				<ion-col size="4">
-					<ion-button color="primary" (click)="appFilter.onFormSubmit($event)" expand="block">{{'Save' | translate}}</ion-button>
-				</ion-col>
-			</ion-row>
-		</ion-grid>
-	</ion-toolbar>
-</ion-footer>
+<ng-template #filterTemplate let-filter="filter" let-schema="schema" >
+	<app-filter #appFilter [item]="filter" (message)="showMessage($event)" (submit)='saveConfig($event)' [schema]="schema"></app-filter>
+	<ion-row  class="ion-justify-content-center"style="margin-bottom:20px">
+		<ion-col size="4">
+			<ion-button color="primary" (click)="appFilter.onFormSubmit($event)" expand="block">{{'Save' | translate}}</ion-button>
+		</ion-col>
+	</ion-row>
+</ng-template>
