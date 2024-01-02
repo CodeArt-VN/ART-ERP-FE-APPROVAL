@@ -19,9 +19,9 @@
 						</app-form-control>
 						<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }">
 						</app-form-control>
-						<app-form-control [field]="{id:'Type', label: 'Type', type : 'text', form : formGroup }">
+						<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select',dataSource: requestTypeList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }">
 						</app-form-control>
-						<app-form-control [field]="{id:'SubType', label: 'SubType', type : 'text', form : formGroup }">
+						<app-form-control  *ngIf="formGroup.controls.Type.value == 'TimeOff'" [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource: timeOffTypeList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }">
 						</app-form-control>
 					</ion-col>
 
@@ -30,7 +30,7 @@
 							[field]="{id:'Sort', label: 'Sort', type : 'number', form : formGroup }"></app-form-control>
 
 						<app-form-control
-							[field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:formGroup.get('_IDSchemaDataSource').value, bindLabel:'Name',bindValue:'Id' , form : formGroup }"
+							[field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"
 							(inputChange)="changeSchema()"> </app-form-control>
 
 						<app-form-control [field]="{id:'SetStatus', type : 'text', label: 'SetStatus', form : formGroup }"
