@@ -1,0 +1,47 @@
+<ion-header>
+	<app-list-toolbar pageTitle="Danh sách" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+</ion-header>
+
+<ion-content appScrollbarTheme class="scrollx">
+	<section class="table responsive">
+		<header class="bold">
+			<div class="col-checkbox cell"></div>
+			<div class="col-id cell" (click)="sortToggle('Id')">
+				{{'Id' | translate}}
+				<ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Id" name="search" color="primary"></ion-icon>
+			</div>
+			<div class="col-code cell" (click)="sortToggle('Id')">
+				{{'Code' | translate}}
+				<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Name" name="search" color="primary"></ion-icon>
+			</div>
+			<div class="col-name cell" (click)="sortToggle('Id')">
+				{{'Name' | translate}}
+				<ion-icon class="min-btn" *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Name" name="search" color="primary"></ion-icon>
+			</div>
+		
+		</header>
+		
+		<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+			<div class="col-checkbox cell">
+				<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
+			</div>
+			<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-id cell">
+				{{i.Id}}
+			</div>
+			<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-code cell">
+				{{i.Code}}
+			</div>
+			<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-name cell">
+				<b>{{i.Name}}</b> <span *ngIf="i.Remark"> - {{i.Remark}}</span>
+			</div>
+		</div>
+
+		<!-- <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
+
+	</section>
+
+</ion-content>
+	
