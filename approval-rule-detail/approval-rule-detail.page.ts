@@ -20,6 +20,10 @@ export class ApprovalRuleDetailPage extends PageBase {
     schema: any;
     ApprovalRule: any;
     config : any;
+    requestTypeList = [];
+    statusList = [];
+    timeOffTypeList = [];
+    
     constructor(
         public pageProvider: APPROVAL_AutoApprovalRuleProvider,
         public branchProvider: BRA_BranchProvider,
@@ -55,35 +59,47 @@ export class ApprovalRuleDetailPage extends PageBase {
             ModifiedBy: new FormControl({ value: '', disabled: true }),
             ModifiedDate: new FormControl({ value: '', disabled: true }),
 
-            _IDSchemaDataSource: {
-                searchProvider: this.schemaService,
-                loading: false,
-                input$: new Subject<string>(),
-                selected: [],
-                items$: null,
-                initSearch() {
-                    this.loading = false;
-                    this.items$ = concat(
-                        of(this.selected),
-                        this.input$.pipe(
-                            distinctUntilChanged(),
-                            tap(() => this.loading = true),
-                            switchMap(term => this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-                                catchError(() => of([])), // empty list on error
-                                tap(() => this.loading = false)
-                            ))
-        
-                        )
-                    );
-                }
-            }
+          
         });
     }
-    
-    // preLoadData(event?: any): void {
-    //     super.preLoadData(event);
-    // }
+    _IDSchemaDataSource:any= {
+        searchProvider: this.schemaService,
+        loading: false,
+        input$: new Subject<string>(),
+        selected: [],
+        items$: null,
+        initSearch() {
+            this.loading = false;
+            this.items$ = concat(
+                of(this.selected),
+                this.input$.pipe(
+                    distinctUntilChanged(),
+                    tap(() => this.loading = true),
+                    switchMap(term => this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+                        catchError(() => of([])), // empty list on error
+                        tap(() => this.loading = false)
+                    ))
 
+                )
+            );
+        }
+    }
+
+    preLoadData(event?: any): void {
+        this.query.IDStaff = this.env.user.StaffID;
+        Promise.all([
+            this.env.getType('RequestType'),
+            this.env.getStatus('ApprovalStatus'),
+            this.env.getType('TimeOffType'),
+            this.env.getType('TimeOffType'),
+
+        ]).then((values: any) => {
+            this.requestTypeList = values[0];
+            this.statusList = values[1];
+            this.timeOffTypeList = values[2];
+            super.preLoadData(event);
+        });
+    }
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
         super.loadedData(event, ignoredFromGroup);
         if(this.item?.IDSchema>0){
@@ -95,7 +111,7 @@ export class ApprovalRuleDetailPage extends PageBase {
 
             this.patchConfig();
         }
-        this.formGroup.get('_IDSchemaDataSource').value.initSearch();
+        this._IDSchemaDataSource.initSearch();
     }
     patchConfig(){
         this.config =JSON.parse(this.item?.Config);
