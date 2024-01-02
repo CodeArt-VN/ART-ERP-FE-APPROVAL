@@ -1,14 +1,75 @@
 <ion-header>
-	<app-list-toolbar pageTitle="Danh sách" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+	<app-detail-toolbar [page]="this"></app-detail-toolbar>
 </ion-header>
-<ion-content>
-		<ng-container *ngFor="let i of item.Filters" [ngTemplateOutlet]="filterTemplate" [ngTemplateOutletContext]="{ filter: i.Filter, schema:schemaList[0]}"></ng-container>
+<!-- *ngIf="item && pageConfig.showSpinner==false" -->
+<ion-content appScrollbarTheme class="ion-padding">
+	<div class="main-view">
+		<ion-grid fixed>
+			<form [formGroup]="formGroup">
+				<ion-row class="hr-group">
+					<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+						<ion-list-header class="ion-no-padding">
+							<ion-label color="primary">{{'Approval-rule' | translate}}</ion-label>
+						</ion-list-header>
+					</ion-col>
+					<ion-col size="12" size-sm size-xl="4">
+						<app-form-control [field]="{id:'Code', label: 'Code', type : 'text', form : formGroup }"
+							(change)="saveChange()">
+							<small label *ngIf="item?.Id">Id: {{item.Id}}</small>
+						</app-form-control>
+						<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }">
+						</app-form-control>
+						<app-form-control [field]="{id:'Type', label: 'Type', type : 'text', form : formGroup }">
+						</app-form-control>
+						<app-form-control [field]="{id:'SubType', label: 'SubType', type : 'text', form : formGroup }">
+						</app-form-control>
+					</ion-col>
+
+					<ion-col size="12" size-sm size-xl="4">
+						<app-form-control
+							[field]="{id:'Sort', label: 'Sort', type : 'number', form : formGroup }"></app-form-control>
+
+						<app-form-control
+							[field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:formGroup.get('_IDSchemaDataSource').value, bindLabel:'Name',bindValue:'Id' , form : formGroup }"
+							(inputChange)="changeSchema()"> </app-form-control>
+
+						<app-form-control [field]="{id:'SetStatus', type : 'text', label: 'SetStatus', form : formGroup }"
+							(change)="saveChange()"></app-form-control>
+
+						<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"
+							(change)="saveChange()"></app-form-control>
+
+					</ion-col>
+				</ion-row>
+			</form>
+		</ion-grid>
+		<div class="row-full shadow full-screen">
+			<ion-toolbar color="primary">
+				<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
+					<ion-segment-button value="s1">
+						<ion-label>{{'Config' | translate }}</ion-label>
+					</ion-segment-button>
+					<!-- <ion-segment-button value="s2">
+						<ion-label>{{'Other information' | translate}}</ion-label>
+					</ion-segment-button> -->
+				</ion-segment>
+			</ion-toolbar>
+			<div *ngIf="segmentView == 's1'">
+				<ion-grid fixed *ngIf="formGroup.get('IDSchema').value> 0 &&  config && schema">
+					<ion-row>
+						<app-filter #appFilter [item]="config" (submit)='saveConfig($event)' [schema]="schema"></app-filter>
+					</ion-row>
+					
+					<ion-row  class="ion-justify-content-center"style="margin-bottom:20px">
+						<ion-col size="4">
+							<ion-button color="primary" (click)="appFilter.onFormSubmit($event)" expand="block">{{'Save' | translate}}</ion-button>
+						</ion-col>
+					</ion-row>
+				</ion-grid>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- <app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
 </ion-content>
-<ng-template #filterTemplate let-filter="filter" let-schema="schema" >
-	<app-filter #appFilter [item]="filter" (message)="showMessage($event)" (submit)='saveConfig($event)' [schema]="schema"></app-filter>
-	<ion-row  class="ion-justify-content-center"style="margin-bottom:20px">
-		<ion-col size="4">
-			<ion-button color="primary" (click)="appFilter.onFormSubmit($event)" expand="block">{{'Save' | translate}}</ion-button>
-		</ion-col>
-	</ion-row>
-</ng-template>
