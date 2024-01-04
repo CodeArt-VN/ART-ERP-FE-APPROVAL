@@ -3,7 +3,7 @@ import { NavController, LoadingController, AlertController } from '@ionic/angula
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
-import { APPROVAL_AutoApprovalRuleProvider, BRA_BranchProvider, HRM_StaffProvider, SYS_SchemaDetailProvider, SYS_SchemaProvider, WMS_ZoneProvider, } from 'src/app/services/static/services.service';
+import { APPROVAL_AutoApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_StaffProvider, SYS_SchemaDetailProvider, SYS_SchemaProvider, WMS_ZoneProvider, } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
@@ -23,7 +23,7 @@ export class ApprovalRuleDetailPage extends PageBase {
     requestTypeList = [];
     statusList = [];
     timeOffTypeList = [];
-    
+
     constructor(
         public pageProvider: APPROVAL_AutoApprovalRuleProvider,
         public branchProvider: BRA_BranchProvider,
@@ -36,7 +36,9 @@ export class ApprovalRuleDetailPage extends PageBase {
         public loadingController: LoadingController,
         public commonService: CommonService,
         public schemaService: SYS_SchemaProvider,
-        public schemaDetailService: SYS_SchemaDetailProvider
+        public schemaDetailService: SYS_SchemaDetailProvider,
+        public approvalTemplateService: APPROVAL_TemplateProvider
+
     ) {
         super();
         this.pageConfig.isDetailPage = true;
@@ -59,7 +61,7 @@ export class ApprovalRuleDetailPage extends PageBase {
             ModifiedBy: new FormControl({ value: '', disabled: true }),
             ModifiedDate: new FormControl({ value: '', disabled: true }),
 
-          
+
         });
     }
     _IDSchemaDataSource:any= {
@@ -86,7 +88,7 @@ export class ApprovalRuleDetailPage extends PageBase {
     }
 
     preLoadData(event?: any): void {
-        this.query.IDStaff = this.env.user.StaffID;
+        //this.query.IDStaff = this.env.user.StaffID;
         Promise.all([
             this.env.getType('RequestType'),
             this.env.getStatus('ApprovalStatus'),
@@ -97,7 +99,7 @@ export class ApprovalRuleDetailPage extends PageBase {
             this.requestTypeList = values[0];
             this.statusList = values[1];
             this.timeOffTypeList = values[2];
-            super.preLoadData(event);
+                        super.preLoadData(event);
         });
     }
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
@@ -105,7 +107,7 @@ export class ApprovalRuleDetailPage extends PageBase {
         if(this.item?.IDSchema>0){
             this.schemaService.getAnItem(this.item.IDSchema).then(value => {
                 this.schema = value;
-               })
+            })
         }
         if(this.item?.Config && this.item?.IDSchema>0){
 
@@ -123,7 +125,7 @@ export class ApprovalRuleDetailPage extends PageBase {
             console.log(this.formGroup.getRawValue());
             console.log(JSON.parse(this.formGroup.get('Config').value));
             this.formGroup.get('Config').markAsDirty();
-             this.saveChange();
+            this.saveChange();
             this.env.showTranslateMessage('erp.app.app-component.page-bage.save-complete', 'success');
         }
         else {
@@ -131,13 +133,43 @@ export class ApprovalRuleDetailPage extends PageBase {
         }
     }
 
-    changeSchema(){
-        this.schemaService.getAnItem(this.formGroup.get('IDSchema').value).then(value => {
-            this.config = JSON.parse('{"Dimension":"logical","Operator":"AND","Value":null,"Logicals":[]}');
-            this.formGroup.get('Config').setValue(this.config);
-            this.schema = value;
-       })}
-  
+    changeType(subType = null) {
+        if (this.formGroup.get('Config').value) {
+           
+            if (subType == null) {
+                this.formGroup.get('SubType').setValue('');
+                this.query.SubType_eq = null;
+            }
+            else {
+                this.query.SubType_eq = subType;
+            }
+           
+            this.query.Type = this.formGroup.get('Type').value;
+            this.env.showLoading('Vui lòng chờ load dữ liệu...', this.approvalTemplateService.read(this.query))
+                .then((response: any) => {
+                    if (response.data && response.data.length && response.data[0].IDSchema) {
+                        this.formGroup.get('IDSchema').setValue(response.data[0].IDSchema);
+                        this.schemaService.getAnItem(this.formGroup.get('IDSchema').value).then(value => {
+                            this.env.showPrompt("Thay đổi Type/SubType sẽ clear hết config. Bạn có muốn tiếp tục?", null, "Cảnh báo").then(_ => {
+                                this.config = { 'Dimension': 'logical', 'Operator': 'AND', 'value': null, 'Logicals': [] }
+                             })
+                            this.schema = value;
+                        })
+                    }
+                 
+                }).catch(err => { });
+        }
+        this.saveChange();
+    }
+
+    changeSubType(e) {
+        return this.changeType(e.target.value);
+    }
+
+    ngAfterViewChecked() {
+        this.cdr.detectChanges();
+    }
+
     async saveChange() {
         super.saveChange2();
     }
