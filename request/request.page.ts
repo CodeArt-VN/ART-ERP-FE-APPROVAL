@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { APPROVAL_RequestProvider, BRA_BranchProvider } from 'src/app/services/static/services.service';
+import { APPROVAL_RequestProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, SYS_SchemaDetailProvider, SYS_SchemaProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { RequestModalPage } from '../request-modal/request-modal.page';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { lib } from 'src/app/services/static/global-functions';
 import { environment } from 'src/environments/environment';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
     selector: 'app-request',
@@ -15,6 +16,12 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['request.page.scss']
 })
 export class RequestPage extends PageBase {
+    schema: any;
+    IDSchema: any;
+    type: any;
+    subType;
+    ApprovalRule: any;
+    config: any;
     requestTypeList = [];
     statusList = [];
     timeOffTypeList = [];
@@ -23,18 +30,24 @@ export class RequestPage extends PageBase {
         public pageProvider: APPROVAL_RequestProvider,
         public branchProvider: BRA_BranchProvider,
         public modalController: ModalController,
-		public popoverCtrl: PopoverController,
+        public popoverCtrl: PopoverController,
         public alertCtrl: AlertController,
         public loadingController: LoadingController,
         public env: EnvService,
         public navCtrl: NavController,
         public location: Location,
+        public formBuilder: FormBuilder,
+        public schemaService: SYS_SchemaProvider,
+        public schemaDetailService: SYS_SchemaDetailProvider,
+        public approvalTemplateService: APPROVAL_TemplateProvider
     ) {
         super();
         this.imgPath = environment.staffAvatarsServer;
+        this.pageConfig.isShowFeature = false;
     }
 
     preLoadData(event?: any): void {
+        this.query.SortBy = 'Id_desc';
         this.query.IDStaff = this.env.user.StaffID;
         Promise.all([
             this.env.getType('RequestType'),
@@ -52,17 +65,17 @@ export class RequestPage extends PageBase {
 
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
         this.items.forEach(i => {
-            i._Type = this.requestTypeList.find(d=>d.Code==i.Type);
-            i._Status = this.statusList.find(d=>d.Code==i.Status);
-           
-            if (i.Type=='Payment') {
+            i._Type = this.requestTypeList.find(d => d.Code == i.Type);
+            i._Status = this.statusList.find(d => d.Code == i.Status);
+
+            if (i.Type == 'Payment') {
                 i.AmountText = lib.currencyFormatFriendly(i.Amount);
             }
-            else if(i.Type=='TimeOff'){
+            else if (i.Type == 'TimeOff') {
                 let d1 = new Date(i.Start);
-                let d2 = new Date( i.End);
-                let diff = Math.abs( d1.valueOf() - d2.valueOf() );
-                i.AmountText = ((diff/ 86400000)+1) + ' N';
+                let d2 = new Date(i.End);
+                let diff = Math.abs(d1.valueOf() - d2.valueOf());
+                i.AmountText = ((diff / 86400000) + 1) + ' N';
             }
 
             i.StartText = lib.dateFormat(i.Start, 'dd/mm');
@@ -109,4 +122,37 @@ export class RequestPage extends PageBase {
         this.showModal(newItem);
     }
 
+    changeType(subType = null) {
+
+        if (subType == null) {
+            this.query.SubType_eq = null;
+        }
+        else {
+            this.query.SubType_eq = subType;
+        }
+        this.config = { 'Dimension': 'logical', 'Operator': 'AND', 'value': null, 'Logicals': [] }
+        this.query.Type = this.type;
+        this.env.showLoading('Vui lòng chờ load dữ liệu...', this.approvalTemplateService.read(this.query))
+            .then((response: any) => {
+                if (response.data && response.data.length && response.data[0].IDSchema) {
+                    this.IDSchema = response.data[0].IDSchema
+                    this.schemaService.getAnItem(this.IDSchema).then(value => {
+                        this.schema = value;
+                    })
+
+                }
+
+            }).catch(err => { });
+
+    }
+
+    changeSubType(e) {
+        return this.changeType(e);
+    }
+    filterConfig(e){
+        this.pageProvider.read({type:this.type,subtype:this.subType,config:this.config}).then(values=>{
+            console.log(values);
+        })
+        console.log(e);
+    }
 }

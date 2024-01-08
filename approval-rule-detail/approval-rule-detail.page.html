@@ -49,8 +49,8 @@
 				</ion-segment>
 			</ion-toolbar>
 			<div *ngIf="segmentView == 's1'">
-				<app-filter  *ngIf="formGroup.get('IDSchema').value> 0 &&  config && schema" #appFilter [(item)]="config" (submit)='saveConfig($event)' [(schema)]="schema"></app-filter>
-				<ion-button color="primary" (click)="appFilter.onFormSubmit($event)" expand="block">{{'Save' | translate}}</ion-button>
+				<app-filter  *ngIf="formGroup.get('IDSchema').value> 0 &&  schema" [(item)]="config" (submit)='saveConfig($event)' [schema]="schema"></app-filter>
+				<!-- <ion-button color="primary" (click)="submutFilter()" expand="block">{{'Save' | translate}}</ion-button> -->
 			</div>
 		</div>
 

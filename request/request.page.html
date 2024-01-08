@@ -42,8 +42,43 @@
 	</section>
 </ion-header>
 
-<ion-content appScrollbarTheme class="header-table">
+<ion-content appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
 	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<ion-list-header class="ion-padding">
+			<ion-label>{{'Filter' | translate}}</ion-label>
+		</ion-list-header>
+		<ion-grid>
+			<ion-col>
+			<div class="c-control">
+				<label class="c-label" for="Type">{{'erp.app.pages.approval.request.type' | translate}} </label>
+				<ng-select class="c-input" labelForId="Type" [(ngModel)]="type" [items]="requestTypeList" (change)="changeType()" bindLabel="Name" bindValue="Code" placeholder="{{'erp.app.pages.approval.request.search-placeholder' | translate}}">
+					<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+						<div *ngIf="i">
+							<div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
+						</div>
+					</ng-template>
+				</ng-select>
+			</div>
+
+			<div class="c-control" *ngIf="Type == 'TimeOff'">
+				<label class="c-label" for="SubType">{{'erp.app.pages.approval.request.sub-type' | translate}} </label>
+				<ng-select class="c-input" labelForId="SubType" [(ngModel)]="subType" [items]="timeOffTypeList" (change)="changeSubType()" bindLabel="Name" bindValue="Code" placeholder="{{'erp.app.pages.approval.request.search-placeholder' | translate}}">
+					<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+						<div *ngIf="i">
+							<div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
+						</div>
+					</ng-template>
+				</ng-select>
+			</div>
+
+			<app-filter #appFilter [smallWidth]="true" [item]="config" [(schema)]="schema" (submit)="filterConfig($event)"></app-filter>
+
+			<div *ngIf="type"><ion-button (click)="appFilter.onFormSubmit()" expand="block">{{'Filter' | translate}}</ion-button></div>
+
+		</ion-col>
+		</ion-grid>
+	</ion-fab>
 	<div *ngIf="items.length && pageConfig.showSpinner==false">
 		<section class="table">
 			<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">

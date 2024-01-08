@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
@@ -8,6 +8,7 @@ import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { FilterComponent } from 'src/app/components/filter/filter.component';
 
 @Component({
     selector: 'app-approval-rule-detail',
@@ -99,7 +100,7 @@ export class ApprovalRuleDetailPage extends PageBase {
             this.requestTypeList = values[0];
             this.statusList = values[1];
             this.timeOffTypeList = values[2];
-                        super.preLoadData(event);
+            super.preLoadData(event);
         });
     }
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
@@ -134,8 +135,7 @@ export class ApprovalRuleDetailPage extends PageBase {
     }
 
     changeType(subType = null) {
-        if (this.formGroup.get('Config').value) {
-           
+      
             if (subType == null) {
                 this.formGroup.get('SubType').setValue('');
                 this.query.SubType_eq = null;
@@ -150,20 +150,23 @@ export class ApprovalRuleDetailPage extends PageBase {
                     if (response.data && response.data.length && response.data[0].IDSchema) {
                         this.formGroup.get('IDSchema').setValue(response.data[0].IDSchema);
                         this.schemaService.getAnItem(this.formGroup.get('IDSchema').value).then(value => {
+                            if (this.formGroup.get('Config').value) {
                             this.env.showPrompt("Thay đổi Type/SubType sẽ clear hết config. Bạn có muốn tiếp tục?", null, "Cảnh báo").then(_ => {
                                 this.config = { 'Dimension': 'logical', 'Operator': 'AND', 'value': null, 'Logicals': [] }
                              })
+                            }
                             this.schema = value;
                         })
+                      
                     }
                  
                 }).catch(err => { });
-        }
+      
         this.saveChange();
     }
 
     changeSubType(e) {
-        return this.changeType(e.target.value);
+        return this.changeType(e);
     }
 
     ngAfterViewChecked() {
