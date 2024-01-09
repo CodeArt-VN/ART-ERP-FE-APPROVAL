@@ -62,7 +62,7 @@
                 </ion-buttons>
 			</ion-toolbar>
 			<div *ngIf="segmentView == 's1'">
-				<app-filter  *ngIf="formGroup.get('IDSchema').value> 0 &&  schema" [item]="formGroup.get('Config').value" (inputChange)="saveConfig($event,formGroup)"  (submit)='saveConfig($event,formGroup)' [schema]="schema"></app-filter>
+				<app-filter  *ngIf="formGroup.get('IDSchema').value> 0 &&  schema" [item]="formGroup.get('_Config').value" (inputChange)="saveConfig($event,formGroup)"  (submit)='saveConfig($event,formGroup)' [schema]="schema"></app-filter>
 				<!-- <ion-button color="primary" (click)="submutFilter()" expand="block">{{'Save' | translate}}</ion-button> -->
 			</div>
 			<div *ngFor="let c of formGroup.get('ManualRules')['controls'];let j = index">
@@ -89,7 +89,7 @@
 								
 							</ion-col>
 							<ion-col size="12" *ngIf="schema">
-								<app-filter #appFilterMaunualRule [schema]="schema" [item]="c.controls.Config.value" (inputChange)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
+								<app-filter #appFilterMaunualRule [schema]="schema" [item]="c.controls._Config.value" (inputChange)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
 							</ion-col>
 						</ion-row>
 					</ion-list>

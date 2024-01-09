@@ -45,7 +45,7 @@ export class ApprovalRuleDetailPage extends PageBase {
         this.pageConfig.isDetailPage = true;
         this.formGroup = this.formBuilder.group({
             Id: new FormControl({ value: '', disabled: true }),
-            IDBranch:new FormControl({ value: env.selectedBranch, disabled: true }),
+            IDBranch:new FormControl({ value: '', disabled: true }),
             Name: [''],
             Type: ['', Validators.required],
             SubType: [''],
@@ -55,6 +55,7 @@ export class ApprovalRuleDetailPage extends PageBase {
             Sort: [''],
             SetStatus: [''],
             Config: [''],
+            _Config:[''],
             ManualRules: this.formBuilder.array([]),
             DeletedManualRules: [[]],
             IsDisabled: new FormControl({ value: '', disabled: true }),
@@ -63,7 +64,6 @@ export class ApprovalRuleDetailPage extends PageBase {
             CreatedDate: new FormControl({ value: '', disabled: true }),
             ModifiedBy: new FormControl({ value: '', disabled: true }),
             ModifiedDate: new FormControl({ value: '', disabled: true }),
-
 
         });
     }
@@ -115,12 +115,13 @@ export class ApprovalRuleDetailPage extends PageBase {
         }
         if(this.item?.Config && this.item?.IDSchema>0){
 
-            this.formGroup.get('Config').setValue(this.patchConfig(this.item.Config));
+            this.formGroup.get('_Config').setValue(this.patchConfig(this.item.Config));
         }
         this._IDSchemaDataSource.initSearch();
-        this.formGroup.get('SubType').setValue(this.item?.SubType);
-        this.formGroup.get('SetStatus').setValue(this.item?.SetStatus);
+
+        this.formGroup.get('IDBranch').setValue(this.env.selectedBranch);
         if(this.item.ManualRules){
+            this.formGroup.setControl('ManualRules', this.formBuilder.array([]));
             this.patchRulesValue();
         }
     }
@@ -141,6 +142,7 @@ export class ApprovalRuleDetailPage extends PageBase {
             Remark: [rule.Remark],
             Sort: [rule.Sort],
             Config:[this.patchConfig(rule.Config)],
+            _Config:[this.patchConfig(rule.Config)],
             ApprovalMode:[rule.ApprovalMode || "OnlyOneIsNeeded " ,Validators.required],
             ApproverList:[rule.ApproverList],
             IsDisabled: new FormControl({ value: rule.IsDisabled, disabled: true }),
@@ -192,7 +194,6 @@ export class ApprovalRuleDetailPage extends PageBase {
             fg.get('Config').setValue(JSON.stringify(e));
             fg.get('Config').markAsDirty();
             this.saveChange();
-            fg.get('Config').setValue(e);
             this.env.showTranslateMessage('erp.app.app-component.page-bage.save-complete', 'success');
         }
         else {
@@ -274,6 +275,14 @@ export class ApprovalRuleDetailPage extends PageBase {
         let submitItem = this.getDirtyValues(this.formGroup);
         super.saveChange2();
     }
+
+    savedChange(savedItem = null, form = this.formGroup) {
+		super.savedChange(savedItem, form)
+        this.item = savedItem;
+        this.loadedData();
+
+	}
+
     segmentView = 's1';
     segmentChanged(ev: any) {
         this.segmentView = ev.detail.value;
