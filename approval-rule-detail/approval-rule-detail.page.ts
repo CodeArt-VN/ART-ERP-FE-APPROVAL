@@ -7,8 +7,6 @@ import { APPROVAL_AutoApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_Branc
 import { FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { FilterComponent } from 'src/app/components/filter/filter.component';
 
 @Component({
     selector: 'app-approval-rule-detail',
@@ -219,10 +217,12 @@ export class ApprovalRuleDetailPage extends PageBase {
                         this.formGroup.get('IDSchema').setValue(response.data[0].IDSchema);
                         this.schemaService.getAnItem(this.formGroup.get('IDSchema').value).then(value => {
                             var config = this.formGroup.get('Config').value;
-                            if (config && config.Logicals.length>0) {
-                            this.env.showPrompt("Thay đổi Type/SubType sẽ clear hết config. Bạn có muốn tiếp tục?", null, "Cảnh báo").then(_ => {
-                                this.formGroup.get('Config').setValue({ 'Dimension': 'logical', 'Operator': 'AND', 'value': null, 'Logicals': [] });
-                             })
+                            if (config && config.Logicals?.length>0) {
+                            this.env.showPrompt("Thay đổi Type/SubType sẽ xoá hết config. Bạn có muốn xoá ?", null, "Cảnh báo").then(_ => {
+                                this.resetConfig(this.formGroup);
+                                let groups = <FormArray>this.formGroup.controls.ManualRules;
+                                groups.controls.forEach(g=>this.resetConfig(g));
+                            })
                             }
                             this.schema = value;
                             this.formGroup.get('IDSchema').markAsDirty();
@@ -244,7 +244,9 @@ export class ApprovalRuleDetailPage extends PageBase {
         c.controls.ApproverList.markAsDirty();
         this.saveChange();
     }
-
+    resetConfig(fg){
+        fg.get('Config').setValue({ 'Dimension': 'logical', 'Operator': 'AND', 'value': null, 'Logicals': [] });
+    }
     removeManualRule(g,index){
         this.env.showPrompt('Bạn có chắc muốn xóa?', null, 'Xóa manual rule').then(_ => {
             let groups = <FormArray>this.formGroup.controls.ManualRules;
