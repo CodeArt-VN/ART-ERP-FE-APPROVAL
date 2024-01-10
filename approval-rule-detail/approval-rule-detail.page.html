@@ -27,11 +27,11 @@
 
 					<ion-col size="12" size-sm size-xl="4">
 						<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(inputChange)="changeSchema($event)"> </app-form-control> -->
-						<app-form-control [field]="{id:'SetStatus', type : 'select', label: 'SetStatus',dataSource:statusList,bindLabel:'Name',bindValue:'Code' ,form : formGroup }"
-							(change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'SetStatus', label: 'SetStatus', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"(inputChange)="saveChange()">
+						</app-form-control>
 
-						<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"
-							(change)="saveChange()"></app-form-control>
+							
+						<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"(change)="saveChange()"></app-form-control>
 
 					</ion-col>
 				</ion-row>
@@ -40,17 +40,60 @@
 		<div class="row-full shadow full-screen">
 			<ion-toolbar color="primary">
 				<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
-					<ion-segment-button value="s1">
+					<ion-segment-button [value]="'s1'">
 						<ion-label>{{'Config' | translate }}</ion-label>
 					</ion-segment-button>
+					<ng-container *ngFor="let c of formGroup.get('ManualRules')['controls'];let j=index">
+						<ion-segment-button [value]="'s'+j+2">
+							<ion-label *ngIf="c.get('Name')?.value">{{c.get('Name').value}}</ion-label>
+							<ion-label *ngIf="!c.get('Name')?.value">{{'Manual rule' | translate }} {{j+1}}</ion-label>
+						</ion-segment-button>
+					</ng-container>
+				
 					<!-- <ion-segment-button value="s2">
 						<ion-label>{{'Other information' | translate}}</ion-label>
 					</ion-segment-button> -->
 				</ion-segment>
+				<ion-buttons slot="end">
+                    <ion-button (click)="addManualRule({})">
+                        <ion-icon slot="start" name="add"></ion-icon>
+                        {{'Add' | translate}}
+                    </ion-button>
+                </ion-buttons>
 			</ion-toolbar>
 			<div *ngIf="segmentView == 's1'">
-				<app-filter  *ngIf="formGroup.get('IDSchema').value> 0 &&  config && schema" #appFilter [(item)]="config" (submit)='saveConfig($event)' [(schema)]="schema"></app-filter>
-				<ion-button color="primary" (click)="appFilter.onFormSubmit($event)" expand="block">{{'Save' | translate}}</ion-button>
+				<app-filter  *ngIf="formGroup.get('IDSchema').value> 0 &&  schema" [item]="formGroup.get('_Config').value" (inputChange)="saveConfig($event,formGroup)"  (submit)='saveConfig($event,formGroup)' [schema]="schema"></app-filter>
+				<!-- <ion-button color="primary" (click)="submutFilter()" expand="block">{{'Save' | translate}}</ion-button> -->
+			</div>
+			<div *ngFor="let c of formGroup.get('ManualRules')['controls'];let j = index">
+				<div *ngIf="segmentView == 's'+j+2">
+					<ion-list>
+						<ion-list-header lines="full">
+							<ion-label>{{'Manual rule' | translate }}</ion-label>
+							<div>
+							<ion-button color="danger" (click)="removeManualRule(c,j)" fill="clear" slot="end">
+									<ion-icon slot="icon-only" name="trash"></ion-icon>
+							</ion-button>
+							</div>
+						</ion-list-header>
+						<ion-row class="hr-group ion-justify-content-center">
+							<ion-col size="12" size-sm size-xl="6">
+								<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : c }"(change)="saveChange()">
+									<small label *ngIf="c.controls.Id?.value">Id: {{c.controls.Id.value}}</small>
+								</app-form-control>
+								<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(inputChange)="changeSchema($event)"> </app-form-control> -->
+								<app-form-control [field]="{id:'_approvalListIds', type : 'ng-select-staff', label: 'ApproverList',dataSource: c.controls._approverListDataSource.value , bindLabel:'FullName',bindValue:'Id', multiple: true,form : c }"
+								(inputChange)="changeApprovedBy($event,c)"></app-form-control>
+		
+								<app-form-control [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c }" (change)="saveChange()"></app-form-control>
+								
+							</ion-col>
+							<ion-col size="12" *ngIf="schema">
+								<app-filter #appFilterMaunualRule [schema]="schema" [item]="c.controls._Config.value" (inputChange)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
+							</ion-col>
+						</ion-row>
+					</ion-list>
+				</div>
 			</div>
 		</div>
 
