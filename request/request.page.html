@@ -45,9 +45,6 @@
 <ion-content appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
 	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
-		<ion-list-header class="ion-padding">
-			<ion-label>{{'Filter' | translate}}</ion-label>
-		</ion-list-header>
 		<ion-grid>
 			<ion-col>
 			<div class="c-control">
@@ -61,9 +58,9 @@
 				</ng-select>
 			</div>
 
-			<div class="c-control" *ngIf="Type == 'TimeOff'">
+			<div class="c-control" *ngIf="type == 'TimeOff'">
 				<label class="c-label" for="SubType">{{'erp.app.pages.approval.request.sub-type' | translate}} </label>
-				<ng-select class="c-input" labelForId="SubType" [(ngModel)]="subType" [items]="timeOffTypeList" (change)="changeSubType()" bindLabel="Name" bindValue="Code" placeholder="{{'erp.app.pages.approval.request.search-placeholder' | translate}}">
+				<ng-select class="c-input" labelForId="SubType" [(ngModel)]="subType" [items]="timeOffTypeList" (change)="changeSubType($event)" bindLabel="Name" bindValue="Code" placeholder="{{'erp.app.pages.approval.request.search-placeholder' | translate}}">
 					<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
 						<div *ngIf="i">
 							<div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
@@ -72,9 +69,9 @@
 				</ng-select>
 			</div>
 
-			<app-filter #appFilter [smallWidth]="true" [item]="config" [(schema)]="schema" (submit)="filterConfig($event)"></app-filter>
+			<app-filter #appFilter [smallWidth]="true" [item]="config" [(schema)]="schema"  (inputChange)="saveConfig($event)"></app-filter>
 
-			<div *ngIf="type"><ion-button (click)="appFilter.onFormSubmit()" expand="block">{{'Filter' | translate}}</ion-button></div>
+			<div *ngIf="type"><ion-button (click)="filterConfig()" expand="block">{{'Filter' | translate}}</ion-button></div>
 
 		</ion-col>
 		</ion-grid>

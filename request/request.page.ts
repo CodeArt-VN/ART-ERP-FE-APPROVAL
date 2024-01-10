@@ -9,6 +9,7 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { lib } from 'src/app/services/static/global-functions';
 import { environment } from 'src/environments/environment';
 import { FormBuilder } from '@angular/forms';
+import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
     selector: 'app-request',
@@ -37,6 +38,7 @@ export class RequestPage extends PageBase {
         public navCtrl: NavController,
         public location: Location,
         public formBuilder: FormBuilder,
+        public commonService: CommonService,
         public schemaService: SYS_SchemaProvider,
         public schemaDetailService: SYS_SchemaDetailProvider,
         public approvalTemplateService: APPROVAL_TemplateProvider
@@ -126,6 +128,7 @@ export class RequestPage extends PageBase {
 
         if (subType == null) {
             this.query.SubType_eq = null;
+            this.subType = null;
         }
         else {
             this.query.SubType_eq = subType;
@@ -143,16 +146,27 @@ export class RequestPage extends PageBase {
                 }
 
             }).catch(err => { });
-
+        this.query.SubType_eq = undefined;
+        this.query.Type = undefined;
     }
-
+    saveConfig(e){
+        this.config = e;
+    }
     changeSubType(e) {
-        return this.changeType(e);
+        return this.changeType(e.Code);
     }
-    filterConfig(e){
-        this.pageProvider.read({type:this.type,subtype:this.subType,config:this.config}).then(values=>{
-            console.log(values);
+    filterConfig(){
+        let obj={
+            "type":this.type,
+            "subType" : this.subType ,
+            "config" : JSON.stringify(this.config)
+        }
+        let apiPath = { method: "GET", url: function () { return ApiSetting.apiDomain("APPROVAL/Request/FilterRequest") } };
+        this.env.showLoading('Vui lòng chờ load dữ liệu...',  this.pageProvider.commonService.connect(apiPath.method, apiPath.url(), obj).toPromise())
+       
+        .then((data: any) => {
+            this.items = data;
+            this.loadedData();
         })
-        console.log(e);
     }
 }
