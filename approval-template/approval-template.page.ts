@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BRA_BranchProvider, WMS_ZoneProvider } from 'src/app/services/static/services.service';
+import { APPROVAL_TemplateProvider, BRA_BranchProvider, WMS_ZoneProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 
 @Component({
@@ -17,6 +17,7 @@ export class ApprovalTemplatePage extends PageBase {
     isAddReportModalOpen = false;
     isAddColorModalOpen = false;
     constructor(
+        public pageProvider: APPROVAL_TemplateProvider,
         public branchProvider: BRA_BranchProvider,
         public modalController: ModalController,
 		public popoverCtrl: PopoverController,
@@ -28,33 +29,6 @@ export class ApprovalTemplatePage extends PageBase {
     ) {
         super(
         );
-    }
-  
-    loadData(event?: any): void {
-       
-        this.items =[
-            {
-                Id:1,
-                IDBranch:610,
-                Name: "SO",
-                Code:"SORule",
-                IDSchema: 1,
-                Type: "SO Type",
-                SubType:"",
-                Remark:'Sale Order',
-                
-            },
-            {
-                Id:2,
-                IDBranch:610,
-                Name: "PO",
-                Code:"PORule",
-                IDSchema: 2,
-                Type: "PO Type",
-                SubType:"",
-                Remark:'Purchase Order',
-            },
-        ]
     }
 
   
