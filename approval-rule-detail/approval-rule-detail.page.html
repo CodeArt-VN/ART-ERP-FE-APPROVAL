@@ -19,9 +19,8 @@
 						</app-form-control>
 						<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }"(change)="saveChange()">
 						</app-form-control>
-						<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select',dataSource: requestTypeList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"(inputChange)="changeType()">
-						</app-form-control>
-						<app-form-control  *ngIf="formGroup.controls.Type.value == 'TimeOff'" [field]="{id:'SubType', label: 'SubType', type : 'ng-select' , dataSource: timeOffTypeList , bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"(inputChange)="changeSubType($event)">
+
+						<app-form-control [field]="{id:'IDApprovalTemplate', label: 'Template', type : 'ng-select-schema',dataSource: _approvalTemplateDataSource ,bindLabel:'Name',bindValue:'Id',placeholder:'search-placeholder', form : formGroup }"(inputChange)="changeTemplate()">
 						</app-form-control>
 					</ion-col>
 
@@ -29,8 +28,6 @@
 						<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(inputChange)="changeSchema($event)"> </app-form-control> -->
 						<app-form-control [field]="{id:'SetStatus', label: 'SetStatus', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"(inputChange)="saveChange()">
 						</app-form-control>
-
-							
 						<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"(change)="saveChange()"></app-form-control>
 
 					</ion-col>
@@ -43,10 +40,10 @@
 					<ion-segment-button [value]="'s1'">
 						<ion-label>{{'Config' | translate }}</ion-label>
 					</ion-segment-button>
-					<ng-container *ngFor="let c of formGroup.get('ManualRules')['controls'];let j=index">
+					<ng-container *ngFor="let c of formGroup.get('RuleApprovers')['controls'];let j=index">
 						<ion-segment-button [value]="'s'+j+2">
 							<ion-label *ngIf="c.get('Name')?.value">{{c.get('Name').value}}</ion-label>
-							<ion-label *ngIf="!c.get('Name')?.value">{{'Manual rule' | translate }} {{j+1}}</ion-label>
+							<ion-label *ngIf="!c.get('Name')?.value">{{'Rule approvers' | translate }} {{j+1}}</ion-label>
 						</ion-segment-button>
 					</ng-container>
 				
@@ -55,23 +52,23 @@
 					</ion-segment-button> -->
 				</ion-segment>
 				<ion-buttons slot="end">
-                    <ion-button (click)="addManualRule({})">
+                    <ion-button (click)="addRuleApprovers({})">
                         <ion-icon slot="start" name="add"></ion-icon>
                         {{'Add' | translate}}
                     </ion-button>
                 </ion-buttons>
 			</ion-toolbar>
 			<div *ngIf="segmentView == 's1'">
-				<app-filter  *ngIf="formGroup.get('IDSchema').value> 0 &&  schema" [item]="formGroup.get('_Config').value" (inputChange)="saveConfig($event,formGroup)"  (submit)='saveConfig($event,formGroup)' [schema]="schema"></app-filter>
+				<app-filter  *ngIf="formGroup.get('IDApprovalTemplate').value> 0 &&  schema" [item]="formGroup.get('_Config').value" (inputChange)="saveConfig($event,formGroup)"  (submit)='saveConfig($event,formGroup)' [schema]="schema"></app-filter>
 				<!-- <ion-button color="primary" (click)="submutFilter()" expand="block">{{'Save' | translate}}</ion-button> -->
 			</div>
-			<div *ngFor="let c of formGroup.get('ManualRules')['controls'];let j = index">
+			<div *ngFor="let c of formGroup.get('RuleApprovers')['controls'];let j = index">
 				<div *ngIf="segmentView == 's'+j+2">
 					<ion-list>
 						<ion-list-header lines="full">
-							<ion-label>{{'Manual rule' | translate }}</ion-label>
+							<ion-label>{{'Rule approvers' | translate }}</ion-label>
 							<div>
-							<ion-button color="danger" (click)="removeManualRule(c,j)" fill="clear" slot="end">
+							<ion-button color="danger" (click)="removeRuleApprovers(c,j)" fill="clear" slot="end">
 									<ion-icon slot="icon-only" name="trash"></ion-icon>
 							</ion-button>
 							</div>
@@ -85,11 +82,11 @@
 								<app-form-control [field]="{id:'_approvalListIds', type : 'ng-select-staff', label: 'ApproverList',dataSource: c.controls._approverListDataSource.value , bindLabel:'FullName',bindValue:'Id', multiple: true,form : c }"
 								(inputChange)="changeApprovedBy($event,c)"></app-form-control>
 		
-								<app-form-control [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c }" (inputChange)="saveChange()"></app-form-control>
 								
 							</ion-col>
 							<ion-col size="12" *ngIf="schema">
-								<app-filter #appFilterMaunualRule [schema]="schema" [item]="c.controls._Config.value" (inputChange)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
+								<app-filter [schema]="schema" [item]="c.controls._Config.value" (inputChange)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
 							</ion-col>
 						</ion-row>
 					</ion-list>

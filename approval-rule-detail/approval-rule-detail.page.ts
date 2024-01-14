@@ -3,7 +3,7 @@ import { NavController, LoadingController, AlertController } from '@ionic/angula
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
-import { APPROVAL_AutoApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_StaffProvider, SYS_SchemaDetailProvider, SYS_SchemaProvider, WMS_ZoneProvider, } from 'src/app/services/static/services.service';
+import {  APPROVAL_ApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_StaffProvider, SYS_SchemaDetailProvider, SYS_SchemaProvider, WMS_ZoneProvider, } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
@@ -15,7 +15,6 @@ import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap }
 })
 export class ApprovalRuleDetailPage extends PageBase {
     schemaDetailList: any;
-    filter: any;
     schema: any;
     ApprovalRule: any;
     ApprovalModes:[];
@@ -25,7 +24,7 @@ export class ApprovalRuleDetailPage extends PageBase {
     timeOffTypeList = [];
 
     constructor(
-        public pageProvider: APPROVAL_AutoApprovalRuleProvider,
+        public pageProvider: APPROVAL_ApprovalRuleProvider,
         public branchProvider: BRA_BranchProvider,
         public env: EnvService,
         public navCtrl: NavController,
@@ -44,20 +43,20 @@ export class ApprovalRuleDetailPage extends PageBase {
         super();
         this.pageConfig.isDetailPage = true;
         this.formGroup = this.formBuilder.group({
-            Id: new FormControl({ value: '', disabled: true }),
-            IDBranch:new FormControl({ value: '', disabled: true }),
+            Id: new FormControl({ value:'', disabled: true }),
+            IDBranch:new FormControl({ value: this.env.selectedBranch, disabled: false }),
             Name: [''],
             Type: ['', Validators.required],
             SubType: [''],
             Remark: [''],
             Code: [''],
-            IDSchema: [''],
+            IDApprovalTemplate:[''],
             Sort: [''],
             SetStatus: [''],
             Config: [''],
             _Config:[''],
-            ManualRules: this.formBuilder.array([]),
-            DeletedManualRules: [[]],
+            RuleApprovers: this.formBuilder.array([]),
+            DeletedRuleApprovers: [[]],
             IsDisabled: new FormControl({ value: '', disabled: true }),
             IsDeleted: new FormControl({ value: '', disabled: true }),
             CreatedBy: new FormControl({ value: '', disabled: true }),
@@ -67,8 +66,9 @@ export class ApprovalRuleDetailPage extends PageBase {
 
         });
     }
-    _IDSchemaDataSource:any= {
-        searchProvider: this.schemaService,
+
+    _approvalTemplateDataSource = {
+        searchProvider: this.approvalTemplateService,
         loading: false,
         input$: new Subject<string>(),
         selected: [],
@@ -89,7 +89,6 @@ export class ApprovalRuleDetailPage extends PageBase {
             );
         }
     }
-
     preLoadData(event?: any): void {
         //this.query.IDStaff = this.env.user.StaffID;
         Promise.all([
@@ -108,32 +107,39 @@ export class ApprovalRuleDetailPage extends PageBase {
     }
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
         super.loadedData(event, ignoredFromGroup);
-        if(this.item?.IDSchema>0){
-            this.schemaService.getAnItem(this.item.IDSchema).then(value => {
-                this.schema = value;
+        if(this.item?.IDApprovalTemplate >0){
+            this.approvalTemplateService.getAnItem(this.item?.IDApprovalTemplate ).then((value:any)=>{
+                this.formGroup.get('Type').setValue(value.Type);
+                this.formGroup.get('SubType').setValue(value.SubType);
+                this._approvalTemplateDataSource.selected.push(value) ;
+                this._approvalTemplateDataSource.initSearch();
+                this.schemaService.getAnItem(value.IDSchema).then(value => {
+                    this.schema = value;
+                })
+
             })
         }
-        if(this.item?.Config && this.item?.IDSchema>0){
-
+       
+        if(this.item?.Config){
             this.formGroup.get('_Config').setValue(this.patchConfig(this.item.Config));
         }
-        this._IDSchemaDataSource.initSearch();
-
-        this.formGroup.get('IDBranch').setValue(this.env.selectedBranch);
-        if(this.item.ManualRules){
-            this.formGroup.setControl('ManualRules', this.formBuilder.array([]));
+      
+        if(this.item.RuleApprovers){
+            this.formGroup.setControl('RuleApprovers', this.formBuilder.array([]));
             this.patchRulesValue();
         }
+        this.formGroup.get('IDBranch').setValue(this.env.selectedBranch);
+        this.formGroup.get('IDBranch').markAsDirty();
     }
     private patchRulesValue() {
-        if (this.item.ManualRules?.length) {
-            this.item.ManualRules.forEach(i => this.addManualRule(i));
+        if (this.item.RuleApprovers?.length) {
+            this.item.RuleApprovers.forEach(i => this.addRuleApprovers(i));
         }
     }
    
-    addManualRule(rule:any,markAsDirty = false) {
+    addRuleApprovers(rule:any,markAsDirty = false) {
         let approverList =this.patchConfig(rule?.ApproverList);
-        let groups = <FormArray>this.formGroup.controls.ManualRules;
+        let groups = <FormArray>this.formGroup.controls.RuleApprovers;
         let group = this.formBuilder.group({
             Id: new FormControl({ value: rule.Id, disabled: true }),
             IdApprovalRule: new FormControl({ value: this.formGroup.get('Id').value, disabled: true }),
@@ -201,42 +207,26 @@ export class ApprovalRuleDetailPage extends PageBase {
         }
     }
 
-    changeType(subType = null) {
-
-            if (subType == null) {
-                this.formGroup.get('SubType').setValue('');
-                this.query.SubType_eq = null;
-            }
-            else {
-                this.query.SubType_eq = subType;
-            }
-           
-            this.query.Type = this.formGroup.get('Type').value;
-            this.env.showLoading('Vui lòng chờ load dữ liệu...', this.approvalTemplateService.read(this.query))
-                .then((response: any) => {
-                    if (response.data && response.data.length && response.data[0].IDSchema) {
-                        this.formGroup.get('IDSchema').setValue(response.data[0].IDSchema);
-                        this.schemaService.getAnItem(this.formGroup.get('IDSchema').value).then(value => {
-                            var config = this.formGroup.get('Config').value;
-                            if (config && config.Logicals?.length>0) {
-                            this.env.showPrompt("Thay đổi Type/SubType sẽ xoá hết config. Bạn có muốn xoá ?", null, "Cảnh báo").then(_ => {
-                                this.resetConfig(this.formGroup);
-                                let groups = <FormArray>this.formGroup.controls.ManualRules;
-                                groups.controls.forEach(g=>this.resetConfig(g));
-                            })
-                            }
-                            this.schema = value;
-                            this.formGroup.get('IDSchema').markAsDirty();
-                            this.saveChange();
-                        })
-                     
-                    }
-                 
-                }).catch(err => { });
-    }
-
-    changeSubType(e) {
-        return this.changeType(e.Code);
+    changeTemplate() {
+        this.approvalTemplateService.getAnItem(this.item?.IDApprovalTemplate ).then((value:any)=>{
+            this.formGroup.get('Type').setValue(value.Type);
+            this.formGroup.get('SubType').setValue(value.SubType);
+            this.schemaService.getAnItem(value.IDSchema).then(value => {
+                var config = this.formGroup.get('_Config').value;
+                if (config && config.Logicals?.length>0) {
+                this.env.showPrompt("Thay đổi Template sẽ xoá hết config. Bạn có muốn xoá ?", null, "Cảnh báo").then(_ => {
+                    this.resetConfig(this.formGroup);
+                    let groups = <FormArray>this.formGroup.controls.RuleApprovers;
+                    groups.controls.forEach(g=>this.resetConfig(g));
+                    this.saveChange();
+                })
+                }
+                this.schema = value;
+                this.formGroup.get('IDApprovalTemplate').markAsDirty();
+                this.saveChange();
+            })
+        })
+            
     }
 
     changeApprovedBy(e,c){
@@ -247,19 +237,21 @@ export class ApprovalRuleDetailPage extends PageBase {
     }
     resetConfig(fg){
         fg.get('Config').setValue({ 'Dimension': 'logical', 'Operator': 'AND', 'value': null, 'Logicals': [] });
+        fg.get('_Config')?.setValue({ 'Dimension': 'logical', 'Operator': 'AND', 'value': null, 'Logicals': [] });
+        fg.get('Config').markAsDirty();
     }
-    removeManualRule(g,index){
+    removeRuleApprovers(g,index){
         this.env.showPrompt('Bạn có chắc muốn xóa?', null, 'Xóa manual rule').then(_ => {
-            let groups = <FormArray>this.formGroup.controls.ManualRules;
+            let groups = <FormArray>this.formGroup.controls.RuleApprovers;
             //groups.controls[index].get('IsDeleted').setValue(true);
             groups.removeAt(index);
-            this.item.ManualRules.splice(index, 1);
-            let deletedManualRules = this.formGroup.get('DeletedManualRules').value;
+            this.item.RuleApprovers.splice(index, 1);
+            let DeletedRuleApprovers = this.formGroup.get('DeletedRuleApprovers').value;
             let deletedId = g.controls.Id.value;
-            deletedManualRules.push(deletedId);
+            DeletedRuleApprovers.push(deletedId);
 
-            this.formGroup.get('DeletedManualRules').setValue(deletedManualRules);
-            this.formGroup.get('DeletedManualRules').markAsDirty();
+            this.formGroup.get('DeletedRuleApprovers').setValue(DeletedRuleApprovers);
+            this.formGroup.get('DeletedRuleApprovers').markAsDirty();
           //  groups.controls[index].markAsDirty();
            // groups.controls[index].get('IsDeleted').markAsDirty()
             this.saveChange();
