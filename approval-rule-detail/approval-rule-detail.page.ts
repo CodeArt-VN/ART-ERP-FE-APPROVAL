@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
 import {  APPROVAL_ApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_StaffProvider, SYS_SchemaDetailProvider, SYS_SchemaProvider, WMS_ZoneProvider, } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
@@ -37,7 +37,8 @@ export class ApprovalRuleDetailPage extends PageBase {
         public commonService: CommonService,
         public schemaService: SYS_SchemaProvider,
         public schemaDetailService: SYS_SchemaDetailProvider,
-        public approvalTemplateService: APPROVAL_TemplateProvider
+        public approvalTemplateService: APPROVAL_TemplateProvider,
+        public router: Router,
 
     ) {
         super();
@@ -67,28 +68,6 @@ export class ApprovalRuleDetailPage extends PageBase {
         });
     }
 
-    _approvalTemplateDataSource = {
-        searchProvider: this.approvalTemplateService,
-        loading: false,
-        input$: new Subject<string>(),
-        selected: [],
-        items$: null,
-        initSearch() {
-            this.loading = false;
-            this.items$ = concat(
-                of(this.selected),
-                this.input$.pipe(
-                    distinctUntilChanged(),
-                    tap(() => this.loading = true),
-                    switchMap(term => this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-                        catchError(() => of([])), // empty list on error
-                        tap(() => this.loading = false)
-                    ))
-
-                )
-            );
-        }
-    }
     preLoadData(event?: any): void {
         //this.query.IDStaff = this.env.user.StaffID;
         Promise.all([
@@ -104,15 +83,19 @@ export class ApprovalRuleDetailPage extends PageBase {
             this.ApprovalModes = values[3];
             super.preLoadData(event);
         });
+    
+        if(this.route.snapshot.queryParams.IDApprovalTemplate){
+            this.formGroup.get('IDApprovalTemplate').setValue(parseInt(this.route.snapshot.queryParams.IDApprovalTemplate));
+        }
     }
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
         super.loadedData(event, ignoredFromGroup);
-        if(this.item?.IDApprovalTemplate >0){
-            this.approvalTemplateService.getAnItem(this.item?.IDApprovalTemplate ).then((value:any)=>{
+       
+        if( this.formGroup.get('IDApprovalTemplate').value >0){
+            this.approvalTemplateService.getAnItem(this.formGroup.get('IDApprovalTemplate').value).then((value:any)=>{
                 this.formGroup.get('Type').setValue(value.Type);
                 this.formGroup.get('SubType').setValue(value.SubType);
-                this._approvalTemplateDataSource.selected.push(value) ;
-                this._approvalTemplateDataSource.initSearch();
+  
                 this.schemaService.getAnItem(value.IDSchema).then(value => {
                     this.schema = value;
                 })
@@ -130,6 +113,8 @@ export class ApprovalRuleDetailPage extends PageBase {
         }
         this.formGroup.get('IDBranch').setValue(this.env.selectedBranch);
         this.formGroup.get('IDBranch').markAsDirty();
+        this.formGroup.get('Type').markAsDirty();
+        this.formGroup.get('IDApprovalTemplate').markAsDirty();
     }
     private patchRulesValue() {
         if (this.item.RuleApprovers?.length) {
@@ -205,28 +190,6 @@ export class ApprovalRuleDetailPage extends PageBase {
         else {
             this.env.showTranslateMessage('erp.app.app-component.page-bage.can-not-save', 'danger');
         }
-    }
-
-    changeTemplate() {
-        this.approvalTemplateService.getAnItem(this.item?.IDApprovalTemplate ).then((value:any)=>{
-            this.formGroup.get('Type').setValue(value.Type);
-            this.formGroup.get('SubType').setValue(value.SubType);
-            this.schemaService.getAnItem(value.IDSchema).then(value => {
-                var config = this.formGroup.get('_Config').value;
-                if (config && config.Logicals?.length>0) {
-                this.env.showPrompt("Thay đổi Template sẽ xoá hết config. Bạn có muốn xoá ?", null, "Cảnh báo").then(_ => {
-                    this.resetConfig(this.formGroup);
-                    let groups = <FormArray>this.formGroup.controls.RuleApprovers;
-                    groups.controls.forEach(g=>this.resetConfig(g));
-                    this.saveChange();
-                })
-                }
-                this.schema = value;
-                this.formGroup.get('IDApprovalTemplate').markAsDirty();
-                this.saveChange();
-            })
-        })
-            
     }
 
     changeApprovedBy(e,c){

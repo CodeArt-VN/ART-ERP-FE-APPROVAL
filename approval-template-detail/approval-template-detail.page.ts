@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
 import { APPROVAL_ApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_StaffProvider, SYS_SchemaProvider, WMS_ZoneProvider,  } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormArray, FormGroup } from '@angular/forms';
@@ -38,13 +38,13 @@ export class ApprovalTemplateDetailPage extends PageBase {
         public cdr: ChangeDetectorRef,
         public loadingController: LoadingController,
         public commonService: CommonService,
-   
+        public router: Router,
          ) {
         super();
         this.pageConfig.isDetailPage = true;
         this.formGroup = this.formBuilder.group({
             Id: new FormControl({ value: '', disabled: true }),
-            IDBranch:new FormControl({ value: '', disabled: false }),
+            IDBranch: new FormControl({ value: '', disabled: false }),
             Name: [''],
             Type: ['', Validators.required],
             Remark: [''],
@@ -79,7 +79,6 @@ export class ApprovalTemplateDetailPage extends PageBase {
         super.loadedData(event, ignoredFromGroup);
         this.patchFormValue();
         if(this.item.Type){
-            this.query.Code = this.item.Type;
             this.query.Type = 'ApprovalRequest';
             this.schemaService.read(this.query)
                 .then((response: any) => {
@@ -87,7 +86,6 @@ export class ApprovalTemplateDetailPage extends PageBase {
                         this.schemaList = response.data;
                     }
                 }).catch(err => { });
-            this.query.Code = undefined;
             this.query.Type = undefined;
         }
       
@@ -127,7 +125,6 @@ export class ApprovalTemplateDetailPage extends PageBase {
         }
    
     changeType() {
-        this.query.Code = this.formGroup.get('Type').value;
         this.query.Type = 'ApprovalRequest';
         this.env.showLoading('Vui lòng chờ load dữ liệu...', this.schemaService.read(this.query))
             .then((response: any) => {
@@ -142,7 +139,6 @@ export class ApprovalTemplateDetailPage extends PageBase {
         }
 
     changeSchema(){
-        this.query.Code = undefined;
         this.query.Type = undefined;
          this.schemaService.getAnItem(this.formGroup.get('IDSchemaMapping').value)
         .then((response: any) => {
@@ -152,7 +148,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
         }).catch(err => { });
         this.saveChange();
     }
-
+    
     segmentView = 's1';
     segmentChanged(ev: any) {
         if(ev.detail.value == 's2'){//approval Rule segment
@@ -165,6 +161,10 @@ export class ApprovalTemplateDetailPage extends PageBase {
             }
         }
         this.segmentView = ev.detail.value;
+    }
+
+    forwardToApprovalRule(){
+      this.router.navigate(['/approval-rule/0'], { queryParams: { 'IDApprovalTemplate':this.formGroup.get('Id').value  } });
     }
 
     async saveChange() {
