@@ -13,6 +13,7 @@
 						</ion-list-header>
 					</ion-col>
 					<ion-col size="12" size-sm size-xl="4">
+						
 						<app-form-control [field]="{id:'Code', label: 'Code', type : 'text', form : formGroup }"
 							(change)="saveChange()">
 							<small label *ngIf="item?.Id">Id: {{item.Id}}</small>
@@ -20,8 +21,6 @@
 						<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }"(change)="saveChange()">
 						</app-form-control>
 
-						<app-form-control [field]="{id:'IDApprovalTemplate', label: 'Template', type : 'ng-select-schema',dataSource: _approvalTemplateDataSource ,bindLabel:'Name',bindValue:'Id',placeholder:'search-placeholder', form : formGroup }"(inputChange)="changeTemplate()">
-						</app-form-control>
 					</ion-col>
 
 					<ion-col size="12" size-sm size-xl="4">

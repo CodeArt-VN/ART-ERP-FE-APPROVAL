@@ -14,138 +14,115 @@
 						<ion-label>{{'Approval rule' | translate}}</ion-label>
 					</ion-segment-button>
 				</ion-segment>
-				<!-- <ion-buttons slot="end" *ngIf="segmentView=='s1'">
-                    <ion-button (click)="addField({},true)">
+				<ion-buttons slot="end" *ngIf="segmentView=='s2' && formGroup.get('Id').value">
+                    <ion-button (click)="forwardToApprovalRule()">
                         <ion-icon slot="start" name="add"></ion-icon>
                         {{'Add' | translate}}
                     </ion-button>
-                </ion-buttons> -->
+                </ion-buttons>
 			</ion-toolbar>
-
-			<!-- <div *ngIf="segmentView == 's1'">
-				<ion-list>
-					<ion-list-header lines="full">
-						<ion-label>{{'UDF' | translate }}</ion-label>
-						<ion-button (click)="toggleReorder()" fill="outline">{{'Sort' | translate }}</ion-button>
-					</ion-list-header>
-					<ion-row class="hr-group" *ngFor="let i of countUDF.length">
-							
-						
-					</ion-row>
-				</ion-list>
-			</div>s -->
-
-			<!-- Order information -->
-			<!-- <div *ngIf="segmentView == 's2'">
+			<div class="ion-padding" *ngIf="segmentView == 's1'">
 				<ion-grid fixed>
-			
+					<form [formGroup]="formGroup">
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Template' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="6">
+								<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }" (change)="saveChange()">
+									<small label *ngIf="formGroup.controls.Id?.value">Id: {{formGroup.controls.Id.value}}</small>
+								</app-form-control>
+		
+								<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="changeType()"></app-form-control>
+		
+								<app-form-control *ngIf="formGroup.get('Type').value =='TimeOff'" [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
+		
+								<app-form-control [field]="{id:'IDSchema', label: 'Schema', type : 'ng-select',dataSource:schemaList , bindValue:'Id', bindLabel:'Name', form : formGroup }" (change)="changeSchema()"></app-form-control>
+							</ion-col>
+		
+						</ion-row>
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Use UDF' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<ng-container *ngFor="let c of countUDF;let j=index">
+									<app-form-control *ngIf="j%2==0" [field]="{ id: 'IsUseUDF' + c, label: 'IsUseUDF' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
+									</app-form-control>
+									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2==0" [field]="{ id: 'UDFLabel' + c, label: 'UDFLabel' + c, type: 'text', form: formGroup }" (change)="saveChange()">
+									</app-form-control>
+								</ng-container>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<ng-container *ngFor="let c of countUDF;let j=index">
+									<app-form-control *ngIf="j%2!=0" [field]="{ id: 'IsUseUDF' + c, label: 'IsUseUDF' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
+									</app-form-control>
+		
+									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2!=0" [field]="{ id: 'UDFLabel' + c, label: 'UDFLabel' + c, type: 'text', form: formGroup }" (change)="saveChange()">
+									</app-form-control>
+								</ng-container>
+							</ion-col>
+						</ion-row>
+		
+						<!-- mapping -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Mapping' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="6">
+								<app-form-control [field]="{id:'IDSchemaMapping', label: 'IDSchemaMapping', type : 'ng-select',dataSource: schemaList, bindValue:'Id', bindLabel:'Name', form : formGroup }" (inputChange)="changeSchema()"></app-form-control>
+		
+								<ng-container *ngFor="let c of countUDF;let j=index">
+									<app-form-control *ngIf="formGroup.get('IsUseUDF'+c)?.value && formGroup.get('IDSchemaMapping').value >0" [field]="{id:'UDFMapping' +c, label:'UDFMapping'+c , type : 'ng-select', dataSource: _schemaListMappingDetail, bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="saveChange()"></app-form-control>
+								</ng-container>
+		
+							</ion-col>
+						</ion-row>
+		
+					</form>
 				</ion-grid>
-			</div> -->
+			</div>
+			<div class="ion-padidng" *ngIf="segmentView == 's2'">
+				<section class="table responsive">
+					<header class="bold">
+						<!-- <div class="col-checkbox cell"></div> -->
+						<div class="col-id cell">
+							{{'Id' | translate}}
+						</div>
+						<div class="col-code cell">
+							{{'Code' | translate}}
+						</div>
+						<div class="col-name cell">
+							{{'Name' | translate}}
+						</div>
+		
+					</header>
+		
+					<div *ngFor="let i of approvalRuleList ; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+						<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-id cell">
+							{{i.Id}}
+						</div>
+						<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-code cell">
+							{{i.Code}}
+						</div>
+						<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-name cell">
+							<b>{{i.Name}}</b> <span *ngIf="i.Remark"> - {{i.Remark}}</span>
+						</div>
+					</div>
+		
+					<!-- <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
+		
+				</section>
+		
+			</div>
 		</div>
 	</div>
-		<div class="ion-padding" *ngIf="segmentView == 's1'">
-		<ion-grid fixed>
-			<form [formGroup]="formGroup">
-				<ion-row class="hr-group">
-					<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
-						<ion-list-header class="ion-no-padding">
-							<ion-label color="primary">{{'Template' | translate}}</ion-label>
-						</ion-list-header>
-					</ion-col>
-					<ion-col size="12" size-sm size-xl="6">
-						<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }" (change)="saveChange()">
-							<small label *ngIf="formGroup.controls.Id?.value">Id: {{formGroup.controls.Id.value}}</small>
-						</app-form-control>
 
-						<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="changeType()"></app-form-control>
-						
-						<app-form-control *ngIf="formGroup.get('Type').value =='TimeOff'" [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
-
-						<app-form-control [field]="{id:'IDSchema', label: 'Schema', type : 'ng-select',dataSource:schemaList , bindValue:'Id', bindLabel:'Name', form : formGroup }" (change)="changeSchema()"></app-form-control>
-					</ion-col>
-
-				</ion-row>
-				<ion-row class="hr-group">
-					<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
-						<ion-list-header class="ion-no-padding">
-							<ion-label color="primary">{{'Use UDF' | translate}}</ion-label>
-						</ion-list-header>
-					</ion-col>
-					<ion-col size="12" size-sm size-xl="4">
-					<ng-container *ngFor="let c of countUDF;let j=index">
-							<app-form-control  *ngIf="j%2==0" [field]="{ id: 'IsUseUDF' + c, label: 'IsUseUDF' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
-							</app-form-control>
-							<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2==0"
-									[field]="{ id: 'UDFLabel' + c, label: 'UDFLabel' + c, type: 'text', form: formGroup }"
-									(change)="saveChange()">
-							</app-form-control>
-						</ng-container>
-					</ion-col>
-					<ion-col size="12" size-sm size-xl="4">
-						<ng-container *ngFor="let c of countUDF;let j=index">
-							<app-form-control *ngIf="j%2!=0" [field]="{ id: 'IsUseUDF' + c, label: 'IsUseUDF' +  c, type: 'checkbox', form:formGroup }"(change)="saveChange()">
-							</app-form-control>
-	
-							<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2!=0"
-									[field]="{ id: 'UDFLabel' + c, label: 'UDFLabel' + c, type: 'text', form: formGroup }"
-									(change)="saveChange()">
-							</app-form-control>
-						</ng-container>
-					</ion-col>
-				</ion-row>
-
-				<!-- mapping -->
-				<ion-row class="hr-group">
-					<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
-						<ion-list-header class="ion-no-padding">
-							<ion-label color="primary">{{'Mapping' | translate}}</ion-label>
-						</ion-list-header>
-					</ion-col>
-					<ion-col size="12" size-sm size-xl="6">
-						<app-form-control [field]="{id:'IDSchemaMapping', label: 'IDSchemaMapping', type : 'ng-select',dataSource: schemaList, bindValue:'Id', bindLabel:'Name', form : formGroup }" (inputChange)="changeSchema()"></app-form-control>
-
-						<ng-container *ngFor="let c of countUDF;let j=index">
-							<app-form-control *ngIf="formGroup.get('IsUseUDF'+c)?.value && formGroup.get('IDSchemaMapping').value >0" [field]="{id:'UDFMapping' +c, label:'UDFMapping'+c , type : 'ng-select', dataSource: _schemaListMappingDetail, bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="saveChange()"></app-form-control>
-						</ng-container>
-
-					</ion-col>
-				</ion-row>
-
-			</form>
-		</ion-grid>
-		</div>
-	<div class="ion-padidng" *ngIf="segmentView == 's2'">
-			<section class="table responsive">
-				<header class="bold">
-					<div class="col-checkbox cell"></div>
-					<div class="col-id cell">
-						{{'Id' | translate}}
-					</div>
-					<div class="col-code cell">
-						{{'Code' | translate}}
-					</div>
-					<div class="col-name cell">
-						{{'Name' | translate}}
-					</div>
-				
-				</header>
-				
-				<div *ngFor="let i of approvalRuleList ; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-					<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-id cell">
-						{{i.Id}}
-					</div>
-					<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-code cell">
-						{{i.Code}}
-					</div>
-					<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-name cell">
-						<b>{{i.Name}}</b> <span *ngIf="i.Remark"> - {{i.Remark}}</span>
-					</div>
-				</div>
-		
-				<!-- <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
-		
-			</section>
-		
-	</div>
 	<!-- <app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
 </ion-content>
