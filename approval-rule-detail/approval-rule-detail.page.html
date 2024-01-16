@@ -78,17 +78,17 @@
 									<small label *ngIf="c.controls.Id?.value">Id: {{c.controls.Id.value}}</small>
 								</app-form-control>
 								<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(inputChange)="changeSchema($event)"> </app-form-control> -->
+								<app-form-control [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c }" (inputChange)="saveChange()"></app-form-control>
 								<app-form-control [field]="{id:'_approvalListIds', type : 'ng-select-staff', label: 'ApproverList',dataSource: c.controls._approverListDataSource.value , bindLabel:'FullName',bindValue:'Id', multiple: true,form : c }"
 								(inputChange)="changeApprovedBy($event,c)"></app-form-control>
 		
-								<app-form-control [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c }" (inputChange)="saveChange()"></app-form-control>
 								
 							</ion-col>
-							<ion-col size="12" *ngIf="schema">
-								<app-filter [schema]="schema" [item]="c.controls._Config.value" (inputChange)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
-							</ion-col>
+						
 						</ion-row>
 					</ion-list>
+					<app-filter *ngIf="schema" [schema]="schema" [item]="c.controls._Config.value" (inputChange)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
+					
 				</div>
 			</div>
 		</div>

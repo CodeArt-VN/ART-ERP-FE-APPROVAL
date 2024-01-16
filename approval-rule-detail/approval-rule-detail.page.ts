@@ -167,7 +167,6 @@ export class ApprovalRuleDetailPage extends PageBase {
             },
         })
         console.log(rule);
-        group.get('ApprovalMode').markAsDirty();
         group.get('_approverListDataSource').value.initSearch();
        
         groups.push(group);
