@@ -151,6 +151,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
     
     segmentView = 's1';
     segmentChanged(ev: any) {
+        this.approvalRuleList =[];
         if(ev.detail.value == 's2'){//approval Rule segment
             if(this.formGroup.get('Id').value){
                 this.query.IDApprovalTemplate = this.item.Id;
