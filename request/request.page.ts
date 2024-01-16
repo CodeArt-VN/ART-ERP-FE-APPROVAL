@@ -134,7 +134,7 @@ export class RequestPage extends PageBase {
             this.query.SubType_eq = subType;
         }
         this.config = { 'Dimension': 'logical', 'Operator': 'AND', 'value': null, 'Logicals': [] }
-        this.query.Type = this.type;
+        this.query.Type_eq = this.type;
         this.env.showLoading('Vui lòng chờ load dữ liệu...', this.approvalTemplateService.read(this.query))
             .then((response: any) => {
                 if (response.data && response.data.length && response.data[0].IDSchema) {
@@ -147,7 +147,7 @@ export class RequestPage extends PageBase {
 
             }).catch(err => { });
         this.query.SubType_eq = undefined;
-        this.query.Type = undefined;
+        this.query.Type_eq = undefined;
     }
     saveConfig(e){
         this.config = e;
@@ -161,8 +161,8 @@ export class RequestPage extends PageBase {
             "subType" : this.subType ,
             "config" : JSON.stringify(this.config)
         }
-        let apiPath = { method: "GET", url: function () { return ApiSetting.apiDomain("APPROVAL/Request/FilterRequest") } };
-        this.env.showLoading('Vui lòng chờ load dữ liệu...',  this.pageProvider.commonService.connect(apiPath.method, apiPath.url(), obj).toPromise())
+        let apiPath = { method: "POST", url: function () { return ApiSetting.apiDomain("APPROVAL/Request/FilterRequest") } };
+        this.env.showLoading('Vui lòng chờ load dữ liệu...',  this.pageProvider.commonService.connect(apiPath.method, apiPath.url(),  obj).toPromise())
        
         .then((data: any) => {
             this.items = data;

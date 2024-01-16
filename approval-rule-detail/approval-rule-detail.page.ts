@@ -134,7 +134,7 @@ export class ApprovalRuleDetailPage extends PageBase {
             Sort: [rule.Sort],
             Config:[this.patchConfig(rule.Config)],
             _Config:[this.patchConfig(rule.Config)],
-            ApprovalMode:[rule.ApprovalMode || "OnlyOneIsNeeded " ,Validators.required],
+            ApprovalMode:[rule.ApprovalMode ,Validators.required],
             ApproverList:[rule.ApproverList],
             IsDisabled: new FormControl({ value: rule.IsDisabled, disabled: true }),
             IsDeleted: new FormControl({ value: rule.IsDeleted, disabled: true }),
@@ -167,9 +167,8 @@ export class ApprovalRuleDetailPage extends PageBase {
             },
         })
         console.log(rule);
-        group.get('ApprovalMode').markAsDirty();
         group.get('_approverListDataSource').value.initSearch();
-       
+        // group.get('ApprovalMode').markAsDirty();
         groups.push(group);
     }
 

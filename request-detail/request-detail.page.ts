@@ -114,7 +114,7 @@ export class RequestDetailPage extends PageBase {
         if (ignoredStatus.findIndex(d => d == this.item.Status) == -1) {
             this.pageConfig.canApprove = this.item._Approvers.findIndex(d => d.Id == this.env.user.StaffID) > -1;
         }
-        if (this.item.ApprovalMode != 'OnlyOneIsNeeded' && this.pageConfig.canApprove) {
+        if (this.item.ApprovalMode?.trim() == 'SequentialApprovals' && this.pageConfig.canApprove) {
 
             let ApproverIdx = this.item._Approvers.findIndex(d => d.Id == this.env.user.StaffID);
 
