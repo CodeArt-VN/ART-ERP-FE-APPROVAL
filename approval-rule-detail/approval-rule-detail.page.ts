@@ -111,7 +111,6 @@ export class ApprovalRuleDetailPage extends PageBase {
             this.formGroup.setControl('RuleApprovers', this.formBuilder.array([]));
             this.patchRulesValue();
         }
-        this.formGroup.get('IDBranch').setValue(this.env.selectedBranch);
         this.formGroup.get('IDBranch').markAsDirty();
         this.formGroup.get('Type').markAsDirty();
         this.formGroup.get('IDApprovalTemplate').markAsDirty();
