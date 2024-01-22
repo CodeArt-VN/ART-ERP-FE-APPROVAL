@@ -51,18 +51,18 @@
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<ng-container *ngFor="let c of countUDF;let j=index">
-									<app-form-control *ngIf="j%2==0" [field]="{ id: 'IsUseUDF' + c, label: 'IsUseUDF' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
+									<app-form-control *ngIf="j%2==0" [field]="{ id: 'IsUseUDF' + c, label: 'Use mapping ' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
 									</app-form-control>
-									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2==0" [field]="{ id: 'UDFLabel' + c, label: 'UDFLabel' + c, type: 'text', form: formGroup }" (change)="saveChange()">
+									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2==0" [field]="{ id: 'UDFLabel' + c, label: 'Label ' + c, type: 'text', form: formGroup }" (change)="saveChange()">
 									</app-form-control>
 								</ng-container>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<ng-container *ngFor="let c of countUDF;let j=index">
-									<app-form-control *ngIf="j%2!=0" [field]="{ id: 'IsUseUDF' + c, label: 'IsUseUDF' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
+									<app-form-control *ngIf="j%2!=0" [field]="{ id: 'IsUseUDF' + c, label: 'Use mapping ' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
 									</app-form-control>
 		
-									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2!=0" [field]="{ id: 'UDFLabel' + c, label: 'UDFLabel' + c, type: 'text', form: formGroup }" (change)="saveChange()">
+									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2!=0" [field]="{ id: 'UDFLabel' + c, label: 'Label ' + c, type: 'text', form: formGroup }" (change)="saveChange()">
 									</app-form-control>
 								</ng-container>
 							</ion-col>
@@ -79,8 +79,8 @@
 								<app-form-control [field]="{id:'IDSchemaMapping', label: 'IDSchemaMapping', type : 'ng-select',dataSource: schemaList, bindValue:'Id', bindLabel:'Name', form : formGroup }" (inputChange)="changeSchema()"></app-form-control>
 		
 								<ng-container *ngFor="let c of countUDF;let j=index">
-									<div class="c-control" *ngIf="formGroup.get('IsUseUDF'+c)?.value && formGroup.get('IDSchemaMapping').value >0" >
-										<label class="c-label" for="InvoiceForm">{{formGroup.get('UDFLabel'+c)?.value}}
+									<div class="c-control" *ngIf="formGroup.get('IsUseUDF'+c)?.value" >
+										<label class="c-label" for="InvoiceForm">{{formGroup.get('UDFLabel'+c)?.value || 'Mapping '+c}}
 											<span *ngIf="!formGroup.get('UDFMapping' +c).valid && !formGroup.get('UDFMapping' +c).pending && (formGroup.get('UDFMapping' +c).dirty || submitAttempt)" ion-text color="danger">(*)</span>
 										</label>
 										<app-input-control [field]="{id:'UDFMapping' +c, label:'UDFMapping'+c , type : 'ng-select', dataSource: _schemaListMappingDetail, bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="saveChange()"></app-input-control>
