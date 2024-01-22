@@ -110,7 +110,7 @@
 		
 					</header>
 		
-					<div *ngFor="let i of approvalRuleList ; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+					<div *ngFor="let i of approvalRuleList ; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}">
 						<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-id cell">
 							{{i.Id}}
 						</div>
@@ -120,6 +120,9 @@
 						<div (click)="nav('approval-rule'+'/'+i.Id,'forward')" class="col-name cell">
 							<b>{{i.Name}}</b> <span *ngIf="i.Remark"> - {{i.Remark}}</span>
 						</div>
+							<ion-button color="danger" (click)="removeApprovalRule(j)" fill="clear" size="small" slot="end">
+								<ion-icon slot="icon-only" name="trash"></ion-icon>
+							</ion-button>
 					</div>
 		
 					<!-- <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->

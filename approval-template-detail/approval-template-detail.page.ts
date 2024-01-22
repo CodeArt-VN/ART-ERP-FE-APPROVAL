@@ -6,8 +6,7 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { APPROVAL_ApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_StaffProvider, SYS_SchemaProvider, WMS_ZoneProvider,  } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormArray, FormGroup } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
-import { FilterComponent } from 'src/app/components/filter/filter.component';
-import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
+import { ApiSetting } from 'src/app/services/static/api-setting';
 
 @Component({
     selector: 'app-approval-template-detail',
@@ -44,7 +43,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
         this.pageConfig.isDetailPage = true;
         this.formGroup = this.formBuilder.group({
             Id: new FormControl({ value: '', disabled: true }),
-            IDBranch: new FormControl({ value: '', disabled: false }),
+            IDBranch: new FormControl({  value: this.env.selectedBranch, disabled: false }),
             Name: [''],
             Type: ['', Validators.required],
             Remark: [''],
@@ -78,6 +77,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
         // this.item.Fields.forEach(x=> this.addField(x));
         super.loadedData(event, ignoredFromGroup);
         this.patchFormValue();
+        this.formGroup.get('IDBranch').markAsDirty();
         if(this.item.Type){
             this.query.Type = 'ApprovalRequest';
             this.schemaService.read(this.query)
@@ -97,8 +97,6 @@ export class ApprovalTemplateDetailPage extends PageBase {
                 }
             }).catch(err => { });
         }
-        this.formGroup.get('IDBranch').setValue(this.env.selectedBranch);
-        this.formGroup.get('IDBranch').markAsDirty();
     }
 
     private patchFormValue() {
@@ -122,6 +120,15 @@ export class ApprovalTemplateDetailPage extends PageBase {
                 }
             }
             this.countUDF= Array(max).fill(max).map((x, i) => i<9?'0' + (i+1): i+1);
+
+            if(this.formGroup.get('Id').value){
+                this.query.IDApprovalTemplate = this.item.Id;
+             this.approvalRuleService.read( this.query).then((response:any)=>{
+                    if(response && response.data && response.data.length>0)
+                    this.approvalRuleList = response.data;
+                });
+                this.query.IDApprovalTemplate = undefined;
+            }
         }
    
     changeType() {
@@ -148,14 +155,25 @@ export class ApprovalTemplateDetailPage extends PageBase {
         }).catch(err => { });
         this.saveChange();
     }
-    
+    removeApprovalRule(index){
+        this.env.showPrompt('Bạn có chắc muốn xóa?', null, 'Xóa approval rule').then(_ => {
+            let apiPath ={
+                delItem : {
+                    method: "DELETE",
+                    url: function (id) { return ApiSetting.apiDomain('APPROVAL/ApprovalRule/') + id }
+                }
+            }
+            this.approvalRuleService.commonService.delete(this.approvalRuleList[index],apiPath).then(value=>{
+                this.approvalRuleList.splice(index,1);
+            })
+        });
+    }
     segmentView = 's1';
     segmentChanged(ev: any) {
-        this.approvalRuleList =[];
-        if(ev.detail.value == 's2'){//approval Rule segment
+        if(ev.detail.value == 's2' && !this.approvalRuleList){//approval Rule segment
             if(this.formGroup.get('Id').value){
                 this.query.IDApprovalTemplate = this.item.Id;
-                this.approvalRuleService.read( this.query).then((response:any)=>{
+                this.env.showLoading('Vui lòng chờ load dữ liệu...', this.approvalRuleService.read( this.query)).then((response:any)=>{
                     if(response && response.data && response.data.length>0)
                     this.approvalRuleList = response.data;
                 });
