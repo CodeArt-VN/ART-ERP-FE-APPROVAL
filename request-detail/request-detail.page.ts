@@ -112,7 +112,7 @@ export class RequestDetailPage extends PageBase {
         let lockStatus = ['Approved', 'Denied', 'Forward']
         this.pageConfig.canApprove = false;
         if (ignoredStatus.findIndex(d => d == this.item.Status) == -1) {
-            this.pageConfig.canApprove = this.item._Approvers.findIndex(d => d.Id == this.env.user.StaffID) > -1;
+            this.pageConfig.canApprove = this.item._Approvers.findIndex(d => d.Id == this.env.user.StaffID && d.Status == null) > -1;
         }
         if (this.item.ApprovalMode?.trim() == 'SequentialApprovals' && this.pageConfig.canApprove) {
 
@@ -204,5 +204,20 @@ export class RequestDetailPage extends PageBase {
             this.commentForm.controls.Remark.setValue('');
             this.loadComment();
         })
+    }
+
+    fowardToMappingObject(){
+        if(this.item.Type){
+            switch(this.item.Type){
+                case "SaleOrder":
+                    this.nav('sale-order/'+ this.item.UDF01);
+                    break;
+                case "PurchaseOrder":
+                    this.nav('purchase-order/'+ this.item.UDF01); 
+                    break;
+                default:
+                    return;
+            }
+        }
     }
 }

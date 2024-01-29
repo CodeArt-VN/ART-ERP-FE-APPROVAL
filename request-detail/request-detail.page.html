@@ -30,7 +30,7 @@
                         <ion-item>
                             <ion-label>
                                 <p>{{'erp.app.pages.approval.request.time' | translate}}</p>
-                                <h2>{{item.StartText}}-{{item.EndText}}</h2>
+                                <h2>{{item.StartText}}<span *ngIf="item.EndText">-{{item.EndText}}</span></h2>
                             </ion-label>
                         </ion-item>
 
@@ -39,11 +39,11 @@
                         <ion-item>
                             <ion-label>
                                 <p>{{'erp.app.pages.approval.request.name' | translate}}</p>
-                                <h2>{{item.Name}}</h2>
+                               <div class="pointer" clickable (click)="fowardToMappingObject()"> <h2>{{item.Name}}</h2></div>
                             </ion-label>
                         </ion-item>
 
-                        <ion-item>
+                        <ion-item  *ngIf="item.Type == 'Payment' || item.Type == 'TimeOff' || item.Type =='OverTime' ">
                             <ion-label>
                                 <p *ngIf="item.Type == 'Payment'">erp.app.pages.approval.request.amount</p>
                                 <p *ngIf="item.Type == 'TimeOff' || item.Type =='OverTime' ">{{'erp.app.pages.approval.request.time-off' | translate}}</p>
