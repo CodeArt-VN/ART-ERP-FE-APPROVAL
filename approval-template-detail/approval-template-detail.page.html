@@ -54,18 +54,18 @@
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<ng-container *ngFor="let c of countUDF;let j=index">
-									<app-form-control *ngIf="j%2==0" [field]="{ id: 'IsUseUDF' + c, label: 'Use mapping ' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
+									<app-form-control *ngIf="j%2==0" [field]="{ id: 'IsUseUDF' + c, label: 'Use ' + labelDisplay(c), type: 'checkbox', form:formGroup }" (change)="saveChange()">
 									</app-form-control>
-									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2==0" [field]="{ id: 'UDFLabel' + c, label: 'Label ' + c, type: 'text', form: formGroup }" (change)="saveChange()">
+									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2==0" [field]="{ id: 'UDFLabel' + c, label: labelDisplay(c), type: 'text', form: formGroup }" (change)="saveChange()">
 									</app-form-control>
 								</ng-container>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<ng-container *ngFor="let c of countUDF;let j=index">
-									<app-form-control *ngIf="j%2!=0" [field]="{ id: 'IsUseUDF' + c, label: 'Use mapping ' +  c, type: 'checkbox', form:formGroup }" (change)="saveChange()">
+									<app-form-control *ngIf="j%2!=0" [field]="{ id: 'IsUseUDF' + c, label: 'Use ' + labelDisplay(c), type: 'checkbox', form:formGroup }" (change)="saveChange()">
 									</app-form-control>
 		
-									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2!=0" [field]="{ id: 'UDFLabel' + c, label: 'Label ' + c, type: 'text', form: formGroup }" (change)="saveChange()">
+									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2!=0" [field]="{ id: 'UDFLabel' + c, label: labelDisplay(c), type: 'text', form: formGroup }" (change)="saveChange()">
 									</app-form-control>
 								</ng-container>
 							</ion-col>
