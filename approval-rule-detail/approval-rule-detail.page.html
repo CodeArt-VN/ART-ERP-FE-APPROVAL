@@ -25,7 +25,7 @@
 
 					<ion-col size="12" size-sm size-xl="4">
 						<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(inputChange)="changeSchema($event)"> </app-form-control> -->
-						<app-form-control [field]="{id:'SetStatus', label: 'SetStatus', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"(inputChange)="saveChange()">
+						<app-form-control [field]="{id:'SetStatus', label: 'Auto approval status', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"(inputChange)="saveChange()">
 						</app-form-control>
 						<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"(change)="saveChange()"></app-form-control>
 
@@ -37,7 +37,7 @@
 			<ion-toolbar color="primary">
 				<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
 					<ion-segment-button [value]="'s1'">
-						<ion-label>{{'Config' | translate }}</ion-label>
+						<ion-label>{{'Conditions for automatic approval' | translate }}</ion-label>
 					</ion-segment-button>
 					<ng-container *ngFor="let c of formGroup.get('RuleApprovers')['controls'];let j=index">
 						<ion-segment-button [value]="'s'+j+2">
