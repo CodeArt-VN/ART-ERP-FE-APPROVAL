@@ -46,31 +46,166 @@
 							</ion-col>
 		
 						</ion-row>
+				
+						<!-- integer Group -->
 						<ion-row class="hr-group">
 							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
 								<ion-list-header class="ion-no-padding">
-									<ion-label color="primary">{{'Use UDF' | translate}}</ion-label>
+									<ion-label color="primary">{{'Integer UDF' | translate}}</ion-label>
 								</ion-list-header>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
-								<ng-container *ngFor="let c of countUDF;let j=index">
-									<app-form-control *ngIf="j%2==0" [field]="{ id: 'IsUseUDF' + c, label: 'Use ' + labelDisplay(c), type: 'checkbox', form:formGroup }" (change)="saveChange()">
-									</app-form-control>
-									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2==0" [field]="{ id: 'UDFLabel' + c, label: labelDisplay(c), type: 'text', form: formGroup }" (change)="saveChange()">
-									</app-form-control>
-								</ng-container>
+								<app-form-control [field]="{ id: 'IsUseUDF01', label: 'Use label ID', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF01')?.value" [field]="{ id: 'UDFLabel01', label: 'Label01', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF02', label: 'Use Label02', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF02')?.value" [field]="{ id: 'UDFLabel02', label: 'Label02', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF03', label: 'Use Label03', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF03')?.value" [field]="{ id: 'UDFLabel03', label: 'Label03', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
 							</ion-col>
+
 							<ion-col size="12" size-sm size-xl="4">
-								<ng-container *ngFor="let c of countUDF;let j=index">
-									<app-form-control *ngIf="j%2!=0" [field]="{ id: 'IsUseUDF' + c, label: 'Use ' + labelDisplay(c), type: 'checkbox', form:formGroup }" (change)="saveChange()">
-									</app-form-control>
-		
-									<app-form-control *ngIf="formGroup.get('IsUseUDF' + c)?.value && j%2!=0" [field]="{ id: 'UDFLabel' + c, label: labelDisplay(c), type: 'text', form: formGroup }" (change)="saveChange()">
-									</app-form-control>
-								</ng-container>
+							
+								<app-form-control [field]="{ id: 'IsUseUDF04', label: 'Use Label04', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF04')?.value" [field]="{ id: 'UDFLabel04', label: 'Label04', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF05', label: 'Use Label05', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF05')?.value" [field]="{ id: 'UDFLabel05', label: 'Label05', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
 							</ion-col>
 						</ion-row>
-		
+						<!-- DateTime Group -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Datetime UDF' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{ id: 'IsUseUDF06', label: 'Use Label06', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF06')?.value" [field]="{ id: 'UDFLabel06', label: 'Label06', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF07', label: 'Use Label07', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF07')?.value" [field]="{ id: 'UDFLabel07', label: 'Label07', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+										
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+
+								<app-form-control [field]="{ id: 'IsUseUDF08', label: 'Use Label08', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF08')?.value" [field]="{ id: 'UDFLabel08', label: 'Label08', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+							</ion-col>
+						</ion-row>
+						<!-- String Group -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'String UDF' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{ id: 'IsUseUDF09', label: 'Use Label09', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF09')?.value" [field]="{ id: 'UDFLabel09', label: 'Label09', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF10', label: 'Use Label10', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF10')?.value" [field]="{ id: 'UDFLabel10', label: 'Label10', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF11', label: 'Use Label11', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF11')?.value" [field]="{ id: 'UDFLabel11', label: 'Label11', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF12', label: 'Use Label12', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF12')?.value" [field]="{ id: 'UDFLabel12', label: 'Label12', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{ id: 'IsUseUDF13', label: 'Use Label13', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF13')?.value" [field]="{ id: 'UDFLabel13', label: 'Label13', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF14', label: 'Use Label14', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF14')?.value" [field]="{ id: 'UDFLabel14', label: 'Label14', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF15', label: 'Use Label15', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF15')?.value" [field]="{ id: 'UDFLabel15', label: 'Label15', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF16', label: 'Use Label16', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF16')?.value" [field]="{ id: 'UDFLabel16', label: 'Label16', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+							</ion-col>
+						</ion-row>
+						<!-- Decimal Group -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Decimal UDF' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{ id: 'IsUseUDF17', label: 'Use Label17', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF17')?.value" [field]="{ id: 'UDFLabel17', label: 'Label17', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF18', label: 'Use Label18', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF18')?.value" [field]="{ id: 'UDFLabel18', label: 'Label18', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF19', label: 'Use Label19', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF19')?.value" [field]="{ id: 'UDFLabel19', label: 'Label19', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+
+								<app-form-control [field]="{ id: 'IsUseUDF20', label: 'Use Label20', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF20')?.value" [field]="{ id: 'UDFLabel20', label: 'Label20', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+								
+								<app-form-control [field]="{ id: 'IsUseUDF21', label: 'Use Label21', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF21')?.value" [field]="{ id: 'UDFLabel21', label: 'Label21', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+
+								<app-form-control [field]="{ id: 'IsUseUDF22', label: 'Use Label22', type: 'checkbox', form:formGroup }" (change)="saveChange()">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUseUDF22')?.value" [field]="{ id: 'UDFLabel22', label: 'Label22', type: 'text', form: formGroup }" (change)="saveChange()">
+								</app-form-control>
+							</ion-col>
+						</ion-row>
 						<!-- mapping -->
 						<ion-row class="hr-group">
 							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
