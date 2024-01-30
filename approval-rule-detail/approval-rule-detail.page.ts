@@ -96,7 +96,7 @@ export class ApprovalRuleDetailPage extends PageBase {
                 this.formGroup.get('Type').setValue(value.Type);
                 this.formGroup.get('SubType').setValue(value.SubType);
   
-                this.schemaService.getAnItem(value.IDSchemaMapping).then(value => {
+                this.schemaService.getAnItem(value.IDSchema).then(value => {
                     this.schema = value;
                 })
 

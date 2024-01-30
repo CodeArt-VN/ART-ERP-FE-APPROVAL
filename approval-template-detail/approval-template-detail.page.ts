@@ -58,6 +58,74 @@ export class ApprovalTemplateDetailPage extends PageBase {
             ModifiedBy: new FormControl({ value: '', disabled: true }),
             ModifiedDate: new FormControl({ value: '', disabled: true }),
             DeletedFields: [[]],
+            IsUseUDF01 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF02 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF03 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF04 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF05 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF06 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF07 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF08 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF09 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF10 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF11 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF12 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF13 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF14 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF15 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF16 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF17 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF18 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF19 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF20 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF21 :  new FormControl({ value: '', disabled: false }),
+            IsUseUDF22 :  new FormControl({ value: '', disabled: false }),
+
+            UDFLabel01 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel02 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel03 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel04 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel05 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel06 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel07 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel08 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel09 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel10 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel11 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel12 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel13 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel14 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel15 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel16 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel17 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel18 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel19 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel20 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel21 :  new FormControl({ value: '', disabled: false }),
+            UDFLabel22 :  new FormControl({ value: '', disabled: false }),
+
+            UDFMapping01 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping02 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping03 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping04 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping05 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping06 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping07 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping08 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping09 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping10 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping11 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping12 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping13 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping14 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping15 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping16 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping17 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping18 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping19 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping20 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping21 :  new FormControl({ value: '', disabled: false }),
+            UDFMapping22 :  new FormControl({ value: '', disabled: false }),
         });
 
     }
@@ -76,6 +144,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
         // this.item.Fields.forEach(x=> this.addField(x));
         super.loadedData(event, ignoredFromGroup);
+        this.countUDF= Array(22).fill(22).map((x, i) => i<9?'0' + (i+1): i+1);
         this.patchFormValue();
         this.formGroup.get('IDBranch').markAsDirty();
         if(this.item.Type){
@@ -100,36 +169,16 @@ export class ApprovalTemplateDetailPage extends PageBase {
     }
 
     private patchFormValue() {
-        let  prop = Object.keys(this.item);
-        let max = 0;
-        prop.forEach(x=>{
-            if(x.startsWith('UDFLabel') || x.startsWith('UDFMapping') ||  x.startsWith('IsUseUDF')){
-                this.formGroup.addControl(x, new FormControl(this.item[x]));
-                 let a = x.replace('UDFLabel','');
-                 if(parseInt(a) > max ) max = parseInt(a);
-                //this.countUDF+=1;
-            }
-        })
-        if(max == 0){
-            max = 22;
-            for(let i = 1 ; i<= max ; i++){
-                let nameIdx = i<10?"0"+i:i;
-                    this.formGroup.addControl('UDFLabel'+nameIdx, new FormControl(''));
-                    this.formGroup.addControl('UDFMapping'+nameIdx, new FormControl(''));
-                    this.formGroup.addControl('IsUseUDF'+nameIdx, new FormControl(''));
-                }
-            }
-            this.countUDF= Array(max).fill(max).map((x, i) => i<9?'0' + (i+1): i+1);
-
-            if(this.formGroup.get('Id').value){
-                this.query.IDApprovalTemplate = this.item.Id;
-             this.approvalRuleService.read( this.query).then((response:any)=>{
-                    if(response && response.data && response.data.length>0)
-                    this.approvalRuleList = response.data;
-                });
-                this.query.IDApprovalTemplate = undefined;
-            }
+      
+        if(this.formGroup.get('Id').value){
+            this.query.IDApprovalTemplate = this.item.Id;
+            this.approvalRuleService.read( this.query).then((response:any)=>{
+                if(response && response.data && response.data.length>0)
+                this.approvalRuleList = response.data;
+            });
+            this.query.IDApprovalTemplate = undefined;
         }
+    }
    
     changeType() {
        // this.query.Type = 'ApprovalRequest';
@@ -186,6 +235,13 @@ export class ApprovalTemplateDetailPage extends PageBase {
       this.router.navigate(['/approval-rule/0'], { queryParams: { 'IDApprovalTemplate':this.formGroup.get('Id').value  } });
     }
 
+    labelDisplay(index){
+        if(index == 1) return 'Label ID';
+        if(index <= 5) return 'Label integer '+index;
+        else if(index <= 8) return "Label time "+index;
+        else if(index <= 16) return "Label string " +index;
+        else if(index <= 22) return "Label decimal "+index;
+    }
     async saveChange() {
         let submitItem = this.getDirtyValues(this.formGroup);
         super.saveChange2();
