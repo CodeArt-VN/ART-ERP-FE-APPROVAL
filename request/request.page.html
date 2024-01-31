@@ -100,7 +100,9 @@
 					<span>{{i._Type.Name}}</span>
 				</div>
 				<div class="col-date cell">
-					{{i.StartText}}-{{i.EndText}}
+					{{i.StartText}}
+					<span *ngIf="i.EndText">&nbsp;-&nbsp;{{i.EndText}}</span>
+					
 				</div>
 				<div (click)="nav('request/'+i.Id,'forward')" class="col-name cell">
 					{{i.Name}}
