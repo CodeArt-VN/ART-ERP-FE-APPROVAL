@@ -15,7 +15,8 @@
         border-right: solid 1px var(--border-color);
     }
     .icon{
-        margin-left: -34px;
+        // margin-left: -34px;
+        margin-left: -27px;
         background: var(--feature-background-top)
     }
 }
@@ -24,4 +25,17 @@
     position: absolute;
     bottom: 8px;
     right: 8px;
+}
+
+
+.A4 .sheet{
+    height: unset;
+}
+.sheet.rpt::ng-deep {
+     .top-zone{
+        min-height: 448px;
+    }
+}
+.sheet.padding-10mm{
+    padding : 0 10mm;
 }
