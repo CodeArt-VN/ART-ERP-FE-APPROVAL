@@ -64,7 +64,7 @@ export class RequestDetailPage extends PageBase {
             this.timeOffTypeList = values[2];
             super.preLoadData(event);
         });
-
+        
         this.loadComment();
     }
 
