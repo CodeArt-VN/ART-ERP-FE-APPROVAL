@@ -35,11 +35,11 @@
 									<small label *ngIf="formGroup.controls.Id?.value">Id: {{formGroup.controls.Id.value}}</small>
 								</app-form-control>
 		
-								<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="changeType()"></app-form-control>
+								<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="saveChange()"></app-form-control>
 		
 								<app-form-control *ngIf="formGroup.get('Type').value =='TimeOff'" [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
 		
-								<app-form-control [field]="{id:'IDSchema', label: 'Schema', type : 'ng-select',dataSource:schemaList , bindValue:'Id', bindLabel:'Name', form : formGroup }" (change)="changeSchema()"></app-form-control>
+								<!-- <app-form-control [field]="{id:'IDSchema', label: 'Schema', type : 'ng-select',dataSource:schemaList , bindValue:'Id', bindLabel:'Name', form : formGroup }" (change)="changeSchema()"></app-form-control> -->
 							</ion-col>
 		
 						</ion-row>

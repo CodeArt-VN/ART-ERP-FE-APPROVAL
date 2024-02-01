@@ -49,7 +49,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
             Remark: [''],
             SubType: [''],
             Sort: [''],
-            IDSchema:[''],
+            // IDSchema:[''],
             IDSchemaMapping:[''],
             IsDisabled: new FormControl({ value: '', disabled: true }),
             IsDeleted: new FormControl({ value: '', disabled: true }),
@@ -180,20 +180,6 @@ export class ApprovalTemplateDetailPage extends PageBase {
         }
     }
    
-    changeType() {
-       // this.query.Type = 'ApprovalRequest';
-        // this.env.showLoading('Vui lòng chờ load dữ liệu...', this.schemaService.read(this.query))
-        //     .then((response: any) => {
-        //         if (response.data && response.data.length) {
-        //             this.schemaList = response.data;
-        //             this._schemaListMappingDetail =[];
-        //             this.formGroup.get('IDSchema').setValue('');
-        //             this.formGroup.get('IDSchemaMapping').setValue('');
-        //         }
-        //     }).catch(err => { });
-            this.saveChange();
-        }
-
     changeSchema(){
         this.query.Type = undefined;
          this.schemaService.getAnItem(this.formGroup.get('IDSchemaMapping').value)
