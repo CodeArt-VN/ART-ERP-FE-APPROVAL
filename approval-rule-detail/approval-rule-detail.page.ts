@@ -7,6 +7,7 @@ import {  APPROVAL_ApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchPr
 import { FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
+import { Schema } from 'src/app/models/options-interface';
 
 @Component({
     selector: 'app-approval-rule-detail',
@@ -18,6 +19,7 @@ export class ApprovalRuleDetailPage extends PageBase {
     schema: any;
     ApprovalRule: any;
     ApprovalModes:[];
+    approvalTemplate:any;
     config : any;
     requestTypeList = [];
     statusList = [];
@@ -93,11 +95,35 @@ export class ApprovalRuleDetailPage extends PageBase {
        
         if( this.formGroup.get('IDApprovalTemplate').value >0){
             this.approvalTemplateService.getAnItem(this.formGroup.get('IDApprovalTemplate').value).then((value:any)=>{
-                this.formGroup.get('Type').setValue(value.Type);
-                this.formGroup.get('SubType').setValue(value.SubType);
+                if(value){
+                    this.approvalTemplate = value;
+                }
+                this.formGroup.get('Type').setValue(this.approvalTemplate.Type);
+                this.formGroup.get('SubType').setValue(this.approvalTemplate.SubType);
   
-                this.schemaService.getAnItem(value.IDSchema).then(value => {
+                 this.schemaService.getAnItem(this.approvalTemplate.IDSchema).then((value : Schema) => {
+                    let listFieldMapping = {
+                        mappingValue:[],
+                        labelValue:[]
+                    };
+                    let listField = Object.keys(this.approvalTemplate).filter(d=>d.includes('IsUseUDF'));
+                    listField.forEach(f => {
+                        if(this.approvalTemplate[f]){
+                            let mappingValue = f.replace("IsUseUDF","UDF");
+                            let labelValue = f.replace("IsUseUDF","UDFLabel");
+                            listFieldMapping.mappingValue.push(mappingValue);
+                            listFieldMapping.labelValue.push(this.approvalTemplate[labelValue]);
+                        }
+                    })   
+                    value.Fields = value.Fields.filter( d=> listFieldMapping.mappingValue.includes(d.Code));
                     this.schema = value;
+                    this.schema.Fields.forEach(s=>{
+                        let idx =  listFieldMapping.mappingValue.findIndex(code => code == s.Code);
+                        if(idx > -1){
+                            s.Name = listFieldMapping.labelValue[idx]
+                        }
+                     })
+
                 })
 
             })

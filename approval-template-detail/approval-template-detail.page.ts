@@ -235,13 +235,6 @@ export class ApprovalTemplateDetailPage extends PageBase {
       this.router.navigate(['/approval-rule/0'], { queryParams: { 'IDApprovalTemplate':this.formGroup.get('Id').value  } });
     }
 
-    labelDisplay(index){
-        if(index == 1) return 'Label ID';
-        if(index <= 5) return 'Label integer '+index;
-        else if(index <= 8) return "Label time "+index;
-        else if(index <= 16) return "Label string " +index;
-        else if(index <= 22) return "Label decimal "+index;
-    }
     async saveChange() {
         let submitItem = this.getDirtyValues(this.formGroup);
         super.saveChange2();
