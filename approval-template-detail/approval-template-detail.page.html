@@ -42,7 +42,7 @@
 		
 								<app-form-control *ngIf="formGroup.get('Type').value =='TimeOff'" [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
 		
-								<app-form-control [field]="{id:'IDSchema', label: 'Schema', type : 'ng-select',dataSource:schemaList , bindValue:'Id', bindLabel:'Name', form : formGroup }" (change)="changeSchema()"></app-form-control>
+								<!-- <app-form-control [field]="{id:'IDSchema', label: 'Schema', type : 'ng-select',dataSource:schemaList , bindValue:'Id', bindLabel:'Name', form : formGroup }" (change)="changeSchema()"></app-form-control> -->
 							</ion-col>
 		
 						</ion-row>

@@ -100,32 +100,20 @@ export class ApprovalRuleDetailPage extends PageBase {
                 }
                 this.formGroup.get('Type').setValue(this.approvalTemplate.Type);
                 this.formGroup.get('SubType').setValue(this.approvalTemplate.SubType);
-  
-                 this.schemaService.getAnItem(this.approvalTemplate.IDSchema).then((value : Schema) => {
-                    let listFieldMapping = {
-                        mappingValue:[],
-                        labelValue:[]
-                    };
-                    let listField = Object.keys(this.approvalTemplate).filter(d=>d.includes('IsUseUDF'));
-                    listField.forEach(f => {
-                        if(this.approvalTemplate[f]){
-                            let mappingValue = f.replace("IsUseUDF","UDF");
-                            let labelValue = f.replace("IsUseUDF","UDFLabel");
-                            listFieldMapping.mappingValue.push(mappingValue);
-                            listFieldMapping.labelValue.push(this.approvalTemplate[labelValue]);
-                        }
-                    })   
-                    value.Fields = value.Fields.filter( d=> listFieldMapping.mappingValue.includes(d.Code));
-                    this.schema = value;
-                    this.schema.Fields.forEach(s=>{
-                        let idx =  listFieldMapping.mappingValue.findIndex(code => code == s.Code);
-                        if(idx > -1){
-                            s.Name = listFieldMapping.labelValue[idx]
-                        }
-                     })
-
-                })
-
+                this.schema = {};
+                this.schema.Fields = [];
+                let listField = Object.keys(this.approvalTemplate).filter(d=>d.includes('IsUseUDF'));
+                listField.forEach(f => {
+                    if(this.approvalTemplate[f]){
+                        let mappingValue = f.replace("IsUseUDF","UDF");
+                        let labelValue = f.replace("IsUseUDF","UDFLabel");
+                        this.schema.Fields.push({
+                            Code : mappingValue,
+                            Name : this.approvalTemplate[labelValue]
+                        })
+                     
+                    }
+                })   
             })
         }
        
