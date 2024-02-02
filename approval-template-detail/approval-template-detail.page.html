@@ -1,16 +1,35 @@
 <ion-header>
 	<app-detail-toolbar [page]="this"></app-detail-toolbar>
 </ion-header>
-<!-- *ngIf="item && pageConfig.showSpinner==false" -->
+
 <ion-content appScrollbarTheme class="ion-padding">
 	<div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
+		<ion-grid fixed>
+			<form [formGroup]="formGroup">
+				<ion-row>
+					<ion-col size="12" class="ion-padding-vertical">
+						<app-page-title  
+						[icon]="pageConfig.pageIcon"
+						[title]="formGroup.get('Name').value" [remark]="formGroup.get('Remark').value">
+						</app-page-title>
+					
+					</ion-col>
+				</ion-row>
+			</form>
+		</ion-grid>
+		
 		<div class="row-full shadow full-screen">
 			<ion-toolbar color="primary">
 				<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
 					<ion-segment-button value="s1">
-						<ion-label>{{'Approval template' | translate }}</ion-label>
+						<ion-label>{{'Approval group' | translate }}</ion-label>
 					</ion-segment-button>
+
 					<ion-segment-button value="s2">
+						<ion-label>{{'Form & mapping' | translate }}</ion-label>
+					</ion-segment-button>
+
+					<ion-segment-button value="s3">
 						<ion-label>{{'Approval rule' | translate}}</ion-label>
 					</ion-segment-button>
 				</ion-segment>
@@ -24,25 +43,108 @@
 			<div class="ion-padding" *ngIf="segmentView == 's1'">
 				<ion-grid fixed>
 					<form [formGroup]="formGroup">
+						<!-- Header information -->
 						<ion-row class="hr-group">
 							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
 								<ion-list-header class="ion-no-padding">
-									<ion-label color="primary">{{'Template' | translate}}</ion-label>
+									<ion-label color="primary">{{'General information' | translate}}</ion-label>
 								</ion-list-header>
 							</ion-col>
-							<ion-col size="12" size-sm size-xl="6">
+							<ion-col size="12" size-sm size-xl="4">
 								<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }" (change)="saveChange()">
 									<small label *ngIf="formGroup.controls.Id?.value">Id: {{formGroup.controls.Id.value}}</small>
 								</app-form-control>
-		
 								<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="saveChange()"></app-form-control>
-		
-								<app-form-control *ngIf="formGroup.get('Type').value =='TimeOff'" [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
-		
-								<!-- <app-form-control [field]="{id:'IDSchema', label: 'Schema', type : 'ng-select',dataSource:schemaList , bindValue:'Id', bindLabel:'Name', form : formGroup }" (change)="changeSchema()"></app-form-control> -->
+								<app-form-control [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
 							</ion-col>
-		
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"></app-form-control>
+								<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
+							</ion-col>
 						</ion-row>
+
+						<!-- Approvers -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Approvers' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<!-- TODO: Thời hạn duyệt -->
+								<app-form-control [field]="{ id: 'IsSentToDirectManager', label: 'Gửi quản lý trực tiếp', type: 'checkbox', form:formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{ id: 'IsUserCanChooseApprover', label: 'Người gửi có thể chọn người duyệt', type: 'checkbox', form:formGroup }" (change)="saveChange()"></app-form-control>
+								<!-- TODO: Những người duyệt có thể chọn -->
+								<!-- TODO: Người duyệt cố định -->
+								<!-- TODO: Quyền duyệt tối cao -->
+
+								
+								
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								
+							</ion-col>
+						</ion-row>
+
+						<!-- Followers -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Followers' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<!-- TODO: Người theo dõi -->
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								
+							</ion-col>
+						</ion-row>
+
+						<!-- Notification -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Notifications' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<!-- TODO: Gửi thông báo qua email -->
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								
+							</ion-col>
+						</ion-row>
+
+						<!-- Other information -->
+						<ion-row class="hr-group" *ngIf="item?.Id">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Other information' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'CreatedBy', type : 'text', label: 'Created by', form : formGroup }"></app-form-control>
+								<app-form-control [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
+								
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"></app-form-control>
+								<app-form-control [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control>
+							</ion-col>
+						</ion-row>
+
+					
+
+
+					</form>
+				</ion-grid>
+			</div>
+
+			<div class="ion-padding" *ngIf="segmentView == 's2'">
+				<ion-grid fixed>
+					<form [formGroup]="formGroup">
+						
 				
 						<!-- integer Group -->
 						<ion-row class="hr-group">
@@ -226,29 +328,12 @@
 							</ion-col>
 						</ion-row>
 
-						<!-- Other information -->
-						<ion-row class="hr-group" *ngIf="item?.Id">
-							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
-								<ion-list-header class="ion-no-padding">
-									<ion-label color="primary">{{'Other information' | translate}}</ion-label>
-								</ion-list-header>
-							</ion-col>
-							<ion-col size="12" size-sm size-xl="4">
-								<app-form-control [field]="{id:'CreatedBy', type : 'text', label: 'Created by', form : formGroup }"></app-form-control>
-								<app-form-control [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
-								<app-form-control [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"></app-form-control>
-								<app-form-control [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control>
-							</ion-col>
-							<ion-col size="12" size-sm size-xl="4">
-								<app-form-control [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"></app-form-control>
-								<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
-							</ion-col>
-						</ion-row>
+						
 		
 					</form>
 				</ion-grid>
 			</div>
-			<div class="ion-padidng table-contain" *ngIf="segmentView == 's2'" style="max-width: 1250px;">
+			<div class="ion-padidng table-contain" *ngIf="segmentView == 's3'" style="max-width: 1250px;">
 				
 
 						

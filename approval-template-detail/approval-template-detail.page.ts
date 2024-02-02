@@ -58,6 +58,10 @@ export class ApprovalTemplateDetailPage extends PageBase {
             ModifiedBy: new FormControl({ value: '', disabled: true }),
             ModifiedDate: new FormControl({ value: '', disabled: true }),
             DeletedFields: [[]],
+
+            IsSentToDirectManager: new FormControl({ value: '', disabled: false }),
+            IsUserCanChooseApprover: new FormControl({ value: '', disabled: false }),
+            
             IsUseUDF01 :  new FormControl({ value: '', disabled: false }),
             IsUseUDF02 :  new FormControl({ value: '', disabled: false }),
             IsUseUDF03 :  new FormControl({ value: '', disabled: false }),
