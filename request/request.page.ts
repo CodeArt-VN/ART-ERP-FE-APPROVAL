@@ -10,6 +10,7 @@ import { lib } from 'src/app/services/static/global-functions';
 import { environment } from 'src/environments/environment';
 import { FormBuilder } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
+import { getDateMeta } from '@fullcalendar/core/internal';
 
 @Component({
     selector: 'app-request',
@@ -26,6 +27,14 @@ export class RequestPage extends PageBase {
     requestTypeList = [];
     statusList = [];
     timeOffTypeList = [];
+    approvalTemplateList = [];
+    requestFiltered = [];
+    requestFilteredByStatus = [];
+
+    _filterTemplateID = 0;
+    _isFilterFollow = false;
+    _isFilterMyRequest = false;
+    listSupperApprover = [];
     imgPath = '';
     constructor(
         public pageProvider: APPROVAL_RequestProvider,
@@ -45,48 +54,74 @@ export class RequestPage extends PageBase {
     ) {
         super();
         this.imgPath = environment.staffAvatarsServer;
-        this.pageConfig.isShowFeature = false;
+        this.pageConfig.isShowFeature = true;
     }
 
     preLoadData(event?: any): void {
         this.query.SortBy = 'Id_desc';
         this.query.IDStaff = this.env.user.StaffID;
+
         Promise.all([
             this.env.getType('RequestType'),
             this.env.getStatus('ApprovalStatus'),
             this.env.getType('TimeOffType'),
-            this.env.getType('TimeOffType'),
-
+            this.approvalTemplateService.read(this.query, this.pageConfig.forceLoadData)
         ]).then((values: any) => {
             this.requestTypeList = values[0];
             this.statusList = values[1];
             this.timeOffTypeList = values[2];
+            this.approvalTemplateList = values[3].data;
             super.preLoadData(event);
         });
     }
 
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
+        this.approvalTemplateList.forEach(s => {
+            if(s.IsSupperApprover){
+                this.listSupperApprover.push(s.Id);
+            }
+        });
         this.items.forEach(i => {
             i._Type = this.requestTypeList.find(d => d.Code == i.Type);
             i._Status = this.statusList.find(d => d.Code == i.Status);
-
-            if (i.Type == 'Payment') {
-                i.AmountText = lib.currencyFormatFriendly(i.Amount);
-            }
-            else if (i.Type == 'TimeOff') {
-                let d1 = new Date(i.Start);
-                let d2 = new Date(i.End);
-                let diff = Math.abs(d1.valueOf() - d2.valueOf());
-                i.AmountText = ((diff / 86400000) + 1) + ' N';
-            }
-
-            i.StartText = lib.dateFormat(i.Start, 'dd/mm');
-            i.Start = lib.dateFormat(i.Start);
-            i.EndText = lib.dateFormat(i.End, 'dd/mm');
-            i.End = lib.dateFormat(i.End);
+            i.StartText = lib.dateFormat(i.Start, 'dd/mm/yy hh:MM');
+            i.CanApprove = false;
         });
-
         super.loadedData(event, ignoredFromGroup);
+    }
+
+    checkCanApprove(i) {
+        let ignoredStatus = ['Draft', 'Approved', 'Denied'];
+        let lockStatus = ['Approved', 'Denied', 'Forward']
+    
+        if (ignoredStatus.findIndex(d => d == i.Status) == -1) {
+            i.CanApprove = i._Approvers.findIndex(d => d.Id == this.env.user.StaffID) > -1;
+        }
+        if (i.ApprovalMode?.trim() == 'SequentialApprovals' && this.pageConfig.canApprove) {
+
+            let ApproverIdx = i._Approvers.findIndex(d => d.Id == this.env.user.StaffID);
+
+            if (ApproverIdx != 0) {
+                for (let index = 0; index < ApproverIdx; index++) {
+                    const Approver = i._Approvers[index];
+                    if (Approver.Status == 'Approved') {
+                        i.CanApprove = i._Logs.findIndex(d => d.Id == Approver.Id) > -1;
+                    }
+                    else {
+                        i.CanApprove = false;
+                        return;
+                    }
+                }
+            }
+            else {
+                if (lockStatus.findIndex(d => d == i._Approvers[ApproverIdx].Status) != -1) {
+                    i.CanApprove = false;
+                }
+                else {
+                    i.CanApprove = i._Approvers.findIndex(d => d.Id == this.env.user.StaffID) > -1;
+                }
+            }
+        }
     }
 
     async showModal(i) {
@@ -96,6 +131,7 @@ export class RequestPage extends PageBase {
                 requestTypeList: this.requestTypeList,
                 statusList: this.statusList,
                 timeOffTypeList: this.timeOffTypeList,
+                approvalTemplateList: this.approvalTemplateList,
                 item: i,
                 id: i.Id
             },
@@ -105,15 +141,22 @@ export class RequestPage extends PageBase {
         const { data } = await modal.onWillDismiss();
 
         if (data) {
-            this.pageProvider.save(data).then(resp => {
+            this.pageProvider.commonService.connect('POST', ApiSetting.apiDomain("APPROVAL/Request/PostRequest"), data).toPromise()
+            .then((resp: any) => {
+                this.submitAttempt = false;
+                super.loadData(null);
+                this.env.publishEvent({ Code: this.pageConfig.pageName });
+            }).catch(err => {
+                if (err.message != null) {
+                    this.env.showMessage(err.message, 'danger');
+                }
+                else {
+                    this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data','danger');
+                }
+                this.submitAttempt = false;
                 this.refresh();
-                // if (data.Id == 0) {
-                //     this.items.unshift(resp);
-                // }
-                // else {
-                //     this.refresh();
-                //}
-            });
+            })
+           
         }
     }
 
@@ -149,24 +192,134 @@ export class RequestPage extends PageBase {
         this.query.SubType_eq = undefined;
         this.query.Type_eq = undefined;
     }
-    saveConfig(e){
+    saveConfig(e) {
         this.config = e;
     }
     changeSubType(e) {
         return this.changeType(e.Code);
     }
-    filterConfig(){
-        let obj={
-            "type":this.type,
-            "subType" : this.subType ,
-            "config" : JSON.stringify(this.config)
+    filterConfig() {
+        let obj = {
+            "type": this.type,
+            "subType": this.subType,
+            "config": JSON.stringify(this.config)
         }
         let apiPath = { method: "POST", url: function () { return ApiSetting.apiDomain("APPROVAL/Request/FilterRequest") } };
-        this.env.showLoading('Vui lòng chờ load dữ liệu...',  this.pageProvider.commonService.connect(apiPath.method, apiPath.url(),  obj).toPromise())
-       
-        .then((data: any) => {
-            this.items = data;
-            this.loadedData();
+        this.env.showLoading('Vui lòng chờ load dữ liệu...', this.pageProvider.commonService.connect(apiPath.method, apiPath.url(), obj).toPromise())
+
+            .then((data: any) => {
+                this.items = data;
+                this.loadedData();
+            })
+    }
+
+    filterBySubTab(key) {
+        this.query.Follow = undefined;
+        this.query.MyRequest = undefined;
+        this.query.IDApprovalTemplate = undefined;
+        this.query[key] = true;
+        this.refresh();
+    }
+    changeTemplateFilter(id){
+        this.query.Follow = undefined;
+        this.query.MyRequest = undefined;
+        this.query.IDApprovalTemplate = undefined;
+        if(id != 0){
+            this.query.IDApprovalTemplate = id; 
+        }
+        this.refresh();
+    }
+ 
+    segmentView = 'All'
+    listFilter = ['Approved','Denied','Draft','NeedApprove','WaitForApprove','Expired',"Unapproved"];
+    segmentChanged(e) {
+        this.listFilter.forEach(d=>{
+                this.query.Status = undefined;
+                this.query[d] = undefined;
         })
+        switch(e.detail.value){
+            case "All":
+                break;
+            case  "Approved":
+            case "Denied":
+            case "Draft":
+            case "Pending":
+            case "Unapproved":
+                this.query.Status = e.detail.value
+                break;
+            default: //NeedApprove, WaitForApprove, Expired
+                this.query[e.detail.value] = true;
+        }
+        this.refresh();
+    }
+    cancelRequest(){
+        if (!this.pageConfig.canCancel) return;
+        if (this.submitAttempt) return;
+
+        let itemsCanNotProcess = this.selectedItems.filter(i => (i.Status == 'Draft' || i.Status == 'Approved'));
+        if (itemsCanNotProcess.length == this.selectedItems.length) {
+            this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.can-not-cancel-pending-draft-only','warning');
+        }
+        else {
+            itemsCanNotProcess.forEach(i => {
+                i.checked = false;
+            });
+            //this.selectedItems = this.selectedItems.filter(i => (i.Status == 'Pending' || i.Status == 'Unapproved'));
+            this.env.showPrompt('Bạn chắc muốn HỦY ' + this.selectedItems.length + ' yêu cầu đang chọn?', null, 'Duyệt ' + this.selectedItems.length + ' yêu cầu')
+                .then(_ => {
+                    this.submitAttempt = true;
+                    let postDTO = { Ids: [] };
+                    postDTO.Ids = this.selectedItems.map(e => e.Id);
+
+                    this.pageProvider.commonService.connect('POST', ApiSetting.apiDomain("APPROVAL/Request/CancelRequest/"), postDTO).toPromise()
+                        .then((savedItem: any) => {
+                            this.env.publishEvent({ Code: this.pageConfig.pageName });
+                            this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.save-complete','success');
+                            this.submitAttempt = false;
+
+                        }).catch(err => {
+                            this.submitAttempt = false;
+                            console.log(err);
+                        });
+                });
+        }
+    }
+    submit(){
+        if (this.submitAttempt) return;
+
+        let itemsCanNotProcess = this.selectedItems.filter(i => !(i.Status == 'Draft' || i.Status == 'Unapproved'));
+        if (itemsCanNotProcess.length == this.selectedItems.length) {
+            this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.can-not-send-approve-new-draft-disapprove-only','warning');
+        }
+        else {
+            itemsCanNotProcess.forEach(i => {
+                i.checked = false;
+            });
+            this.selectedItems = this.selectedItems.filter(i => (i.Status == 'Draft' || i.Status == 'Unapproved'));
+
+            this.env.showPrompt('Bạn chắc muốn gửi duyệt ' + this.selectedItems.length + ' đơn hàng đang chọn?', null, 'Gửi duyệt ' + this.selectedItems.length + ' mua hàng')
+                .then(_ => {
+                    this.submitAttempt = true;
+                    let postDTO = { Ids: [] };
+                    postDTO.Ids = this.selectedItems.map(e => e.Id);
+
+                    this.pageProvider.commonService.connect('POST', ApiSetting.apiDomain("APPROVAL/Request/SubmitRequest/"), postDTO).toPromise()
+                        .then((savedItem: any) => {
+                            this.env.publishEvent({ Code: this.pageConfig.pageName });
+                            this.submitAttempt = false;
+
+                            if (savedItem > 0) {
+                                this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.send-to-approve-with-value','success', savedItem);
+                            }
+                            else {
+                                this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.check-atleast-one','warning');
+                            }
+
+                        }).catch(err => {
+                            this.submitAttempt = false;
+                            console.log(err);
+                        });
+                });
+        }
     }
 }

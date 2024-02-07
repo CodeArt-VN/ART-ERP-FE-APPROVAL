@@ -27,7 +27,7 @@
             <ion-row>
 
                 <ion-col size="12" size-sm="12" size-md="12">
-                    <div class="c-control">
+                    <!-- <div class="c-control">
                         <label class="c-label" for="Type">{{'erp.app.pages.approval.request.type' | translate}}
                             <span *ngIf="!formGroup.controls.Type.valid && !formGroup.controls.Type.pending && (formGroup.controls.Type.dirty || submitAttempt)" ion-text color="danger">(*)</span>
                         </label>
@@ -38,7 +38,38 @@
                                 </div>
                             </ng-template>
                         </ng-select>
-                    </div>
+                    </div> -->
+                    <app-form-control [field]="{id:'Name', label:'Title', type : 'text', form : formGroup}" ></app-form-control>
+
+                    <app-form-control [field]="{id:'IDApprovalTemplate', label:'Approval template', type : 'ng-select', dataSource: approvalTemplateList, bindLabel:'Name', bindValue:'Id', form : formGroup}" (inputChange)= "changeTemplate($event)" ></app-form-control>
+                    <app-form-control *ngIf="template?.IsUserCanChooseApprover && template?.SelectableApproverList" [field]="{id:'SelectableApproverIds', label:'Selectable approvers', type : 'ng-select', dataSource: _approverListDataSource, bindLabel:'FullName', bindValue:'Id', form : formGroup, multiple: true, clearable:true}" ></app-form-control>
+                   
+                    <app-form-control *ngIf="formGroup.get('UDFLabel01').value" [field]="{id:'UDF01', label:formGroup.get('UDFLabel01').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel02').value" [field]="{id:'UDF02', label:formGroup.get('UDFLabel02').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel03').value" [field]="{id:'UDF03', label:formGroup.get('UDFLabel03').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel04').value" [field]="{id:'UDF04', label:formGroup.get('UDFLabel04').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel05').value" [field]="{id:'UDF05', label:formGroup.get('UDFLabel05').value, type : 'number', form : formGroup}" ></app-form-control>
+                  
+                    <app-form-control *ngIf="formGroup.get('UDFLabel06').value" [field]="{id:'UDF06', label:formGroup.get('UDFLabel06').value, type : 'datetime-local', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel07').value" [field]="{id:'UDF07', label:formGroup.get('UDFLabel07').value, type : 'datetime-local', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel08').value" [field]="{id:'UDF08', label:formGroup.get('UDFLabel08').value, type : 'datetime-local', form : formGroup}" ></app-form-control>
+                  
+                    <app-form-control *ngIf="formGroup.get('UDFLabel09').value" [field]="{id:'UDF09', label:formGroup.get('UDFLabel09').value, type : 'text', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel10').value" [field]="{id:'UDF10', label:formGroup.get('UDFLabel10').value, type : 'text', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel11').value" [field]="{id:'UDF11', label:formGroup.get('UDFLabel11').value, type : 'text', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel12').value" [field]="{id:'UDF12', label:formGroup.get('UDFLabel12').value, type : 'text', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel13').value" [field]="{id:'UDF13', label:formGroup.get('UDFLabel13').value, type : 'text', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel14').value" [field]="{id:'UDF14', label:formGroup.get('UDFLabel14').value, type : 'text', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel15').value" [field]="{id:'UDF15', label:formGroup.get('UDFLabel15').value, type : 'text', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel16').value" [field]="{id:'UDF16', label:formGroup.get('UDFLabel16').value, type : 'text', form : formGroup}" ></app-form-control>
+
+                    <app-form-control *ngIf="formGroup.get('UDFLabel17').value" [field]="{id:'UDF17', label:formGroup.get('UDFLabel17').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel18').value" [field]="{id:'UDF18', label:formGroup.get('UDFLabel18').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel19').value" [field]="{id:'UDF19', label:formGroup.get('UDFLabel19').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel20').value" [field]="{id:'UDF20', label:formGroup.get('UDFLabel20').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel21').value" [field]="{id:'UDF21', label:formGroup.get('UDFLabel21').value, type : 'number', form : formGroup}" ></app-form-control>
+                    <app-form-control *ngIf="formGroup.get('UDFLabel22').value" [field]="{id:'UDF22', label:formGroup.get('UDFLabel22').value, type : 'number', form : formGroup}" ></app-form-control>
+                  
 
                     <div class="c-control" *ngIf="formGroup.controls.Type.value == 'TimeOff'">
                         <label class="c-label" for="SubType">{{'erp.app.pages.approval.request.sub-type' | translate}}
@@ -53,36 +84,6 @@
                         </ng-select>
                     </div>
 
-
-                    <div class="c-control">
-                        <label class="c-label" for="Name">{{'erp.app.pages.approval.request.name' | translate}}
-                            <span *ngIf="!formGroup.controls.Name.valid && !formGroup.controls.Name.pending && (formGroup.controls.Name.dirty || submitAttempt)" ion-text color="danger">(*)</span>
-                        </label>
-                        <input class="c-input" id="Name" formControlName="Name" type="text">
-                    </div>
-                    <div class="c-control">
-                        <label class="c-label" for="Remark">{{'erp.app.pages.approval.request.remark' | translate}}
-                            <span *ngIf="!formGroup.controls.Remark.valid && !formGroup.controls.Remark.pending && (formGroup.controls.Remark.dirty || submitAttempt)" ion-text color="danger">(*)</span>
-                        </label>
-                        <textarea rows="3" class="c-input remark" id="Remark" formControlName="Remark" type="textarea"></textarea>
-                    </div>
-                </ion-col>
-
-                <ion-col size="12" size-sm="12" size-md="6">
-                    <div class="c-control">
-                        <label class="c-label" for="Start">{{'erp.app.pages.approval.request.start' | translate}}
-                            <span *ngIf="!formGroup.controls.Start.valid && !formGroup.controls.Start.pending && (formGroup.controls.Start.dirty || submitAttempt)" ion-text color="danger">(*)</span>
-                        </label>
-                        <input class="c-input" id="Start" formControlName="Start" type="date">
-                    </div>
-                </ion-col>
-                <ion-col size="12" size-sm="12" size-md="6">
-                    <div class="c-control">
-                        <label class="c-label" for="End">{{'erp.app.pages.approval.request.end' | translate}}
-                            <span *ngIf="!formGroup.controls.End.valid && !formGroup.controls.End.pending && (formGroup.controls.End.dirty || submitAttempt)" ion-text color="danger">(*)</span>
-                        </label>
-                        <input class="c-input" id="End" formControlName="End" type="date">
-                    </div>
                 </ion-col>
 
                 <ion-col size="12" size-sm="12" size-md="12">

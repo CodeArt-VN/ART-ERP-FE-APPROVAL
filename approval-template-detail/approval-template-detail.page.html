@@ -56,9 +56,11 @@
 								</app-form-control>
 								<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="saveChange()"></app-form-control>
 								<app-form-control [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'ApprovalMode', label: 'Approval mode', type : 'ng-select', dataSource:approvalModes ,bindValue:'Code', bindLabel:'Name', form : formGroup }" (inputChange)="saveChange()"></app-form-control>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<app-form-control [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"></app-form-control>
+								
 								<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
 							</ion-col>
 						</ion-row>
@@ -72,11 +74,17 @@
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<!-- TODO: Thời hạn duyệt -->
-								<app-form-control [field]="{ id: 'IsSentToDirectManager', label: 'Gửi quản lý trực tiếp', type: 'checkbox', form:formGroup }" (change)="saveChange()"></app-form-control>
-								<app-form-control [field]="{ id: 'IsUserCanChooseApprover', label: 'Người gửi có thể chọn người duyệt', type: 'checkbox', form:formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'HoursToApprove', label: 'Limit hours', type : 'number', form : formGroup }" (inputChange)="saveChange()"></app-form-control>
+
+								<app-form-control [field]="{id:'IsSentToAdministrationManager', label: 'IsSentToAdministrationManager', type : 'checkbox', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'IsSentToSpecializedManager', label: 'IsSentToSpecializedManager', type : 'checkbox',form : formGroup }" (change)="saveChange()"></app-form-control>
 								<!-- TODO: Những người duyệt có thể chọn -->
+								<app-form-control [field]="{id:'IsUserCanChooseApprover', label: 'IsUserCanChooseApprover', type : 'checkbox', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control *ngIf="formGroup.get('IsUserCanChooseApprover').value" [field]="{id:'_SelectableApproverList', label: 'Selectable Approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SelectableApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}" (inputChange)="changeStaffSelection($event,'SelectableApproverList')"></app-form-control>
 								<!-- TODO: Người duyệt cố định -->
+								<app-form-control [field]="{id:'_FixedApproverList', label: 'Fixed Approvers', type : 'ng-select-staff', dataSource: formGroup.get('_FixedApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}" (inputChange)="changeStaffSelection($event,'FixedApproverList')"></app-form-control>
 								<!-- TODO: Quyền duyệt tối cao -->
+								<app-form-control [field]="{id:'_SupperApproverList', label: 'Super Approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SupperApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}" (inputChange)="changeStaffSelection($event,'SupperApproverList')"></app-form-control>
 
 								
 								
@@ -94,7 +102,7 @@
 								</ion-list-header>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
-								<!-- TODO: Người theo dõi -->
+								<app-form-control [field]="{id:'_FollowerList', label: 'Followers', type : 'ng-select-staff', dataSource: formGroup.get('_FollowerListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}" (inputChange)="changeStaffSelection($event,'FollowerList')"></app-form-control>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								
