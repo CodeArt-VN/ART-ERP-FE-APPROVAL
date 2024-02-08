@@ -7,6 +7,7 @@ import { APPROVAL_ApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchPro
 import { FormBuilder, Validators, FormControl, FormArray, FormGroup } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { ApiSetting } from 'src/app/services/static/api-setting';
+import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 
 @Component({
     selector: 'app-approval-template-detail',
@@ -18,7 +19,8 @@ export class ApprovalTemplateDetailPage extends PageBase {
     filter:any;
     requestTypeList:any;
     timeOffTypeList:any;
-    _schemaListDetail:any;
+    approvalModes:[];
+     _schemaListDetail:any;
     _schemaListMappingDetail:any;
     schemaList:any;
     schema:any;
@@ -29,6 +31,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
         public approvalRuleService : APPROVAL_ApprovalRuleProvider,
         public schemaService: SYS_SchemaProvider,
         public branchProvider: BRA_BranchProvider,
+        public staffService : HRM_StaffProvider,
         public env: EnvService,
         public navCtrl: NavController,
         public route: ActivatedRoute,
@@ -51,6 +54,15 @@ export class ApprovalTemplateDetailPage extends PageBase {
             Sort: [''],
             // IDSchema:[''],
             IDSchemaMapping:[''],
+            IsSentToSpecializedManager:[''],
+            IsSentToAdministrationManager:[''],
+            IsUserCanChooseApprover:[''],
+            SelectableApproverList:[''],
+            FixedApproverList:[''],
+            FollowerList:[''],
+            SupperApproverList:[''],
+            HoursToApprove:[''],
+            ApprovalMode:[''],
             IsDisabled: new FormControl({ value: '', disabled: true }),
             IsDeleted: new FormControl({ value: '', disabled: true }),
             CreatedBy: new FormControl({ value: '', disabled: true }),
@@ -59,9 +71,102 @@ export class ApprovalTemplateDetailPage extends PageBase {
             ModifiedDate: new FormControl({ value: '', disabled: true }),
             DeletedFields: [[]],
 
-            IsSentToDirectManager: new FormControl({ value: '', disabled: false }),
-            IsUserCanChooseApprover: new FormControl({ value: '', disabled: false }),
+
+            _SupperApproverList:[''],
+            _SupperApproverListDataSource: {
+                searchProvider: this.staffService,
+                loading: false,
+                input$: new Subject<string>(),
+                selected: [],
+                items$: null,
+                initSearch() {
+                    this.loading = false;
+                    this.items$ = concat(
+                        of(this.selected),
+                        this.input$.pipe(
+                            distinctUntilChanged(),
+                            tap(() => this.loading = true),
+                            switchMap(term => this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+                                catchError(() => of([])), // empty list on error
+                                tap(() => this.loading = false)
+                            ))
+        
+                        )
+                    );
+                }
+            },
+
+            _FixedApproverList:[''],
+            _FixedApproverListDataSource: {
+                searchProvider: this.staffService,
+                loading: false,
+                input$: new Subject<string>(),
+                selected: [],
+                items$: null,
+                initSearch() {
+                    this.loading = false;
+                    this.items$ = concat(
+                        of(this.selected),
+                        this.input$.pipe(
+                            distinctUntilChanged(),
+                            tap(() => this.loading = true),
+                            switchMap(term => this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+                                catchError(() => of([])), // empty list on error
+                                tap(() => this.loading = false)
+                            ))
+        
+                        )
+                    );
+                }
+            },
             
+            _SelectableApproverList:[''],
+            _SelectableApproverListDataSource: {
+                searchProvider: this.staffService,
+                loading: false,
+                input$: new Subject<string>(),
+                selected: [],
+                items$: null,
+                initSearch() {
+                    this.loading = false;
+                    this.items$ = concat(
+                        of(this.selected),
+                        this.input$.pipe(
+                            distinctUntilChanged(),
+                            tap(() => this.loading = true),
+                            switchMap(term => this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+                                catchError(() => of([])), // empty list on error
+                                tap(() => this.loading = false)
+                            ))
+        
+                        )
+                    );
+                }
+            },
+            _FollowerList:[''],
+            _FollowerListDataSource:  {
+                searchProvider: this.staffService,
+                loading: false,
+                input$: new Subject<string>(),
+                selected: [],
+                items$: null,
+                initSearch() {
+                    this.loading = false;
+                    this.items$ = concat(
+                        of(this.selected),
+                        this.input$.pipe(
+                            distinctUntilChanged(),
+                            tap(() => this.loading = true),
+                            switchMap(term => this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+                                catchError(() => of([])), // empty list on error
+                                tap(() => this.loading = false)
+                            ))
+        
+                        )
+                    );
+                }
+            },
+
             IsUseUDF01 :  new FormControl({ value: '', disabled: false }),
             IsUseUDF02 :  new FormControl({ value: '', disabled: false }),
             IsUseUDF03 :  new FormControl({ value: '', disabled: false }),
@@ -138,9 +243,11 @@ export class ApprovalTemplateDetailPage extends PageBase {
        Promise.all([
         this.env.getType('RequestType'),
         this.env.getType('TimeOffType'),
+        this.env.getType('ApprovalProcess')
     ]).then((values: any) => {
         this.requestTypeList = values[0];
         this.timeOffTypeList = values[1];
+        this.approvalModes = values[2];
         super.preLoadData(event);
     });
     }
@@ -150,6 +257,10 @@ export class ApprovalTemplateDetailPage extends PageBase {
         super.loadedData(event, ignoredFromGroup);
         this.countUDF= Array(22).fill(22).map((x, i) => i<9?'0' + (i+1): i+1);
         this.patchFormValue();
+        this.formGroup.get('_FixedApproverListDataSource').value.initSearch();
+        this.formGroup.get('_FollowerListDataSource').value.initSearch();
+        this.formGroup.get('_SelectableApproverListDataSource').value.initSearch();
+        this.formGroup.get('_SupperApproverListDataSource').value.initSearch();
         this.formGroup.get('IDBranch').markAsDirty();
         if(this.item.Type){
             //this.query.Type = 'ApprovalRequest';
@@ -170,10 +281,12 @@ export class ApprovalTemplateDetailPage extends PageBase {
                 }
             }).catch(err => { });
         }
+
+     
     }
 
     private patchFormValue() {
-      
+        
         if(this.formGroup.get('Id').value){
             this.query.IDApprovalTemplate = this.item.Id;
             this.approvalRuleService.read( this.query).then((response:any)=>{
@@ -181,9 +294,46 @@ export class ApprovalTemplateDetailPage extends PageBase {
                 this.approvalRuleList = response.data;
             });
             this.query.IDApprovalTemplate = undefined;
+            if(this.item.FollowerList){
+                let followerList = this.patchConfig(this.item?.FollowerList);
+                if(followerList){
+                    this.formGroup.get('_FollowerList').setValue(followerList.map(m => m.Id));
+                    this.formGroup.get('_FollowerListDataSource').value.selected = followerList;
+                }
+            }
+            if(this.item.FixedApproverList){
+                let fixedApproverList = this.patchConfig(this.item.FixedApproverList);
+                if(fixedApproverList){
+                    this.formGroup.get('_FixedApproverList').setValue(fixedApproverList.map(m => m.Id));
+                    this.formGroup.get('_FixedApproverListDataSource').value.selected = fixedApproverList;
+                }
+                
+            }
+            if(this.item.SelectableApproverList){
+                let selectableApproverList = this.patchConfig(this.item.SelectableApproverList);
+                if(selectableApproverList){
+                    this.formGroup.get('_SelectableApproverList').setValue(selectableApproverList.map(m => m.Id));
+                    this.formGroup.get('_SelectableApproverListDataSource').value.selected = selectableApproverList;
+                }
+                
+            }
+            if(this.item.SupperApproverList){
+                let supperApproverList = this.patchConfig(this.item?.SupperApproverList);
+                if(supperApproverList){
+                    this.formGroup.get('_SupperApproverList').setValue(supperApproverList.map(m => m.Id));
+                    this.formGroup.get('_SupperApproverListDataSource').value.selected = supperApproverList;
+                }
+                
+            }
+        }
+        
+    }
+     patchConfig(config){
+        if(config){
+            return config =JSON.parse(config);
         }
     }
-   
+
     changeSchema(){
         this.query.Type = undefined;
          this.schemaService.getAnItem(this.formGroup.get('IDSchemaMapping').value)
@@ -221,6 +371,13 @@ export class ApprovalTemplateDetailPage extends PageBase {
         this.segmentView = ev.detail.value;
     }
 
+    changeStaffSelection(e,control){
+        e = JSON.stringify(e);
+        this.formGroup.get(control).setValue(e);
+        this.formGroup.get(control).markAsDirty();
+        this.saveChange();
+    }
+
     forwardToApprovalRule(){
       this.router.navigate(['/approval-rule/0'], { queryParams: { 'IDApprovalTemplate':this.formGroup.get('Id').value  } });
     }
@@ -231,3 +388,4 @@ export class ApprovalTemplateDetailPage extends PageBase {
     }
 
 }
+

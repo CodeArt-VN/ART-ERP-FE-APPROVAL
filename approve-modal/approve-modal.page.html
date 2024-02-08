@@ -70,6 +70,7 @@
                         <ion-button *ngIf=" item.Status == 'Approved'" (click)="submit()">{{'erp.app.pages.approval.request.approve' | translate}}</ion-button>
                         <ion-button *ngIf=" item.Status == 'Forward'" (click)="submit()">{{'erp.app.pages.approval.request.forward' | translate}}</ion-button>
                         <ion-button *ngIf=" item.Status == 'Denied'" (click)="submit()">{{'erp.app.pages.approval.request.denied' | translate}}</ion-button>
+                        <ion-button *ngIf=" item.Status == 'Return'" (click)="submit()">{{'Return' | translate}}</ion-button>
                     </div>
 
                 </ion-col>

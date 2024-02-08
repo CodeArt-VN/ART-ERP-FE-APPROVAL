@@ -10,7 +10,6 @@
     .small-kid{
         display: inline;
     }
-    
     .table{
         background-color: transparent;
         min-width: unset !important;
@@ -105,7 +104,7 @@
         }
 
         .col-staff{
-            order: 3;
+            order: 4;
         }
 
         .col-code {
@@ -148,7 +147,7 @@
             max-width: fit-content!important;
             min-width: fit-content!important;
             font-weight: bold;
-            order: 4;
+            order: 3;
             color: var(--ion-color-medium) !important;
         }
 
@@ -197,6 +196,9 @@
             font-size: 160%;
             color: var(--ion-color-primary) !important;
             font-weight: bold;
+        }
+        .follower{
+            display: none;
         }
     }
 

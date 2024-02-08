@@ -12,49 +12,10 @@
                         <ion-label color="primary">{{'erp.app.pages.approval.request.request-information' | translate}}</ion-label>
                     </ion-list-header>
                     <ion-list>
-                        <ion-item>
+                        <ion-item *ngFor="let udf of mappingList">
                             <ion-label>
-                                <p>{{'erp.app.pages.approval.request.type' | translate}}</p>
-                                <h2>{{item._Type.Name}}</h2>
-                            </ion-label>
-                        </ion-item>
-
-                        <ion-item *ngIf="item.Type == 'TimeOff'">
-                            <ion-label>
-                                <p>{{'erp.app.pages.approval.request.sub-type' | translate}}</p>
-                                <h2>{{item._SubType.Name}}</h2>
-                            </ion-label>
-                        </ion-item>
-
-
-                        <ion-item>
-                            <ion-label>
-                                <p>{{'erp.app.pages.approval.request.time' | translate}}</p>
-                                <h2>{{item.StartText}}-{{item.EndText}}</h2>
-                            </ion-label>
-                        </ion-item>
-
-
-
-                        <ion-item>
-                            <ion-label>
-                                <p>{{'erp.app.pages.approval.request.name' | translate}}</p>
-                                <h2>{{item.Name}}</h2>
-                            </ion-label>
-                        </ion-item>
-
-                        <ion-item>
-                            <ion-label>
-                                <p *ngIf="item.Type == 'Payment'">erp.app.pages.approval.request.amount</p>
-                                <p *ngIf="item.Type == 'TimeOff' || item.Type =='OverTime' ">{{'erp.app.pages.approval.request.time-off' | translate}}</p>
-                                <h2 class="bold">{{item.AmountText}}</h2>
-                            </ion-label>
-                        </ion-item>
-
-                        <ion-item>
-                            <ion-label>
-                                <p>{{'erp.app.pages.approval.request.remark' | translate}}</p>
-                                <h2><span class="remark">{{item.Remark}}</span></h2>
+                                <p>{{udf.Label | translate}}</p>
+                                <h2>{{udf.Value}}</h2>
                             </ion-label>
                         </ion-item>
 
@@ -96,27 +57,32 @@
 
                         </ion-col>
                     </ion-row>
-                    <ion-list *ngIf="pageConfig.canApprove">
+                    <ion-list *ngIf="pageConfig.canApprove || isCanDisapprove">
                         <ion-list-header>
                             <ion-label color="primary">{{'erp.app.pages.approval.request.approve-title' | translate}}</ion-label>
                         </ion-list-header>
                         <ion-item>
                             <ion-grid fixed>
                                 <ion-row>
-                                    <ion-col size="4">
+                                    <ion-col size="4" *ngIf="(item.Status == 'Pending'|| item.Status == 'InProgress') && currentApprover.Status != 'Approved' && pageConfig.canApprove  ">
                                         <ion-button color="success" expand="block" (click)="submitApproval('Approved')">
                                             {{'erp.app.pages.approval.request.approve' | translate}}
                                         </ion-button>
 
                                     </ion-col>
-                                    <ion-col size="4">
+                                    <ion-col size="4" *ngIf="item.Status == 'Pending'">
                                         <ion-button color="warning" expand="block" (click)="submitApproval('Forward')">
                                             {{'erp.app.pages.approval.request.forward' | translate}}
                                         </ion-button>
                                     </ion-col>
-                                    <ion-col size="4">
+                                    <ion-col size="4"   *ngIf="item.Status == 'Pending'|| item.Status == 'InProgress'">
                                         <ion-button color="danger" expand="block" (click)="submitApproval('Denied')">
                                             {{'erp.app.pages.approval.request.denied' | translate}}
+                                        </ion-button>
+                                    </ion-col>
+                                    <ion-col size="4"  *ngIf="isCanDisapprove">
+                                        <ion-button color="danger" expand="block" (click)="disapprove()">
+                                            {{'Disapprove' | translate}}
                                         </ion-button>
                                     </ion-col>
                                 </ion-row>
@@ -194,6 +160,19 @@
                                     </h3>
                                 </ion-label>
                                 <ion-icon *ngIf="i._Status" slot="end" [color]="i._Status.Color" [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
+                            </ion-item>
+                        </ion-list>
+                        <ion-list-header>
+                            <ion-label color="primary">{{'Followers' | translate}}</ion-label>
+                        </ion-list-header>
+                        <ion-list>
+                            <ion-item *ngFor="let i of item._Followers">
+                                <ion-avatar slot="start">
+                                    <ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+                                </ion-avatar>
+                                <ion-label>
+                                    <h2>{{i.FullName}}</h2>
+                                </ion-label>
                             </ion-item>
                         </ion-list>
 
