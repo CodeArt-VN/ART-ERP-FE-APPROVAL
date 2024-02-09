@@ -9,7 +9,7 @@
             <ion-row>
                 <ion-col size="12" size-md="12" size-lg="12" size-xl="8">
                     <ion-list-header>
-                        <ion-label color="primary">{{'erp.app.pages.approval.request.request-information' | translate}}</ion-label>
+                        <ion-label color="primary">{{'Suggestions' | translate}}</ion-label>
                     </ion-list-header>
                     <ion-list>
                         <ion-item *ngFor="let udf of mappingList">
@@ -21,7 +21,7 @@
 
                         <ion-item>
                             <ion-label>
-                                <p>{{'erp.app.pages.approval.request.status' | translate}}</p>
+                                <p>{{'Status' | translate}}</p>
                                 <h2>
                                     <ion-text [color]="item._Status.Color"><b> {{item._Status.Name}}</b></ion-text>
                                 </h2>
@@ -59,28 +59,28 @@
                     </ion-row>
                     <ion-list *ngIf="pageConfig.canApprove || isCanDisapprove">
                         <ion-list-header>
-                            <ion-label color="primary">{{'erp.app.pages.approval.request.approve-title' | translate}}</ion-label>
+                            <ion-label color="primary">{{'Approve' | translate}}</ion-label>
                         </ion-list-header>
                         <ion-item>
                             <ion-grid fixed>
                                 <ion-row>
-                                    <ion-col size="4" *ngIf="(item.Status == 'Pending'|| item.Status == 'InProgress') && currentApprover.Status != 'Approved' && pageConfig.canApprove  ">
+                                    <ion-col size="6" size-md="3" *ngIf="(item.Status == 'Pending'|| item.Status == 'InProgress') && currentApprover.Status != 'Approved' && pageConfig.canApprove  ">
                                         <ion-button color="success" expand="block" (click)="submitApproval('Approved')">
-                                            {{'erp.app.pages.approval.request.approve' | translate}}
+                                            {{'Approve' | translate}}
                                         </ion-button>
 
                                     </ion-col>
-                                    <ion-col size="4" *ngIf="item.Status == 'Pending'">
+                                    <ion-col size="6" size-md="3" *ngIf="item.Status == 'Pending'">
                                         <ion-button color="warning" expand="block" (click)="submitApproval('Forward')">
-                                            {{'erp.app.pages.approval.request.forward' | translate}}
+                                            {{'Forward' | translate}}
                                         </ion-button>
                                     </ion-col>
-                                    <ion-col size="4"   *ngIf="item.Status == 'Pending'|| item.Status == 'InProgress'">
+                                    <ion-col size="6" size-md="3" *ngIf="item.Status == 'Pending'|| item.Status == 'InProgress'">
                                         <ion-button color="danger" expand="block" (click)="submitApproval('Denied')">
-                                            {{'erp.app.pages.approval.request.denied' | translate}}
+                                            {{'Deny' | translate}}
                                         </ion-button>
                                     </ion-col>
-                                    <ion-col size="4"  *ngIf="isCanDisapprove">
+                                    <ion-col size="6" size-md="3" *ngIf="isCanDisapprove">
                                         <ion-button color="danger" expand="block" (click)="disapprove()">
                                             {{'Disapprove' | translate}}
                                         </ion-button>
@@ -92,7 +92,7 @@
 
                     <ion-list *ngIf="item?.Id">
                         <ion-list-header>
-                            <ion-label color="primary">{{'erp.app.pages.approval.request.comment' | translate}}</ion-label>
+                            <ion-label color="primary">{{'Discussion' | translate}}</ion-label>
                         </ion-list-header>
                         <ion-item lines="none">
                             <ion-avatar slot="start">
@@ -109,7 +109,7 @@
                                     <ion-button (click)="addComment()" fill="clear" class="send">
                                         <ion-icon slot="icon-only" name="paper-plane"></ion-icon>
                                     </ion-button>
-                                    <textarea (keydown.enter)="addComment()" placeholder="{{'erp.app.pages.approval.request.comment-placeholder' | translate}}" rows="1" class="c-input remark" id="Remark" formControlName="Remark" type="textarea"></textarea>
+                                    <textarea (keydown.enter)="addComment()" placeholder="{{'Write your discussion' | translate}}" rows="1" class="c-input remark" id="Remark" formControlName="Remark" type="textarea"></textarea>
                                 </div>
 
                             </ion-item>
@@ -132,7 +132,7 @@
                 <ion-col size="12" size-md="12" size-lg="12" size-xl="4">
                     <div class="row-full shadow full-screen">
                         <ion-list-header>
-                            <ion-label color="primary">{{'erp.app.pages.approval.request.requested-by' | translate}}</ion-label>
+                            <ion-label color="primary">{{'Requester' | translate}}</ion-label>
                         </ion-list-header>
                         <ion-list>
                             <ion-item>
@@ -146,7 +146,7 @@
                         </ion-list>
 
                         <ion-list-header>
-                            <ion-label color="primary">{{'erp.app.pages.approval.request.approvers' | translate}}</ion-label>
+                            <ion-label color="primary">{{'Approver' | translate}}</ion-label>
                         </ion-list-header>
                         <ion-list>
                             <ion-item *ngFor="let i of item._Approvers">
@@ -178,7 +178,7 @@
 
                         <ion-list *ngIf="item._Logs.length">
                             <ion-list-header>
-                                <ion-label color="primary">{{'erp.app.pages.approval.request.timeline' | translate}}</ion-label>
+                                <ion-label color="primary">{{'Main activities' | translate}}</ion-label>
                             </ion-list-header>
                             <ion-item *ngFor="let i of item._Logs" class="log" lines="none">
                                 <ion-label slot="start" class="time">

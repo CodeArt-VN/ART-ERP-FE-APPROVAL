@@ -197,10 +197,10 @@ export class ApprovalRuleDetailPage extends PageBase {
             fg.get('Config').setValue(JSON.stringify(e));
             fg.get('Config').markAsDirty();
             this.saveChange();
-            this.env.showTranslateMessage('erp.app.app-component.page-bage.save-complete', 'success');
+            this.env.showTranslateMessage('Saving completed!', 'success');
         }
         else {
-            this.env.showTranslateMessage('erp.app.app-component.page-bage.can-not-save', 'danger');
+            this.env.showTranslateMessage('Cannot save, please try again', 'danger');
         }
     }
 

@@ -2,19 +2,19 @@
     <ion-toolbar class="no-padding">
         <ion-buttons slot="start">
             <ion-button color="dark" class="ion-hide-sm-down">
-                {{'erp.app.pages.approval.request.page-title-modal' | translate}}
+                {{'Request' | translate}}
             </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-            <ion-button (click)="refresh()" title="{{'erp.app.pages.approval.request.refresh' | translate}}">
+            <ion-button (click)="refresh()" title="{{'Refresh' | translate}}">
                 <ion-icon slot="icon-only" name="reload-outline"></ion-icon>
             </ion-button>
 
-            <ion-button title="{{'erp.app.pages.approval.request.help' | translate}}" (click)="help()">
+            <ion-button title="{{'Help' | translate}}" (click)="help()">
                 <ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
             </ion-button>
 
-            <ion-button title="{{'erp.app.pages.approval.request.close-modal' | translate}}" color="secondary" (click)="closeModal()">
+            <ion-button title="{{'Close' | translate}}" color="secondary" (click)="closeModal()">
                 <ion-icon slot="icon-only" name="close"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -28,10 +28,10 @@
 
                 <ion-col size="12" size-sm="12" size-md="12">
                     <!-- <div class="c-control">
-                        <label class="c-label" for="Type">{{'erp.app.pages.approval.request.type' | translate}}
+                        <label class="c-label" for="Type">{{'Request classification' | translate}}
                             <span *ngIf="!formGroup.controls.Type.valid && !formGroup.controls.Type.pending && (formGroup.controls.Type.dirty || submitAttempt)" ion-text color="danger">(*)</span>
                         </label>
-                        <ng-select class="c-input" labelForId="Type" formControlName="Type" [items]="requestTypeList" bindLabel="Name" bindValue="Code" placeholder="{{'erp.app.pages.approval.request.search-placeholder' | translate}}">
+                        <ng-select class="c-input" labelForId="Type" formControlName="Type" [items]="requestTypeList" bindLabel="Name" bindValue="Code" placeholder="{{'Search' | translate}}">
                             <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                                 <div *ngIf="i">
                                     <div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
@@ -72,10 +72,10 @@
                   
 
                     <div class="c-control" *ngIf="formGroup.controls.Type.value == 'TimeOff'">
-                        <label class="c-label" for="SubType">{{'erp.app.pages.approval.request.sub-type' | translate}}
+                        <label class="c-label" for="SubType">{{'Leaves classification' | translate}}
                             <span *ngIf="!formGroup.controls.SubType.valid && !formGroup.controls.SubType.pending && (formGroup.controls.SubType.dirty || submitAttempt)" ion-text color="danger">(*)</span>
                         </label>
-                        <ng-select class="c-input" labelForId="SubType" formControlName="SubType" [items]="timeOffTypeList" bindLabel="Name" bindValue="Code" placeholder="{{'erp.app.pages.approval.request.search-placeholder' | translate}}">
+                        <ng-select class="c-input" labelForId="SubType" formControlName="SubType" [items]="timeOffTypeList" bindLabel="Name" bindValue="Code" placeholder="{{'Search' | translate}}">
                             <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                                 <div *ngIf="i">
                                     <div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
@@ -88,7 +88,7 @@
 
                 <ion-col size="12" size-sm="12" size-md="12">
                     <div class="c-control" *ngIf="formGroup.controls.Type.value == 'Payment'">
-                        <label class="c-label" for="Amount"> <span *ngIf="formGroup.controls.Type.value == 'Payment'">{{'erp.app.pages.approval.request.amount' | translate}}</span>
+                        <label class="c-label" for="Amount"> <span *ngIf="formGroup.controls.Type.value == 'Payment'">{{'Amount' | translate}}</span>
                             <span *ngIf="!formGroup.controls.Amount.valid && !formGroup.controls.Amount.pending && (formGroup.controls.Amount.dirty || submitAttempt)" ion-text color="danger">(*)</span>
                         </label>
                         <input class="c-input" id="Amount" formControlName="Amount" type="number">
@@ -101,8 +101,8 @@
                     <div class="c-control ion-text-right">
                         <label class="c-label" for=""></label>
                         
-                        <ion-button color="warning" (click)="submit('Pending')">{{'erp.app.pages.approval.request.submit' | translate}}</ion-button>
-                        <ion-button color="primary" (click)="submit()" fill="outline">{{'erp.app.pages.approval.request.draft' | translate}}</ion-button>
+                        <ion-button color="warning" (click)="submit('Pending')">{{'submit Request For Approval' | translate}}</ion-button>
+                        <ion-button color="primary" (click)="submit()" fill="outline">{{'Save draft' | translate}}</ion-button>
                     </div>
                 </ion-col>
             </ion-row>

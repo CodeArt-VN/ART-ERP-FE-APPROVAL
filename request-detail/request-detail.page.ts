@@ -249,7 +249,7 @@ export class RequestDetailPage extends PageBase {
                         this.env.showMessage(err.message, 'danger');
                     }
                     else {
-                        this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data', 'danger');
+                        this.env.showTranslateMessage('Cannot extract data', 'danger');
                     }
                     this.submitAttempt = false;
                     this.refresh();
@@ -278,7 +278,7 @@ export class RequestDetailPage extends PageBase {
                             this.env.showMessage(err.message, 'danger');
                         }
                         else {
-                            this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data', 'danger');
+                            this.env.showTranslateMessage('Cannot extract data', 'danger');
                         }
                         this.submitAttempt = false;
                         this.refresh();

@@ -202,7 +202,7 @@ export class RequestModalPage extends PageBase {
         this.formGroup.updateValueAndValidity();
         if (!this.formGroup.valid) {
             let a = this.findInvalidControls();
-            this.env.showTranslateMessage('erp.app.pages.approval.request.message.check-red-above', 'warning');
+            this.env.showTranslateMessage('Please recheck information highlighted in red above', 'warning');
         }
         else {
             let submitItem = this.formGroup.value;//this.getDirtyValues(this.formGroup);

@@ -55,6 +55,8 @@ export class RequestPage extends PageBase {
         super();
         this.imgPath = environment.staffAvatarsServer;
         this.pageConfig.isShowFeature = true;
+        this.pageConfig.mainPageActive = true;
+
     }
 
     preLoadData(event?: any): void {
@@ -151,7 +153,7 @@ export class RequestPage extends PageBase {
                     this.env.showMessage(err.message, 'danger');
                 }
                 else {
-                    this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data','danger');
+                    this.env.showTranslateMessage('Cannot extract data','danger');
                 }
                 this.submitAttempt = false;
                 this.refresh();
@@ -221,6 +223,8 @@ export class RequestPage extends PageBase {
         this.refresh();
     }
     changeTemplateFilter(id){
+        this.pageConfig.mainPageActive = false;
+
         this.query.Follow = undefined;
         this.query.MyRequest = undefined;
         this.query.IDApprovalTemplate = undefined;
@@ -229,6 +233,11 @@ export class RequestPage extends PageBase {
         }
         this.refresh();
     }
+
+    backSubPage() {
+        this.pageConfig.mainPageActive =  true;
+    }
+
  
     segmentView = 'All'
     listFilter = ['Approved','Denied','Draft','NeedApprove','WaitForApprove','Expired',"Unapproved"];
@@ -258,7 +267,7 @@ export class RequestPage extends PageBase {
 
         let itemsCanNotProcess = this.selectedItems.filter(i => (i.Status == 'Draft' || i.Status == 'Approved'));
         if (itemsCanNotProcess.length == this.selectedItems.length) {
-            this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.can-not-cancel-pending-draft-only','warning');
+            this.env.showTranslateMessage('Your selected invoices cannot be canceled. Please select draft or pending for approval invoice','warning');
         }
         else {
             itemsCanNotProcess.forEach(i => {
@@ -274,7 +283,7 @@ export class RequestPage extends PageBase {
                     this.pageProvider.commonService.connect('POST', ApiSetting.apiDomain("APPROVAL/Request/CancelRequest/"), postDTO).toPromise()
                         .then((savedItem: any) => {
                             this.env.publishEvent({ Code: this.pageConfig.pageName });
-                            this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.save-complete','success');
+                            this.env.showTranslateMessage('Saving completed!','success');
                             this.submitAttempt = false;
 
                         }).catch(err => {
@@ -289,7 +298,7 @@ export class RequestPage extends PageBase {
 
         let itemsCanNotProcess = this.selectedItems.filter(i => !(i.Status == 'Draft' || i.Status == 'Unapproved'));
         if (itemsCanNotProcess.length == this.selectedItems.length) {
-            this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.can-not-send-approve-new-draft-disapprove-only','warning');
+            this.env.showTranslateMessage('Your selected invoices cannot be approved. Please select new or draft or disapproved ones','warning');
         }
         else {
             itemsCanNotProcess.forEach(i => {
@@ -309,10 +318,10 @@ export class RequestPage extends PageBase {
                             this.submitAttempt = false;
 
                             if (savedItem > 0) {
-                                this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.send-to-approve-with-value','success', savedItem);
+                                this.env.showTranslateMessage('{{value}} orders sent for approval','success', savedItem);
                             }
                             else {
-                                this.env.showTranslateMessage('erp.app.pages.purchase.purchase-order.message.check-atleast-one','warning');
+                                this.env.showTranslateMessage('Please check again, orders must have at least 1 item to be approved','warning');
                             }
 
                         }).catch(err => {

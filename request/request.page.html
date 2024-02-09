@@ -1,97 +1,53 @@
 <ion-header>
-	<app-list-toolbar pageTitle="{{'erp.app.pages.approval.request.page-title' | translate}}" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (submitOrdersForApproval)="submit()" (cancelOrders)="cancelRequest()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
-	<section class="table">
-		<!-- <header class="bold">
-			<div class="col-checkbox cell"></div>
-			<div class="col-id cell" (click)="sortToggle('Id')">
-				Id
-				<ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Id" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-code cell" (click)="sortToggle('Code')">
-				Mã
-				<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-name cell" (click)="sortToggle('Name')">
-				Tên gọi
-				<ion-icon class="min-btn" *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Name" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-remark cell">Ghi chú</div>
-		</header> -->
-		<form (submit)="refresh()" action="#">
-			<header class="filter" *ngIf="pageConfig.isShowSearch">
-				<div class="col-checkbox cell"></div>
-				<div class="col-id cell">
-					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Id" class="c-input" [ngClass]="{active: query.Id}" type="text" placeholder="{{'Id' | translate}}">
-					<ion-icon class="min-btn" (click)="query.Id=''; refresh()" *ngIf="query.Id" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-code cell">
-					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Code" class="c-input" [ngClass]="{active: query.Code}" type="text" placeholder="{{'Code' | translate}}">
-					<ion-icon class="min-btn" (click)="query.Code=''; refresh()" *ngIf="query.Code" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-name cell">
-					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Name" class="c-input" [ngClass]="{active: query.Name}" type="text" placeholder="{{'Name' | translate }}">
-					<ion-icon class="min-btn" (click)="query.Name=''; refresh()" *ngIf="query.Name" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-remark cell"></div>
-				<button mat-raised-button type="submit" style="display:none">Search</button>
-			</header>
-		</form>
-	</section>
+	<app-list-toolbar pageTitle="{{'Request' | translate}}" [page]="this" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (submitOrdersForApproval)="submit()" (cancelOrders)="cancelRequest()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+	<ion-toolbar style="--padding-start: 4px;">
+		<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
+			<ion-segment-button value="All">
+				<ion-label>{{'All' | translate }}</ion-label>
+			</ion-segment-button>
+
+			<!-- Đến lượt duyệt -->
+			<!-- <ion-segment-button value="NeedApprove">
+				<ion-label>{{'Đến lượt duyệt' | translate }}</ion-label>
+			</ion-segment-button> -->
+			<ion-segment-button value="Pending">
+				<ion-label>{{'Pending' | translate }}</ion-label>
+			</ion-segment-button>
+
+			<!-- Quá hạn -->
+			<ion-segment-button value="Expired">
+				<ion-label>{{'Expired' | translate}}</ion-label>
+			</ion-segment-button>
+
+			<!-- Chờ duyệt -->
+			<!-- <ion-segment-button value="WaitForApprove">
+				<ion-label>{{'Chờ duyệt' | translate}}</ion-label>
+			</ion-segment-button> -->
+
+			<!-- Đã chấp thuận -->
+			<ion-segment-button value="Approved">
+				<ion-label>{{'Approved' | translate}}</ion-label>
+			</ion-segment-button>
+
+			<!-- Đã từ chối -->
+			<ion-segment-button value="Denied">
+				<ion-label>{{'Rejected' | translate}}</ion-label>
+			</ion-segment-button>
+
+			<ion-segment-button value="Unapproved">
+				<ion-label>{{'Unapproved' | translate}}</ion-label>
+			</ion-segment-button>
+
+			<!-- Nháp -->
+			<ion-segment-button value="Draft">
+				<ion-label>{{'Draft' | translate}}</ion-label>
+			</ion-segment-button>
+		</ion-segment>
+	</ion-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}">
-	<div class="row-full shadow full-screen">
-		<ion-toolbar color="primary">
-			<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
-				<ion-segment-button value="All">
-					<ion-label>{{'All' | translate }}</ion-label>
-				</ion-segment-button>
-
-				<!-- Đến lượt duyệt -->
-				<!-- <ion-segment-button value="NeedApprove">
-					<ion-label>{{'Đến lượt duyệt' | translate }}</ion-label>
-				</ion-segment-button> -->
-				<ion-segment-button value="Pending">
-					<ion-label>{{'Pending' | translate }}</ion-label>
-				</ion-segment-button>
-
-				<!-- Quá hạn -->
-				<ion-segment-button value="Expired">
-					<ion-label>{{'Expired' | translate}}</ion-label>
-				</ion-segment-button>
-
-				<!-- Chờ duyệt -->
-				<!-- <ion-segment-button value="WaitForApprove">
-					<ion-label>{{'Chờ duyệt' | translate}}</ion-label>
-				</ion-segment-button> -->
-
-				<!-- Đã chấp thuận -->
-				<ion-segment-button value="Approved">
-					<ion-label>{{'Approved' | translate}}</ion-label>
-				</ion-segment-button>
-
-				<!-- Đã từ chối -->
-				<ion-segment-button value="Denied">
-					<ion-label>{{'Rejected' | translate}}</ion-label>
-				</ion-segment-button>
-
-				<ion-segment-button value="Unapproved">
-					<ion-label>{{'Unapproved' | translate}}</ion-label>
-				</ion-segment-button>
-
-				<!-- Nháp -->
-				<ion-segment-button value="Draft">
-					<ion-label>{{'Draft' | translate}}</ion-label>
-				</ion-segment-button>
-			</ion-segment>
-		</ion-toolbar>
-
-	</div>
-
-	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature no-print " vertical="top" horizontal="start" slot="fixed">
+<ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature, childViewActive: !pageConfig.mainPageActive}" >
+	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print " vertical="top" horizontal="start" slot="fixed">
 		<ion-list>
 			<ion-list-header lines="full">
 				<ion-label color="dark">{{'Request groups' | translate}}</ion-label>
@@ -149,6 +105,25 @@
 					{{'Status' | translate}}
 				</div>
 			</header>
+			<form (submit)="refresh()" action="#">
+				<header class="filter" *ngIf="pageConfig.isShowSearch">
+					<div class="col-checkbox cell"></div>
+					<div class="col-id cell">
+						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Id" class="c-input" [ngClass]="{active: query.Id}" type="text" placeholder="{{'Id' | translate}}">
+						<ion-icon class="min-btn" (click)="query.Id=''; refresh()" *ngIf="query.Id" name="close-circle-outline"></ion-icon>
+					</div>
+					<div class="col-code cell">
+						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Code" class="c-input" [ngClass]="{active: query.Code}" type="text" placeholder="{{'Code' | translate}}">
+						<ion-icon class="min-btn" (click)="query.Code=''; refresh()" *ngIf="query.Code" name="close-circle-outline"></ion-icon>
+					</div>
+					<div class="col-name cell">
+						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Name" class="c-input" [ngClass]="{active: query.Name}" type="text" placeholder="{{'Name' | translate }}">
+						<ion-icon class="min-btn" (click)="query.Name=''; refresh()" *ngIf="query.Name" name="close-circle-outline"></ion-icon>
+					</div>
+					<div class="col-remark cell"></div>
+					<button mat-raised-button type="submit" style="display:none">Search</button>
+				</header>
+			</form>
 
 			<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
 				<div class="col-checkbox cell">

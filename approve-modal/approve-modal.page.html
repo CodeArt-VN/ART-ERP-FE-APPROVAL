@@ -2,19 +2,19 @@
     <ion-toolbar class="no-padding">
         <ion-buttons slot="start">
             <ion-button color="dark" class="ion-hide-sm-down">
-                {{'erp.app.pages.approval.request.page-title-approve' | translate}}
+                {{'Approve' | translate}}
             </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-            <ion-button (click)="refresh()" title="{{'erp.app.pages.approval.request.refresh' | translate}}">
+            <ion-button (click)="refresh()" title="{{'Refresh' | translate}}">
                 <ion-icon slot="icon-only" name="reload-outline"></ion-icon>
             </ion-button>
 
-            <ion-button title="{{'erp.app.pages.approval.request.help' | translate}}" (click)="help()">
+            <ion-button title="{{'Help' | translate}}" (click)="help()">
                 <ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
             </ion-button>
 
-            <ion-button title="{{'erp.app.pages.approval.request.close-modal' | translate}}" color="secondary" (click)="closeModal()">
+            <ion-button title="{{'Close' | translate}}" color="secondary" (click)="closeModal()">
                 <ion-icon slot="icon-only" name="close"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -29,7 +29,7 @@
 
                     
                     <div class="c-control" *ngIf=" item.Status == 'Forward'">
-                        <label class="c-label" for="ForwardTo">{{'erp.app.pages.approval.request.forward' | translate}}
+                        <label class="c-label" for="ForwardTo">{{'Forward' | translate}}
                             <span *ngIf="!formGroup.controls.ForwardTo.valid && !formGroup.controls.ForwardTo.pending && (formGroup.controls.ForwardTo.dirty || submitAttempt)" ion-text color="danger">(*)</span>
                         </label>
 
@@ -45,14 +45,14 @@
                                 <div *ngIf="i">
                                     <ion-avatar ><ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img></ion-avatar>
                                     <span [ngOptionHighlight]="search">{{i.FullName}}</span><br>
-                                    <small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b> <span *ngIf="i.Phone"> | {{'erp.app.pages.approval.request.phone' | translate}}: <b [ngOptionHighlight]="search">{{i.Phone}}</b></span></small>
+                                    <small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b> <span *ngIf="i.Phone"> | {{'Telephone' | translate}}: <b [ngOptionHighlight]="search">{{i.Phone}}</b></span></small>
                                 </div>
                             </ng-template>
                         </ng-select>
                     </div>
 
                     <div class="c-control">
-                        <label class="c-label" for="Remark">{{'erp.app.pages.approval.request.remark' | translate}}
+                        <label class="c-label" for="Remark">{{'Content' | translate}}
                             <span *ngIf="!formGroup.controls.Remark.valid && !formGroup.controls.Remark.pending && (formGroup.controls.Remark.dirty || submitAttempt)" ion-text color="danger">(*)</span>
                         </label>
                         <textarea rows="3" class="c-input remark" id="Remark" formControlName="Remark" type="textarea"></textarea>
@@ -67,9 +67,9 @@
                 <ion-col>
                     <div class="c-control ion-text-right">
                         <label class="c-label" for=""></label>
-                        <ion-button *ngIf=" item.Status == 'Approved'" (click)="submit()">{{'erp.app.pages.approval.request.approve' | translate}}</ion-button>
-                        <ion-button *ngIf=" item.Status == 'Forward'" (click)="submit()">{{'erp.app.pages.approval.request.forward' | translate}}</ion-button>
-                        <ion-button *ngIf=" item.Status == 'Denied'" (click)="submit()">{{'erp.app.pages.approval.request.denied' | translate}}</ion-button>
+                        <ion-button *ngIf=" item.Status == 'Approved'" (click)="submit()">{{'Approve' | translate}}</ion-button>
+                        <ion-button *ngIf=" item.Status == 'Forward'" (click)="submit()">{{'Forward' | translate}}</ion-button>
+                        <ion-button *ngIf=" item.Status == 'Denied'" (click)="submit()">{{'Deny' | translate}}</ion-button>
                         <ion-button *ngIf=" item.Status == 'Return'" (click)="submit()">{{'Return' | translate}}</ion-button>
                     </div>
 
