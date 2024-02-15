@@ -57,7 +57,7 @@
 
                         </ion-col>
                     </ion-row>
-                    <ion-list *ngIf="pageConfig.canApprove || isCanDisapprove">
+                    <ion-list *ngIf="pageConfig.canApprove || pageConfig.canDisapprove">
                         <ion-list-header>
                             <ion-label color="primary">{{'Approve' | translate}}</ion-label>
                         </ion-list-header>
@@ -80,7 +80,7 @@
                                             {{'Deny' | translate}}
                                         </ion-button>
                                     </ion-col>
-                                    <ion-col size="6" size-md="3" *ngIf="isCanDisapprove">
+                                    <ion-col size="6" size-md="3" *ngIf="pageConfig.canDisapprove">
                                         <ion-button color="danger" expand="block" (click)="disapprove()">
                                             {{'Disapprove' | translate}}
                                         </ion-button>

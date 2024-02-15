@@ -56,7 +56,7 @@ export class RequestPage extends PageBase {
         this.imgPath = environment.staffAvatarsServer;
         this.pageConfig.isShowFeature = true;
         this.pageConfig.mainPageActive = true;
-
+        this.pageConfig.canSubmitOrdersForApproval = true;
     }
 
     preLoadData(event?: any): void {
@@ -83,47 +83,17 @@ export class RequestPage extends PageBase {
                 this.listSupperApprover.push(s.Id);
             }
         });
+        let submitStatus = ['Draft', 'Unapproved'];
         this.items.forEach(i => {
             i._Type = this.requestTypeList.find(d => d.Code == i.Type);
             i._Status = this.statusList.find(d => d.Code == i.Status);
             i.StartText = lib.dateFormat(i.Start, 'dd/mm/yy hh:MM');
-            i.CanApprove = false;
+            i.canSubmitOrdersForApproval = false;
+            if(i.IDStaff ==  this.env.user.StaffID && submitStatus.findIndex(d => d == i.Status) > -1){
+                i.canSubmitOrdersForApproval = true
+            }
         });
         super.loadedData(event, ignoredFromGroup);
-    }
-
-    checkCanApprove(i) {
-        let ignoredStatus = ['Draft', 'Approved', 'Denied'];
-        let lockStatus = ['Approved', 'Denied', 'Forward']
-    
-        if (ignoredStatus.findIndex(d => d == i.Status) == -1) {
-            i.CanApprove = i._Approvers.findIndex(d => d.Id == this.env.user.StaffID) > -1;
-        }
-        if (i.ApprovalMode?.trim() == 'SequentialApprovals' && this.pageConfig.canApprove) {
-
-            let ApproverIdx = i._Approvers.findIndex(d => d.Id == this.env.user.StaffID);
-
-            if (ApproverIdx != 0) {
-                for (let index = 0; index < ApproverIdx; index++) {
-                    const Approver = i._Approvers[index];
-                    if (Approver.Status == 'Approved') {
-                        i.CanApprove = i._Logs.findIndex(d => d.Id == Approver.Id) > -1;
-                    }
-                    else {
-                        i.CanApprove = false;
-                        return;
-                    }
-                }
-            }
-            else {
-                if (lockStatus.findIndex(d => d == i._Approvers[ApproverIdx].Status) != -1) {
-                    i.CanApprove = false;
-                }
-                else {
-                    i.CanApprove = i._Approvers.findIndex(d => d.Id == this.env.user.StaffID) > -1;
-                }
-            }
-        }
     }
 
     async showModal(i) {
