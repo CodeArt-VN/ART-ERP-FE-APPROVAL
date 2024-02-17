@@ -235,7 +235,7 @@ export class RequestPage extends PageBase {
         if (!this.pageConfig.canCancel) return;
         if (this.submitAttempt) return;
 
-        let itemsCanNotProcess = this.selectedItems.filter(i => (i.Status == 'Draft' || i.Status == 'Approved'));
+        let itemsCanNotProcess = this.selectedItems.filter(i => (i.Status == 'Draft' || i.Status == 'Canceled'));
         if (itemsCanNotProcess.length == this.selectedItems.length) {
             this.env.showTranslateMessage('Your selected invoices cannot be canceled. Please select draft or pending for approval invoice','warning');
         }
