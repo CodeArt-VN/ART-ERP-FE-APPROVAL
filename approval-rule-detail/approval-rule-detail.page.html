@@ -24,8 +24,8 @@
 					</ion-col>
 
 					<ion-col size="12" size-sm size-xl="4">
-						<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(inputChange)="changeSchema($event)"> </app-form-control> -->
-						<app-form-control [field]="{id:'SetStatus', label: 'Auto approval status', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"(inputChange)="saveChange()">
+						<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(change)="changeSchema($event)"> </app-form-control> -->
+						<app-form-control [field]="{id:'SetStatus', label: 'Auto approval status', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"(change)="saveChange()">
 						</app-form-control>
 						<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"(change)="saveChange()"></app-form-control>
 
@@ -58,7 +58,7 @@
                 </ion-buttons>
 			</ion-toolbar>
 			<div *ngIf="segmentView == 's1'">
-				<app-filter  *ngIf="formGroup.get('IDApprovalTemplate').value> 0 &&  schema" [item]="formGroup.get('_Config').value" (inputChange)="saveConfig($event,formGroup)"  (submit)='saveConfig($event,formGroup)' [schema]="schema"></app-filter>
+				<app-filter  *ngIf="formGroup.get('IDApprovalTemplate').value> 0 &&  schema" [item]="formGroup.get('_Config').value" (change)="saveConfig($event,formGroup)"  (submit)='saveConfig($event,formGroup)' [schema]="schema"></app-filter>
 				<!-- <ion-button color="primary" (click)="submutFilter()" expand="block">{{'Save' | translate}}</ion-button> -->
 			</div>
 			<div *ngFor="let c of formGroup.get('RuleApprovers')['controls'];let j = index">
@@ -76,15 +76,15 @@
 								<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : c }"(change)="saveChange()">
 									<small label *ngIf="c.controls.Id?.value">Id: {{c.controls.Id.value}}</small>
 								</app-form-control>
-								<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(inputChange)="changeSchema($event)"> </app-form-control> -->
-								<app-form-control [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c }" (inputChange)="saveChange()"></app-form-control>
+								<!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(change)="changeSchema($event)"> </app-form-control> -->
+								<app-form-control [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c }" (change)="saveChange()"></app-form-control>
 								<app-form-control [field]="{id:'_approvalListIds', type : 'ng-select-staff', label: 'ApproverList',dataSource: c.controls._approverListDataSource.value , bindLabel:'FullName',bindValue:'Id', multiple: true, clearable: true, form : c }"
-								(inputChange)="changeApprovedBy($event,c)"></app-form-control>
+								(change)="changeApprovedBy($event,c)"></app-form-control>
 								
 							</ion-col>
 						
 						</ion-row>
-					<app-filter *ngIf="schema" [schema]="schema" [item]="c.controls._Config.value" (inputChange)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
+					<app-filter *ngIf="schema" [schema]="schema" [item]="c.controls._Config.value" (change)="saveConfig($event,c)" (submit)="saveConfig($event,c)"></app-filter>
 					
 				</div>
 			</div>

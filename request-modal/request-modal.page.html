@@ -41,7 +41,7 @@
                     </div> -->
                     <app-form-control [field]="{id:'Name', label:'Title', type : 'text', form : formGroup}" ></app-form-control>
 
-                    <app-form-control [field]="{id:'IDApprovalTemplate', label:'Approval template', type : 'ng-select', dataSource: approvalTemplateList, bindLabel:'Name', bindValue:'Id', form : formGroup}" (inputChange)= "changeTemplate($event)" ></app-form-control>
+                    <app-form-control [field]="{id:'IDApprovalTemplate', label:'Approval template', type : 'ng-select', dataSource: approvalTemplateList, bindLabel:'Name', bindValue:'Id', form : formGroup}" (change)= "changeTemplate($event)" ></app-form-control>
                     <app-form-control *ngIf="template?.IsUserCanChooseApprover && template?.SelectableApproverList" [field]="{id:'SelectableApproverIds', label:'Selectable approvers', type : 'ng-select', dataSource: _approverListDataSource, bindLabel:'FullName', bindValue:'Id', form : formGroup, multiple: true, clearable:true}" ></app-form-control>
                    
                     <app-form-control *ngIf="formGroup.get('UDFLabel01').value" [field]="{id:'UDF01', label:formGroup.get('UDFLabel01').value, type : 'number', form : formGroup}" ></app-form-control>
