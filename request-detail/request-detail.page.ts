@@ -26,7 +26,6 @@ export class RequestDetailPage extends PageBase {
     approvalTemplate: any;
     isSupperApprover;
     currentApprover;
-    isCanDisapprove;
     commentForm: FormGroup;
     constructor(
         public pageProvider: APPROVAL_RequestProvider,
@@ -93,7 +92,7 @@ export class RequestDetailPage extends PageBase {
             }
         });
 
-        this.isCanDisapprove = canDisapproveStatus.includes(this.item.Status) && this.item.IDStaff != this.env.user.StaffID 
+        this.pageConfig.canDisapprove = canDisapproveStatus.includes(this.item.Status) && this.item.IDStaff != this.env.user.StaffID 
         && this.item._Approvers.some(d=> d.Id == this.env.user.StaffID);
 
         this.item._Logs.forEach(i => {
@@ -108,7 +107,7 @@ export class RequestDetailPage extends PageBase {
                     this.approvalTemplate = value;
                     if(this.approvalTemplate.IsSupperApprover){
                         if(canDisapproveStatus.includes(this.item.Status)){
-                            this.isCanDisapprove = true;
+                            this.pageConfig.canDisapprove = true;
                         }
                        if(canApproveStatus.includes(this.item.Status)){
                         this.pageConfig.CanApprove =true;
@@ -178,7 +177,7 @@ export class RequestDetailPage extends PageBase {
     }
 
     async disapprove() {
-        if (!this.isCanDisapprove) {
+        if (!this.pageConfig.canDisapprove) {
             return;
         }
         let approval = {
@@ -249,7 +248,7 @@ export class RequestDetailPage extends PageBase {
                         this.env.showMessage(err.message, 'danger');
                     }
                     else {
-                        this.env.showTranslateMessage('Cannot extract data', 'danger');
+                        this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data', 'danger');
                     }
                     this.submitAttempt = false;
                     this.refresh();
@@ -278,7 +277,7 @@ export class RequestDetailPage extends PageBase {
                             this.env.showMessage(err.message, 'danger');
                         }
                         else {
-                            this.env.showTranslateMessage('Cannot extract data', 'danger');
+                            this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data', 'danger');
                         }
                         this.submitAttempt = false;
                         this.refresh();
