@@ -14,8 +14,8 @@ import { ApprovalTemplatePage } from './approval-template.page';
     FormsModule,
     ShareModule,
 
-    RouterModule.forChild([{ path: '', component: ApprovalTemplatePage }])
+    RouterModule.forChild([{ path: '', component: ApprovalTemplatePage }]),
   ],
-  declarations: [ApprovalTemplatePage]
+  declarations: [ApprovalTemplatePage],
 })
 export class ApprovalTemplatePageModule {}

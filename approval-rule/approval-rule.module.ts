@@ -13,8 +13,8 @@ import { ShareModule } from 'src/app/share.module';
     FormsModule,
     ShareModule,
 
-    RouterModule.forChild([{ path: '', component: ApprovalRulePage }])
+    RouterModule.forChild([{ path: '', component: ApprovalRulePage }]),
   ],
-  declarations: [ApprovalRulePage]
+  declarations: [ApprovalRulePage],
 })
 export class ApprovalRulePageModule {}

@@ -1,44 +1,43 @@
-.full-screen{
-    min-height: calc(100vh - 97px);
-    height: 100%;
+.full-screen {
+  min-height: calc(100vh - 97px);
+  height: 100%;
 }
 
-.remark{
-    white-space: pre-line !important;
+.remark {
+  white-space: pre-line !important;
 }
 
-.log{
-    align-items: stretch;
-    
-    .time{
-        max-width: 100px;
-        border-right: solid 1px var(--border-color);
-    }
-    .icon{
-        // margin-left: -34px;
-        margin-left: -27px;
-        background: var(--feature-background-top)
-    }
+.log {
+  align-items: stretch;
+
+  .time {
+    max-width: 100px;
+    border-right: solid 1px var(--border-color);
+  }
+  .icon {
+    // margin-left: -34px;
+    margin-left: -27px;
+    background: var(--feature-background-top);
+  }
 }
 
-.send{
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
+.send {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
 }
 
-
-.A4 .sheet{
-    height: unset;
+.A4 .sheet {
+  height: unset;
 }
 .sheet.rpt::ng-deep {
-     .top-zone{
-        min-height: 448px;
-    }
-    .noti{
-        margin-top:unset;
-    }
+  .top-zone {
+    min-height: 448px;
+  }
+  .noti {
+    margin-top: unset;
+  }
 }
-.sheet.padding-10mm{
-    padding : 0 10mm;
+.sheet.padding-10mm {
+  padding: 0 10mm;
 }

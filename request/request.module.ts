@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ShareModule } from 'src/app/share.module';
-import { FileUploadModule } from 'ng2-file-upload';
 import { RequestPage } from './request.page';
 import { RequestModalPage } from '../request-modal/request-modal.page';
 
@@ -14,10 +13,9 @@ import { RequestModalPage } from '../request-modal/request-modal.page';
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    FileUploadModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: RequestPage }])
+    RouterModule.forChild([{ path: '', component: RequestPage }]),
   ],
-  declarations: [RequestPage,RequestModalPage]
+  declarations: [RequestPage, RequestModalPage],
 })
 export class RequestPageModule {}

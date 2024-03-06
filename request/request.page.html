@@ -1,175 +1,274 @@
 <ion-header>
-	<app-list-toolbar pageTitle="{{'Request' | translate}}" [page]="this" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (submitOrdersForApproval)="submit()" (cancelOrders)="cancelRequest()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
-	<ion-toolbar style="--padding-start: 4px;">
-		<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
-			<ion-segment-button value="All">
-				<ion-label>{{'All' | translate }}</ion-label>
-			</ion-segment-button>
+  <app-list-toolbar
+    pageTitle="{{'Request' | translate}}"
+    [page]="this"
+    [pageConfig]="pageConfig"
+    [selectedItems]="selectedItems"
+    [query]="query"
+    (add)="add()"
+    (refresh)="refresh()"
+    (export)="export()"
+    (import)="import($event)"
+    (help)="help()"
+    (unselect)="unselect()"
+    (archiveItems)="archiveItems()"
+    (deleteItems)="deleteItems()"
+    (submitOrdersForApproval)="submit()"
+    (cancelOrders)="cancelRequest()"
+    (changeBranch)="changeBranch($event)"
+  ></app-list-toolbar>
+  <ion-toolbar style="--padding-start: 4px">
+    <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
+      <ion-segment-button value="All">
+        <ion-label>{{'All' | translate }}</ion-label>
+      </ion-segment-button>
 
-			<!-- Đến lượt duyệt -->
-			<!-- <ion-segment-button value="NeedApprove">
+      <!-- Đến lượt duyệt -->
+      <!-- <ion-segment-button value="NeedApprove">
 				<ion-label>{{'Đến lượt duyệt' | translate }}</ion-label>
 			</ion-segment-button> -->
-			<ion-segment-button value="Pending">
-				<ion-label>{{'Pending' | translate }}</ion-label>
-			</ion-segment-button>
+      <ion-segment-button value="Pending">
+        <ion-label>{{'Pending' | translate }}</ion-label>
+      </ion-segment-button>
 
-			<!-- Quá hạn -->
-			<ion-segment-button value="Expired">
-				<ion-label>{{'Expired' | translate}}</ion-label>
-			</ion-segment-button>
+      <!-- Quá hạn -->
+      <ion-segment-button value="Expired">
+        <ion-label>{{'Expired' | translate}}</ion-label>
+      </ion-segment-button>
 
-			<!-- Chờ duyệt -->
-			<!-- <ion-segment-button value="WaitForApprove">
+      <!-- Chờ duyệt -->
+      <!-- <ion-segment-button value="WaitForApprove">
 				<ion-label>{{'Chờ duyệt' | translate}}</ion-label>
 			</ion-segment-button> -->
 
-			<!-- Đã chấp thuận -->
-			<ion-segment-button value="Approved">
-				<ion-label>{{'Approved' | translate}}</ion-label>
-			</ion-segment-button>
+      <!-- Đã chấp thuận -->
+      <ion-segment-button value="Approved">
+        <ion-label>{{'Approved' | translate}}</ion-label>
+      </ion-segment-button>
 
-			<!-- Đã từ chối -->
-			<ion-segment-button value="Denied">
-				<ion-label>{{'Rejected' | translate}}</ion-label>
-			</ion-segment-button>
+      <!-- Đã từ chối -->
+      <ion-segment-button value="Denied">
+        <ion-label>{{'Rejected' | translate}}</ion-label>
+      </ion-segment-button>
 
-			<ion-segment-button value="Unapproved">
-				<ion-label>{{'Unapproved' | translate}}</ion-label>
-			</ion-segment-button>
+      <ion-segment-button value="Unapproved">
+        <ion-label>{{'Unapproved' | translate}}</ion-label>
+      </ion-segment-button>
 
-			<!-- Nháp -->
-			<ion-segment-button value="Draft">
-				<ion-label>{{'Draft' | translate}}</ion-label>
-			</ion-segment-button>
-		</ion-segment>
-	</ion-toolbar>
+      <!-- Nháp -->
+      <ion-segment-button value="Draft">
+        <ion-label>{{'Draft' | translate}}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature, childViewActive: !pageConfig.mainPageActive}" >
-	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print " vertical="top" horizontal="start" slot="fixed">
-		<ion-list>
-			<ion-list-header lines="full">
-				<ion-label color="dark">{{'Request groups' | translate}}</ion-label>
-			</ion-list-header>
-			<ion-item lines="full" [color]="query.IDApprovalTemplate == undefined && !query.Follow && !query.MyRequest? 'primary': '' " button detail="false" class="clickable" (click)="changeTemplateFilter(0)" >
-				<ion-label>
-					{{'All' | translate}}
-				</ion-label>
-			</ion-item>
+<ion-content
+  appScrollbarTheme
+  class="left"
+  [ngClass]="{withFeature: pageConfig.isShowFeature, childViewActive: !pageConfig.mainPageActive}"
+>
+  <ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print" vertical="top" horizontal="start" slot="fixed">
+    <ion-list>
+      <ion-list-header lines="full">
+        <ion-label color="dark">{{'Request groups' | translate}}</ion-label>
+      </ion-list-header>
+      <ion-item
+        lines="full"
+        [color]="query.IDApprovalTemplate == undefined && !query.Follow && !query.MyRequest? 'primary': '' "
+        button
+        detail="false"
+        class="clickable"
+        (click)="changeTemplateFilter(0)"
+      >
+        <ion-label> {{'All' | translate}} </ion-label>
+      </ion-item>
 
+      <ion-item
+        [color]="i.Id == query.IDApprovalTemplate? 'primary': '' "
+        button
+        detail="false"
+        lines="full"
+        class="clickable"
+        *ngFor="let i of approvalTemplateList"
+        (click)="changeTemplateFilter(i.Id)"
+      >
+        <ion-label>{{i.Name}}</ion-label>
+        <ion-note slot="end"> {{i.RequestCount || 0}}</ion-note>
+      </ion-item>
 
-			<ion-item [color]="i.Id == query.IDApprovalTemplate? 'primary': '' " button detail="false" lines="full" class="clickable" *ngFor="let i of approvalTemplateList" (click)="changeTemplateFilter(i.Id)">
-				<ion-label>{{i.Name}}</ion-label>
-				<ion-note slot="end">  {{i.RequestCount || 0}}</ion-note>
-			</ion-item>
+      <ion-item
+        lines="full"
+        [color]="query.Follow? 'primary': '' "
+        button
+        detail="false"
+        class="clickable"
+        (click)="filterBySubTab('Follow')"
+      >
+        <ion-label> {{'Follow' | translate}} </ion-label>
+      </ion-item>
 
-			<ion-item lines="full" [color]="query.Follow? 'primary': '' " button detail="false" class="clickable"  (click)="filterBySubTab('Follow')" >
-				<ion-label>
-					{{'Follow' | translate}}
-				</ion-label>
-			</ion-item>
+      <ion-item
+        lines="full"
+        [color]="query.MyRequest? 'primary': '' "
+        button
+        detail="false"
+        class="clickable"
+        (click)="filterBySubTab('MyRequest')"
+      >
+        <ion-label> {{'My request' | translate}} </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-fab>
+  <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"> </app-page-message>
+  <div *ngIf="items.length && pageConfig.showSpinner==false">
+    <section class="table">
+      <header class="bold">
+        <div class="col-checkbox cell"></div>
+        <div class="col-id cell">{{'Id' | translate}}</div>
+        <div class="col-name cell">{{'Name' | translate}}</div>
+        <div class="col-staff cell">{{'Requester' | translate}}</div>
+        <div class="col-date cell">{{'Date' | translate}}</div>
+        <div class="col-staff cell">{{'Approvers' | translate}}</div>
+        <div class="col-staff cell">{{'Followers' | translate}}</div>
+        <div class="col-status cell">{{'Status' | translate}}</div>
+      </header>
+      <form (submit)="refresh()" action="#">
+        <header class="filter" *ngIf="pageConfig.isShowSearch">
+          <div class="col-checkbox cell"></div>
+          <div class="col-id cell">
+            <input
+              [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="query.Id"
+              class="c-input"
+              [ngClass]="{active: query.Id}"
+              type="text"
+              placeholder="{{'Id' | translate}}"
+            />
+            <ion-icon
+              class="min-btn"
+              (click)="query.Id=''; refresh()"
+              *ngIf="query.Id"
+              name="close-circle-outline"
+            ></ion-icon>
+          </div>
+          <div class="col-code cell">
+            <input
+              [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="query.Code"
+              class="c-input"
+              [ngClass]="{active: query.Code}"
+              type="text"
+              placeholder="{{'Code' | translate}}"
+            />
+            <ion-icon
+              class="min-btn"
+              (click)="query.Code=''; refresh()"
+              *ngIf="query.Code"
+              name="close-circle-outline"
+            ></ion-icon>
+          </div>
+          <div class="col-name cell">
+            <input
+              [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="query.Name"
+              class="c-input"
+              [ngClass]="{active: query.Name}"
+              type="text"
+              placeholder="{{'Name' | translate }}"
+            />
+            <ion-icon
+              class="min-btn"
+              (click)="query.Name=''; refresh()"
+              *ngIf="query.Name"
+              name="close-circle-outline"
+            ></ion-icon>
+          </div>
+          <div class="col-remark cell"></div>
+          <button mat-raised-button type="submit" style="display: none">Search</button>
+        </header>
+      </form>
 
-			<ion-item lines="full" [color]="query.MyRequest? 'primary': '' " button detail="false" class="clickable" (click)="filterBySubTab('MyRequest')"  >
-				<ion-label>
-					{{'My request' | translate}}
-				</ion-label>
-			</ion-item>
-		</ion-list>
+      <div
+        *ngFor="let i of items; let j = index;"
+        class="row"
+        [ngClass]="{odd: j % 2 != 0}"
+        [ngClass]="{selected: i.checked}"
+      >
+        <div class="col-checkbox cell">
+          <input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox" />
+        </div>
 
-	</ion-fab>
-	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"> </app-page-message>
-	<div *ngIf="items.length && pageConfig.showSpinner==false">
-		<section class="table">
-			<header class="bold">
-				<div class="col-checkbox cell"></div>
-				<div class="col-id cell">
-					{{'Id' | translate}}
-				</div>
-				<div class="col-name cell">
-					{{'Name' | translate}}
-				</div>
-				<div class="col-staff cell">
-					{{'Requester' | translate}}
-				</div>
-				<div class="col-date cell">
-					{{'Date' | translate}}
-				</div>
-				<div class="col-staff cell">
-					{{'Approvers' | translate}}
-				</div>
-				<div class="col-staff cell">
-					{{'Followers' | translate}}
-				</div>
-				<div class="col-status cell">
-					{{'Status' | translate}}
-				</div>
-			</header>
-			<form (submit)="refresh()" action="#">
-				<header class="filter" *ngIf="pageConfig.isShowSearch">
-					<div class="col-checkbox cell"></div>
-					<div class="col-id cell">
-						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Id" class="c-input" [ngClass]="{active: query.Id}" type="text" placeholder="{{'Id' | translate}}">
-						<ion-icon class="min-btn" (click)="query.Id=''; refresh()" *ngIf="query.Id" name="close-circle-outline"></ion-icon>
-					</div>
-					<div class="col-code cell">
-						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Code" class="c-input" [ngClass]="{active: query.Code}" type="text" placeholder="{{'Code' | translate}}">
-						<ion-icon class="min-btn" (click)="query.Code=''; refresh()" *ngIf="query.Code" name="close-circle-outline"></ion-icon>
-					</div>
-					<div class="col-name cell">
-						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Name" class="c-input" [ngClass]="{active: query.Name}" type="text" placeholder="{{'Name' | translate }}">
-						<ion-icon class="min-btn" (click)="query.Name=''; refresh()" *ngIf="query.Name" name="close-circle-outline"></ion-icon>
-					</div>
-					<div class="col-remark cell"></div>
-					<button mat-raised-button type="submit" style="display:none">Search</button>
-				</header>
-			</form>
-
-			<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-				<div class="col-checkbox cell">
-					<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
-				</div>
-
-				<div (click)="nav('request/'+i.Id,'forward')" class="col-id cell">
-					{{i.Id}}
-				</div>
-				<div (click)="nav('request/'+i.Id,'forward')" class="col-name cell">
-					{{i.Name}}
-				</div>
-				<div class="col-staff cell">
-					<ion-avatar class="avatar" slot="start">
-						<ion-img #img [src]="imgPath + i._Staff?.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
-					</ion-avatar>
-					{{i._Staff?.FullName}}
-				</div>
-				<div class="col-date cell">
-					{{i.StartText}}
-					<!-- <span *ngIf="i.EndText">&nbsp;-&nbsp;{{i.EndText}}</span> -->
-
-				</div>
-				<div class="col-staff cell" style="position: relative">
-					<ion-avatar class="avatar" style="position:absolute" [ngStyle]="{'left': j*17+'px'}" slot="start" *ngFor="let approver of i._Approvers; let j = index" [title]="approver.FullName">
-						<ion-img #img [src]="imgPath + approver.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
-					</ion-avatar>
-				</div>
-				<div class="col-staff follower cell" style="position: relative">
-					<ion-avatar class="avatar"  style="position:absolute" [ngStyle]="{'left': j*17+'px'}" slot="start" *ngFor="let follower of i._Followers; let j = index" [title]="follower.FullName">
-						<ion-img #img 
-						[src]="imgPath + follower?.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
-					</ion-avatar>
-				</div>
-				<div (click)="nav('request/'+i.Id,'forward')" class="col-status cell">
-					<span class="bar-holder">
-						<ion-text class="bar-title" *ngIf="i._Status" [color]="i._Status.Color">{{i._Status.Name}}</ion-text>
-						<span class="bar" [ngClass]="{active: s.Code==i.Status}" [ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}" *ngFor="let s of statusList" [title]="s.Name"></span>
-					</span>
-				</div>
-				<hr>
-
-			</div>
-		</section>
-	</div>
-	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
-		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
-	</ion-infinite-scroll>
+        <div (click)="nav('request/'+i.Id,'forward')" class="col-id cell">{{i.Id}}</div>
+        <div (click)="nav('request/'+i.Id,'forward')" class="col-name cell">{{i.Name}}</div>
+        <div class="col-staff cell">
+          <ion-avatar class="avatar" slot="start">
+            <ion-img
+              #img
+              [src]="imgPath + i._Staff?.Code + '.jpg'"
+              (ionError)="img.src = 'assets/avartar-empty.jpg'"
+            ></ion-img>
+          </ion-avatar>
+          {{i._Staff?.FullName}}
+        </div>
+        <div class="col-date cell">
+          {{i.StartText}}
+          <!-- <span *ngIf="i.EndText">&nbsp;-&nbsp;{{i.EndText}}</span> -->
+        </div>
+        <div class="col-staff cell" style="position: relative">
+          <ion-avatar
+            class="avatar"
+            style="position: absolute"
+            [ngStyle]="{'left': j*17+'px'}"
+            slot="start"
+            *ngFor="let approver of i._Approvers; let j = index"
+            [title]="approver.FullName"
+          >
+            <ion-img
+              #img
+              [src]="imgPath + approver.Code + '.jpg'"
+              (ionError)="img.src = 'assets/avartar-empty.jpg'"
+            ></ion-img>
+          </ion-avatar>
+        </div>
+        <div class="col-staff follower cell" style="position: relative">
+          <ion-avatar
+            class="avatar"
+            style="position: absolute"
+            [ngStyle]="{'left': j*17+'px'}"
+            slot="start"
+            *ngFor="let follower of i._Followers; let j = index"
+            [title]="follower.FullName"
+          >
+            <ion-img
+              #img
+              [src]="imgPath + follower?.Code + '.jpg'"
+              (ionError)="img.src = 'assets/avartar-empty.jpg'"
+            ></ion-img>
+          </ion-avatar>
+        </div>
+        <div (click)="nav('request/'+i.Id,'forward')" class="col-status cell">
+          <span class="bar-holder">
+            <ion-text class="bar-title" *ngIf="i._Status" [color]="i._Status.Color">{{i._Status.Name}}</ion-text>
+            <span
+              class="bar"
+              [ngClass]="{active: s.Code==i.Status}"
+              [ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}"
+              *ngFor="let s of statusList"
+              [title]="s.Name"
+            ></span>
+          </span>
+        </div>
+        <hr />
+      </div>
+    </section>
+  </div>
+  <ion-infinite-scroll
+    color="primary"
+    threshold="20%"
+    (ionInfinite)="loadData($event)"
+    [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData"
+  >
+    <ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

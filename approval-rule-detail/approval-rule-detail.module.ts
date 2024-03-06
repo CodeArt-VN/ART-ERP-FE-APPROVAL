@@ -5,25 +5,16 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ShareModule } from 'src/app/share.module';
 import { ApprovalRuleDetailPage } from './approval-rule-detail.page';
-import { FileUploadModule } from 'ng2-file-upload';
 
 const routes: Routes = [
   {
     path: '',
-    component: ApprovalRuleDetailPage
-  }
+    component: ApprovalRuleDetailPage,
+  },
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    ReactiveFormsModule,
-    FileUploadModule,
-    ShareModule,
-    RouterModule.forChild(routes)
-  ],
-  declarations: [ApprovalRuleDetailPage]
+  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
+  declarations: [ApprovalRuleDetailPage],
 })
-export class ApprovalRuleDetailPageModule { }
+export class ApprovalRuleDetailPageModule {}
