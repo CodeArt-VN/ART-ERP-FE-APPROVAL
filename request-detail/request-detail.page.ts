@@ -85,8 +85,6 @@ export class RequestDetailPage extends PageBase {
     this.item.Start = lib.dateFormat(this.item.Start);
     this.item.EndText = lib.dateFormat(this.item.End, 'dd/mm');
     this.item.End = lib.dateFormat(this.item.End);
-    let canDisapproveStatus = ['Approved', 'Denied', 'InProgress', 'Pending'];
-    let canApproveStatus = ['Denied', 'InProgress', 'Pending'];
 
     this.item._Approvers.forEach((i) => {
       i._Status = this.statusList.find((d) => d.Code == i.Status);
@@ -94,11 +92,6 @@ export class RequestDetailPage extends PageBase {
         this.currentApprover = i;
       }
     });
-
-    this.pageConfig.canDisapprove =
-      canDisapproveStatus.includes(this.item.Status) &&
-      this.item.IDStaff != this.env.user.StaffID &&
-      this.item._Approvers.some((d) => d.Id == this.env.user.StaffID);
 
     this.item._Logs.forEach((i) => {
       i._Status = this.statusList.find((d) => d.Code == i.Status);
@@ -109,16 +102,7 @@ export class RequestDetailPage extends PageBase {
       this.approvalTemplateService.getAnItem(this.item.IDApprovalTemplate).then((value) => {
         if (value) {
           this.approvalTemplate = value;
-          if (this.approvalTemplate.IsSupperApprover) {
-            if (canDisapproveStatus.includes(this.item.Status)) {
-              this.pageConfig.canDisapprove = true;
-            }
-            if (canApproveStatus.includes(this.item.Status)) {
-              this.pageConfig.CanApprove = true;
-            }
-          } else {
-            this.checkCanApprove();
-          }
+          this.checkPermision();
           var udfList = Object.keys(this.approvalTemplate).filter((d) => d.includes('IsUseUDF'));
           udfList.forEach((d) => {
             if (this.approvalTemplate[d]) {
@@ -133,42 +117,48 @@ export class RequestDetailPage extends PageBase {
         }
       });
     }
+    else{
+      this.checkPermision();
 
+    }
     super.loadedData(event);
   }
 
-  checkCanApprove() {
-    let ignoredStatus = ['Draft', 'Approved', 'Denied'];
-    let lockStatus = ['Forward']; //'Approved', 'Denied',
+  checkPermision() {
+    let canDisapproveStatus = ['Approved', 'InProgress', 'Pending'];
+    let canApproveStatus = ['InProgress', 'Pending', 'Unapproved'];
+    // let ignoredStatus = ['Draft', 'Approved', 'Denied'];
+    // let lockStatus = ['Forward']; //'Approved', 'Denied',
     this.pageConfig.canApprove = false;
-    if (this.approvalTemplate?.IsSupperApprover) {
-      this.pageConfig.canApprove = true;
-      return;
-    }
-    if (ignoredStatus.findIndex((d) => d == this.item.Status) == -1) {
-      this.pageConfig.canApprove = this.item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID) > -1;
-    }
-    if (this.item.ApprovalMode?.trim() == 'SequentialApprovals' && this.pageConfig.canApprove) {
-      let ApproverIdx = this.item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID);
-
-      if (ApproverIdx != 0) {
-        for (let index = 0; index < ApproverIdx; index++) {
-          const Approver = this.item._Approvers[index];
-          if (Approver.Status == 'Approved') {
-            this.pageConfig.canApprove = this.item._Logs.findIndex((d) => d.Id == Approver.Id) > -1;
-          } else {
-            this.pageConfig.canApprove = false;
-            return;
+    if (canApproveStatus.includes(this.item.Status)) {
+      if (this.approvalTemplate?.IsSupperApprover ||(this.currentApprover && this.item.ApprovalMode?.trim() != 'SequentialApprovals')) {
+        this.pageConfig.canApprove = true;
+      } 
+      else {
+        if (this.currentApprover) { // Duyệt tuần tự
+          let approverIdx = this.item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID);
+          if (approverIdx != 0) {
+            for(let index = approverIdx-1; index =0; index--){
+              const Approver = this.item._Approvers[index];
+              if (Approver.Status != 'Approved') {
+                  break;
+              } 
+              if (index == 0 ) {
+                this.pageConfig.canApprove = true;
+              } 
+            }
           }
-        }
-      } else {
-        if (lockStatus.findIndex((d) => d == this.item._Approvers[ApproverIdx].Status) != -1) {
-          this.pageConfig.canApprove = false;
-        } else {
-          this.pageConfig.canApprove = this.item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID) > -1;
+          else{
+            this.pageConfig.canApprove = true;
+          }
         }
       }
     }
+    this.pageConfig.canDisapprove = false;
+    if(canDisapproveStatus.includes(this.item.Status) &&(this.approvalTemplate?.IsSupperApprover || this.currentApprover)){
+      this.pageConfig.canDisapprove = true;
+    }
+
   }
 
   async disapprove() {

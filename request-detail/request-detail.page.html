@@ -66,7 +66,7 @@
                   <ion-col
                     size="6"
                     size-md="3"
-                    *ngIf="(item.Status == 'Pending'|| item.Status == 'InProgress') && currentApprover.Status != 'Approved' && pageConfig.canApprove  "
+                    *ngIf="pageConfig.canApprove"
                   >
                     <ion-button color="success" expand="block" (click)="submitApproval('Approved')">
                       {{'Approve' | translate}}
