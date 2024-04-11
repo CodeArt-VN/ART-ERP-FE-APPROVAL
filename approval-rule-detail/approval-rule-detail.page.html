@@ -66,10 +66,10 @@
         </ion-buttons>
       </ion-toolbar>
       <div *ngIf="segmentView == 's1'">
-        <app-filter
+        <app-filter    #appFilter
           *ngIf="formGroup.get('IDApprovalTemplate').value> 0 &&  schema"
           [item]="formGroup.get('_Config').value"
-          (change)="saveConfig($event,formGroup)"
+          (change)="appFilter.onFormSubmit($event)"
           (submit)="saveConfig($event,formGroup)"
           [schema]="schema"
         ></app-filter>
@@ -101,11 +101,11 @@
               ></app-form-control>
             </ion-col>
           </ion-row>
-          <app-filter
+          <app-filter #appFilterApprover
             *ngIf="schema"
             [schema]="schema"
             [item]="c.controls._Config.value"
-            (change)="saveConfig($event,c)"
+            (change)="appFilterApprover.onFormSubmit($event)"
             (submit)="saveConfig($event,c)"
           ></app-filter>
         </div>
