@@ -24,24 +24,41 @@
     <ion-grid fixed>
       <ion-row>
         <ion-col size="12" size-sm="12" size-md="12">
-          <!-- <div class="c-control">
-                        <label class="c-label" for="Type">{{'Request classification' | translate}}
-                            <span *ngIf="!formGroup.controls.Type.valid && !formGroup.controls.Type.pending && (formGroup.controls.Type.dirty || submitAttempt)" ion-text color="danger">(*)</span>
-                        </label>
-                        <ng-select class="c-input" labelForId="Type" formControlName="Type" [items]="requestTypeList" bindLabel="Name" bindValue="Code" placeholder="{{'Search' | translate}}">
-                            <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-                                <div *ngIf="i">
-                                    <div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
-                                </div>
-                            </ng-template>
-                        </ng-select>
-                    </div> -->
           <app-form-control [field]="{id:'Name', label:'Title', type : 'text', form : formGroup}"></app-form-control>
-
           <app-form-control
             [field]="{id:'IDApprovalTemplate', label:'Approval template', type : 'ng-select', dataSource: approvalTemplateList, bindLabel:'Name', bindValue:'Id', form : formGroup}"
             (change)="changeTemplate($event)"
           ></app-form-control>
+          <div class="c-control" *ngIf="formGroup.controls.Type.value == 'TimeOff'">
+            <label class="c-label" for="SubType"
+              >{{'Leaves classification' | translate}}
+              <span
+                *ngIf="!formGroup.controls.SubType.valid && !formGroup.controls.SubType.pending && (formGroup.controls.SubType.dirty || submitAttempt)"
+                ion-text
+                color="danger"
+                >(*)</span
+              >
+            </label>
+            <ng-select
+              class="c-input"
+              labelForId="SubType"
+              formControlName="SubType"
+              [items]="timeOffTypeList"
+              bindLabel="Name"
+              bindValue="Code"
+              placeholder="{{'Search' | translate}}"
+            >
+              <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+                <div *ngIf="i">
+                  <div>
+                    <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+                    <span [ngOptionHighlight]="search">{{i.Name}}</span>
+                  </div>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+
           <app-form-control
             *ngIf="template?.IsUserCanChooseApprover && template?.SelectableApproverList"
             [field]="{id:'SelectableApproverIds', label:'Selectable approvers', type : 'ng-select', dataSource: _approverListDataSource, bindLabel:'FullName', bindValue:'Id', form : formGroup, multiple: true, clearable:true}"
@@ -99,19 +116,19 @@
           ></app-form-control>
           <app-form-control
             *ngIf="formGroup.get('UDFLabel13').value"
-            [field]="{id:'UDF13', label:formGroup.get('UDFLabel13').value, type : 'text', form : formGroup}"
+            [field]="{id:'UDF13', label:formGroup.get('UDFLabel13').value, type : 'textarea', form : formGroup}"
           ></app-form-control>
           <app-form-control
             *ngIf="formGroup.get('UDFLabel14').value"
-            [field]="{id:'UDF14', label:formGroup.get('UDFLabel14').value, type : 'text', form : formGroup}"
+            [field]="{id:'UDF14', label:formGroup.get('UDFLabel14').value, type : 'textarea', form : formGroup}"
           ></app-form-control>
           <app-form-control
             *ngIf="formGroup.get('UDFLabel15').value"
-            [field]="{id:'UDF15', label:formGroup.get('UDFLabel15').value, type : 'text', form : formGroup}"
+            [field]="{id:'UDF15', label:formGroup.get('UDFLabel15').value, type : 'textarea', form : formGroup}"
           ></app-form-control>
           <app-form-control
             *ngIf="formGroup.get('UDFLabel16').value"
-            [field]="{id:'UDF16', label:formGroup.get('UDFLabel16').value, type : 'text', form : formGroup}"
+            [field]="{id:'UDF16', label:formGroup.get('UDFLabel16').value, type : 'textarea', form : formGroup}"
           ></app-form-control>
 
           <app-form-control
@@ -138,36 +155,6 @@
             *ngIf="formGroup.get('UDFLabel22').value"
             [field]="{id:'UDF22', label:formGroup.get('UDFLabel22').value, type : 'number', form : formGroup}"
           ></app-form-control>
-
-          <div class="c-control" *ngIf="formGroup.controls.Type.value == 'TimeOff'">
-            <label class="c-label" for="SubType"
-              >{{'Leaves classification' | translate}}
-              <span
-                *ngIf="!formGroup.controls.SubType.valid && !formGroup.controls.SubType.pending && (formGroup.controls.SubType.dirty || submitAttempt)"
-                ion-text
-                color="danger"
-                >(*)</span
-              >
-            </label>
-            <ng-select
-              class="c-input"
-              labelForId="SubType"
-              formControlName="SubType"
-              [items]="timeOffTypeList"
-              bindLabel="Name"
-              bindValue="Code"
-              placeholder="{{'Search' | translate}}"
-            >
-              <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-                <div *ngIf="i">
-                  <div>
-                    <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-                    <span [ngOptionHighlight]="search">{{i.Name}}</span>
-                  </div>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
         </ion-col>
 
         <ion-col size="12" size-sm="12" size-md="12">

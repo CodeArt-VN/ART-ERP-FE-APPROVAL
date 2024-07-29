@@ -306,11 +306,11 @@
                 </app-form-control>
               </ion-col>
             </ion-row>
-            <!-- String Group -->
+            <!-- Text Group -->
             <ion-row class="hr-group">
               <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
                 <ion-list-header class="ion-no-padding">
-                  <ion-label color="primary">{{'String UDF' | translate}}</ion-label>
+                  <ion-label color="primary">{{'Text UDF' | translate}}</ion-label>
                 </ion-list-header>
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
@@ -337,7 +337,8 @@
                   (change)="saveChange()"
                 >
                 </app-form-control>
-
+              </ion-col>
+              <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
                   [field]="{ id: 'IsUseUDF11', label: 'Use Label11', type: 'checkbox', form:formGroup }"
                   (change)="saveChange()"
@@ -362,6 +363,14 @@
                 >
                 </app-form-control>
               </ion-col>
+            </ion-row>
+            <!-- Text area Group -->
+            <ion-row class="hr-group">
+              <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+                <ion-list-header class="ion-no-padding">
+                  <ion-label color="primary">{{'Text Area UDF' | translate}}</ion-label>
+                </ion-list-header>
+              </ion-col>
               <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
                   [field]="{ id: 'IsUseUDF13', label: 'Use Label13', type: 'checkbox', form:formGroup }"
@@ -370,7 +379,7 @@
                 </app-form-control>
                 <app-form-control
                   *ngIf="formGroup.get('IsUseUDF13')?.value"
-                  [field]="{ id: 'UDFLabel13', label: 'Label13', type: 'text', form: formGroup }"
+                  [field]="{ id: 'UDFLabel13', label: 'Label13', type: 'textarea', form: formGroup }"
                   (change)="saveChange()"
                 >
                 </app-form-control>
@@ -382,11 +391,12 @@
                 </app-form-control>
                 <app-form-control
                   *ngIf="formGroup.get('IsUseUDF14')?.value"
-                  [field]="{ id: 'UDFLabel14', label: 'Label14', type: 'text', form: formGroup }"
+                  [field]="{ id: 'UDFLabel14', label: 'Label14', type: 'textarea', form: formGroup }"
                   (change)="saveChange()"
                 >
                 </app-form-control>
-
+              </ion-col>
+              <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
                   [field]="{ id: 'IsUseUDF15', label: 'Use Label15', type: 'checkbox', form:formGroup }"
                   (change)="saveChange()"
@@ -394,7 +404,7 @@
                 </app-form-control>
                 <app-form-control
                   *ngIf="formGroup.get('IsUseUDF15')?.value"
-                  [field]="{ id: 'UDFLabel15', label: 'Label15', type: 'text', form: formGroup }"
+                  [field]="{ id: 'UDFLabel15', label: 'Label15', type: 'textarea', form: formGroup }"
                   (change)="saveChange()"
                 >
                 </app-form-control>
@@ -406,7 +416,7 @@
                 </app-form-control>
                 <app-form-control
                   *ngIf="formGroup.get('IsUseUDF16')?.value"
-                  [field]="{ id: 'UDFLabel16', label: 'Label16', type: 'text', form: formGroup }"
+                  [field]="{ id: 'UDFLabel16', label: 'Label16', type: 'textarea', form: formGroup }"
                   (change)="saveChange()"
                 >
                 </app-form-control>
