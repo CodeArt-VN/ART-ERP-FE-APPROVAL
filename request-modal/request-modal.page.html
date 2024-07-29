@@ -30,33 +30,17 @@
             (change)="changeTemplate($event)"
           ></app-form-control>
           <div class="c-control" *ngIf="formGroup.controls.Type.value == 'TimeOff'">
-            <label class="c-label" for="SubType"
-              >{{'Leaves classification' | translate}}
-              <span
-                *ngIf="!formGroup.controls.SubType.valid && !formGroup.controls.SubType.pending && (formGroup.controls.SubType.dirty || submitAttempt)"
-                ion-text
-                color="danger"
-                >(*)</span
-              >
-            </label>
-            <ng-select
-              class="c-input"
-              labelForId="SubType"
-              formControlName="SubType"
-              [items]="timeOffTypeList"
-              bindLabel="Name"
-              bindValue="Code"
-              placeholder="{{'Search' | translate}}"
-            >
-              <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-                <div *ngIf="i">
-                  <div>
-                    <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-                    <span [ngOptionHighlight]="search">{{i.Name}}</span>
-                  </div>
-                </div>
-              </ng-template>
-            </ng-select>
+            <app-form-control
+              [field]="{
+              id: 'SubType',
+              label: 'SubType',
+              type: 'ng-select',
+              dataSource: timeOffTypeList,
+              bindValue: 'Code',
+              bindLabel: 'Name',
+              form: formGroup
+            }"
+            ></app-form-control>
           </div>
 
           <app-form-control
