@@ -11,6 +11,15 @@
             <ion-label color="primary">{{'Suggestions' | translate}}</ion-label>
           </ion-list-header>
           <ion-list>
+            <ion-item>
+              <ion-label>
+                <p>{{'Leaves classification' | translate}}</p>
+                <h2>
+                  <ion-text [color]="item._SubType.Color"><b> {{item._SubType.Name}}</b></ion-text>
+                </h2>
+              </ion-label>
+            </ion-item>
+
             <ion-item *ngFor="let udf of mappingList">
               <ion-label>
                 <p>{{udf.Label | translate}}</p>
@@ -63,11 +72,7 @@
             <ion-item>
               <ion-grid fixed>
                 <ion-row>
-                  <ion-col
-                    size="6"
-                    size-md="3"
-                    *ngIf="pageConfig.canApprove"
-                  >
+                  <ion-col size="6" size-md="3" *ngIf="pageConfig.canApprove">
                     <ion-button color="success" expand="block" (click)="submitApproval('Approved')">
                       {{'Approve' | translate}}
                     </ion-button>
