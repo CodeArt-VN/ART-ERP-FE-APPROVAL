@@ -1,5 +1,5 @@
-import { Component, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { NavController, LoadingController, AlertController } from '@ionic/angular';
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { NavController, LoadingController, AlertController, PopoverController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
@@ -10,12 +10,10 @@ import {
   HRM_StaffProvider,
   SYS_SchemaDetailProvider,
   SYS_SchemaProvider,
-  WMS_ZoneProvider,
 } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
-import { Schema } from 'src/app/models/options-interface';
 
 @Component({
   selector: 'app-approval-rule-detail',
@@ -36,6 +34,7 @@ export class ApprovalRuleDetailPage extends PageBase {
   constructor(
     public pageProvider: APPROVAL_ApprovalRuleProvider,
     public branchProvider: BRA_BranchProvider,
+    public popoverCtrl: PopoverController,
     public env: EnvService,
     public navCtrl: NavController,
     public route: ActivatedRoute,

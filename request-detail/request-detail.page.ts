@@ -1,5 +1,5 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
-import { NavController, LoadingController, AlertController, ModalController } from '@ionic/angular';
+import { NavController, LoadingController, AlertController, ModalController, PopoverController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
@@ -37,6 +37,7 @@ export class RequestDetailPage extends PageBase {
     public branchProvider: BRA_BranchProvider,
     public commentProvider: APPROVAL_CommentProvider,
     public approvalTemplateService: APPROVAL_TemplateProvider,
+    public popoverCtrl: PopoverController,
     public modalController: ModalController,
     public env: EnvService,
     public navCtrl: NavController,
