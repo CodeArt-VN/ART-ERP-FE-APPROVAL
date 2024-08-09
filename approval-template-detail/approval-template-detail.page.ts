@@ -357,7 +357,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
     this.saveChange();
   }
   removeApprovalRule(index) {
-    this.env.showPrompt('Bạn có chắc muốn xóa?', null, 'Xóa approval rule').then((_) => {
+    this.env.showPrompt2('Bạn có chắc muốn xóa không?', null, 'Xóa approval rule').then((_) => {
       let apiPath = {
         delItem: {
           method: 'DELETE',
@@ -378,7 +378,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
       if (this.formGroup.get('Id').value) {
         this.query.IDApprovalTemplate = this.item.Id;
         this.env
-          .showLoading('Vui lòng chờ load dữ liệu...', this.approvalRuleService.read(this.query))
+          .showLoading2('Vui lòng chờ load dữ liệu...', this.approvalRuleService.read(this.query))
           .then((response: any) => {
             if (response && response.data && response.data.length > 0) this.approvalRuleList = response.data;
           });
