@@ -129,7 +129,7 @@ export class RequestPage extends PageBase {
         })
         .catch((err) => {
           if (err.message != null) {
-            this.env.showMessage(err.message, 'danger');
+            this.env.showTranslateMessage(err.message, 'danger');
           } else {
             this.env.showTranslateMessage('Cannot extract data', 'danger');
           }
@@ -161,7 +161,7 @@ export class RequestPage extends PageBase {
     };
     this.query.Type_eq = this.type;
     this.env
-      .showLoading('Vui lòng chờ load dữ liệu...', this.approvalTemplateService.read(this.query))
+      .showLoading2('Vui lòng chờ load dữ liệu...', this.approvalTemplateService.read(this.query))
       .then((response: any) => {
         if (response.data && response.data.length && response.data[0].IDSchema) {
           this.IDSchema = response.data[0].IDSchema;
@@ -193,7 +193,7 @@ export class RequestPage extends PageBase {
       },
     };
     this.env
-      .showLoading(
+      .showLoading2(
         'Vui lòng chờ load dữ liệu...',
         this.pageProvider.commonService.connect(apiPath.method, apiPath.url(), obj).toPromise(),
       )
@@ -265,10 +265,10 @@ export class RequestPage extends PageBase {
       });
       //this.selectedItems = this.selectedItems.filter(i => (i.Status == 'Pending' || i.Status == 'Unapproved'));
       this.env
-        .showPrompt(
-          'Bạn chắc muốn HỦY ' + this.selectedItems.length + ' yêu cầu đang chọn?',
+        .showPrompt2(
+          {code:'Bạn có chắc muốn HỦY {{value}} yêu cầu đang chọn?',value:{value:this.selectedItems.length}},
           null,
-          'Duyệt ' + this.selectedItems.length + ' yêu cầu',
+          {code:'Duyệt {{value}} yêu cầu',value:{value:this.selectedItems.length}},
         )
         .then((_) => {
           this.submitAttempt = true;
@@ -308,10 +308,10 @@ export class RequestPage extends PageBase {
       this.selectedItems = this.selectedItems.filter((i) => i.Status == 'Draft' || i.Status == 'Unapproved');
 
       this.env
-        .showPrompt(
-          'Bạn chắc muốn gửi duyệt ' + this.selectedItems.length + ' đơn hàng đang chọn?',
+        .showPrompt2(
+          {code:'Bạn có chắc muốn gửi duyệt {{value}} đơn hàng đang chọn?',value:{value:this.selectedItems.length}},
           null,
-          'Gửi duyệt ' + this.selectedItems.length + ' mua hàng',
+          {code:'Gửi duyệt {{value}} mua hàng',value:{value:this.selectedItems.length}}
         )
         .then((_) => {
           this.submitAttempt = true;
