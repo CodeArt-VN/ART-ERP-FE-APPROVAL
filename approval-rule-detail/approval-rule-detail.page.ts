@@ -253,7 +253,7 @@ export class ApprovalRuleDetailPage extends PageBase {
   }
   removeRuleApprovers(g, index) {
     this.env
-      .showPrompt('Bạn có chắc muốn xóa?', null, 'Xóa manual rule')
+      .showPrompt2('Bạn có chắc muốn xóa không?', null, 'Xóa manual rule')
       .then((_) => {
         let groups = <FormArray>this.formGroup.controls.RuleApprovers;
         //groups.controls[index].get('IsDeleted').setValue(true);
