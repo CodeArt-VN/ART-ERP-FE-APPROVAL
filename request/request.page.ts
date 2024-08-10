@@ -129,9 +129,9 @@ export class RequestPage extends PageBase {
         })
         .catch((err) => {
           if (err.message != null) {
-            this.env.showTranslateMessage(err.message, 'danger');
+            this.env.showMessage(err.message, 'danger');
           } else {
-            this.env.showTranslateMessage('Cannot extract data', 'danger');
+            this.env.showMessage('Cannot extract data', 'danger');
           }
           this.submitAttempt = false;
           this.refresh();
@@ -161,7 +161,7 @@ export class RequestPage extends PageBase {
     };
     this.query.Type_eq = this.type;
     this.env
-      .showLoading2('Vui lòng chờ load dữ liệu...', this.approvalTemplateService.read(this.query))
+      .showLoading('Please wait for a few moments', this.approvalTemplateService.read(this.query))
       .then((response: any) => {
         if (response.data && response.data.length && response.data[0].IDSchema) {
           this.IDSchema = response.data[0].IDSchema;
@@ -193,8 +193,8 @@ export class RequestPage extends PageBase {
       },
     };
     this.env
-      .showLoading2(
-        'Vui lòng chờ load dữ liệu...',
+      .showLoading(
+        'Please wait for a few moments',
         this.pageProvider.commonService.connect(apiPath.method, apiPath.url(), obj).toPromise(),
       )
 
@@ -255,7 +255,7 @@ export class RequestPage extends PageBase {
 
     let itemsCanNotProcess = this.selectedItems.filter((i) => i.Status == 'Draft' || i.Status == 'Canceled');
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected invoices cannot be canceled. Please select draft or pending for approval invoice',
         'warning',
       );
@@ -265,7 +265,7 @@ export class RequestPage extends PageBase {
       });
       //this.selectedItems = this.selectedItems.filter(i => (i.Status == 'Pending' || i.Status == 'Unapproved'));
       this.env
-        .showPrompt2(
+        .showPrompt(
           {code:'Bạn có chắc muốn HỦY {{value}} yêu cầu đang chọn?',value:{value:this.selectedItems.length}},
           null,
           {code:'Duyệt {{value}} yêu cầu',value:{value:this.selectedItems.length}},
@@ -282,7 +282,7 @@ export class RequestPage extends PageBase {
               this.env.publishEvent({
                 Code: this.pageConfig.pageName,
               });
-              this.env.showTranslateMessage('Saving completed!', 'success');
+              this.env.showMessage('Saving completed!', 'success');
               this.submitAttempt = false;
             })
             .catch((err) => {
@@ -297,7 +297,7 @@ export class RequestPage extends PageBase {
 
     let itemsCanNotProcess = this.selectedItems.filter((i) => !(i.Status == 'Draft' || i.Status == 'Unapproved'));
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected invoices cannot be approved. Please select new or draft or disapproved ones',
         'warning',
       );
@@ -308,7 +308,7 @@ export class RequestPage extends PageBase {
       this.selectedItems = this.selectedItems.filter((i) => i.Status == 'Draft' || i.Status == 'Unapproved');
 
       this.env
-        .showPrompt2(
+        .showPrompt(
           {code:'Bạn có chắc muốn gửi duyệt {{value}} đơn hàng đang chọn?',value:{value:this.selectedItems.length}},
           null,
           {code:'Gửi duyệt {{value}} mua hàng',value:{value:this.selectedItems.length}}
@@ -328,9 +328,9 @@ export class RequestPage extends PageBase {
               this.submitAttempt = false;
 
               if (savedItem > 0) {
-                this.env.showTranslateMessage('{{value}} orders sent for approval', 'success', savedItem);
+                this.env.showMessage('{{value}} orders sent for approval', 'success', savedItem);
               } else {
-                this.env.showTranslateMessage(
+                this.env.showMessage(
                   'Please check again, orders must have at least 1 item to be approved',
                   'warning',
                 );

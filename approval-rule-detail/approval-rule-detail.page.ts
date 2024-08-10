@@ -224,9 +224,9 @@ export class ApprovalRuleDetailPage extends PageBase {
       fg.get('Config').setValue(JSON.stringify(e));
       fg.get('Config').markAsDirty();
       this.saveChange();
-      this.env.showTranslateMessage('Saving completed!', 'success');
+      this.env.showMessage('Saving completed!', 'success');
     } else {
-      this.env.showTranslateMessage('Cannot save, please try again', 'danger');
+      this.env.showMessage('Cannot save, please try again', 'danger');
     }
   }
 
@@ -253,7 +253,7 @@ export class ApprovalRuleDetailPage extends PageBase {
   }
   removeRuleApprovers(g, index) {
     this.env
-      .showPrompt2('Bạn có chắc muốn xóa không?', null, 'Xóa manual rule')
+      .showPrompt('Bạn có chắc muốn xóa không?', null, 'Xóa manual rule')
       .then((_) => {
         let groups = <FormArray>this.formGroup.controls.RuleApprovers;
         //groups.controls[index].get('IsDeleted').setValue(true);

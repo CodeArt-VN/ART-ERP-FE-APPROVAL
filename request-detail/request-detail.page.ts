@@ -191,10 +191,10 @@ export class RequestDetailPage extends PageBase {
           this.submitAttempt = false;
 
           if (result) {
-            this.env.showTranslateMessage('Return success', 'success');
+            this.env.showMessage('Return success', 'success');
             this.refresh();
           } else {
-            this.env.showTranslateMessage('Return failure', 'warning');
+            this.env.showMessage('Return failure', 'warning');
           }
         })
         .catch((err) => {
@@ -234,9 +234,9 @@ export class RequestDetailPage extends PageBase {
         })
         .catch((err) => {
           if (err.message != null) {
-            this.env.showTranslateMessage(err.message, 'danger');
+            this.env.showMessage(err.message, 'danger');
           } else {
-            this.env.showTranslateMessage('Cannot extract data', 'danger');
+            this.env.showMessage('Cannot extract data', 'danger');
           }
           this.submitAttempt = false;
           this.refresh();
@@ -265,9 +265,9 @@ export class RequestDetailPage extends PageBase {
           })
           .catch((err) => {
             if (err.message != null) {
-              this.env.showTranslateMessage(err.message, 'danger');
+              this.env.showMessage(err.message, 'danger');
             } else {
-              this.env.showTranslateMessage('Cannot extract data', 'danger');
+              this.env.showMessage('Cannot extract data', 'danger');
             }
             this.submitAttempt = false;
             this.refresh();
