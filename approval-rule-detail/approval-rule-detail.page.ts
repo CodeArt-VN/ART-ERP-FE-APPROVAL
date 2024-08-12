@@ -131,9 +131,11 @@ export class ApprovalRuleDetailPage extends PageBase {
       this.formGroup.setControl('RuleApprovers', this.formBuilder.array([]));
       this.patchRulesValue();
     }
-    this.formGroup.get('IDBranch').markAsDirty();
-    this.formGroup.get('Type').markAsDirty();
-    this.formGroup.get('IDApprovalTemplate').markAsDirty();
+    if(!this.item.Id){
+      this.formGroup.get('IDBranch').markAsDirty();
+      this.formGroup.get('Type').markAsDirty();
+      this.formGroup.get('IDApprovalTemplate').markAsDirty();
+    }
   }
   private patchRulesValue() {
     if (this.item.RuleApprovers?.length) {
