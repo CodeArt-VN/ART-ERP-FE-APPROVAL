@@ -29,7 +29,7 @@
           <ion-col size="12" size-sm size-xl="4">
             <!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(change)="changeSchema($event)"> </app-form-control> -->
             <app-form-control
-              [field]="{id:'SetStatus', label: 'Auto approval status', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder:'search-placeholder', form : formGroup }"
+              [field]="{id:'SetStatus', label: 'Auto approval status', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder: 'Search...', form : formGroup }"
               (change)="saveChange()"
             >
             </app-form-control>
