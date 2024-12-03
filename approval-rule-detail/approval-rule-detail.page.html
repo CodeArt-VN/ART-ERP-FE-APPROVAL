@@ -1,5 +1,5 @@
 <ion-header>
-  <app-detail-toolbar [page]="this"></app-detail-toolbar>
+  <app-toolbar [page]="this"></app-toolbar>
 </ion-header>
 <!-- *ngIf="item && pageConfig.showSpinner==false" -->
 <ion-content appScrollbarTheme class="ion-padding">
@@ -66,7 +66,7 @@
         </ion-buttons>
       </ion-toolbar>
       <div *ngIf="segmentView == 's1'">
-        <app-filter    #appFilter
+        <app-filter #appFilter
           *ngIf="formGroup.get('IDApprovalTemplate').value> 0 &&  schema"
           [item]="formGroup.get('_Config').value"
           (change)="appFilter.onFormSubmit($event)"

@@ -72,7 +72,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
       FollowerList: [''],
       SupperApproverList: [''],
       HoursToApprove: [''],
-      ApprovalMode: [''],
+      ApprovalMode: ['',Validators.required],
       IsDisabled: new FormControl({ value: '', disabled: true }),
       IsDeleted: new FormControl({ value: '', disabled: true }),
       CreatedBy: new FormControl({ value: '', disabled: true }),
@@ -252,14 +252,22 @@ export class ApprovalTemplateDetailPage extends PageBase {
   }
 
   preLoadData(event) {
+    let querySchema = {
+      Take  : 500,
+      Skip : 0
+    }
     Promise.all([
       this.env.getType('RequestType'),
       this.env.getType('TimeOffType'),
       this.env.getType('ApprovalProcess'),
+      this.schemaService
+        .read()
     ]).then((values: any) => {
       this.requestTypeList = values[0];
       this.timeOffTypeList = values[1];
       this.approvalModes = values[2];
+      this.schemaList =  values[3].data;
+
       super.preLoadData(event);
     });
   }
@@ -276,18 +284,18 @@ export class ApprovalTemplateDetailPage extends PageBase {
     this.formGroup.get('_SelectableApproverListDataSource').value.initSearch();
     this.formGroup.get('_SupperApproverListDataSource').value.initSearch();
     this.formGroup.get('IDBranch').markAsDirty();
-    if (this.item.Type) {
-      //this.query.Type = 'ApprovalRequest';
-      this.schemaService
-        .read(this.query)
-        .then((response: any) => {
-          if (response.data && response.data.length) {
-            this.schemaList = response.data;
-          }
-        })
-        .catch((err) => {});
-      this.query.Type = undefined;
-    }
+    // if (this.item.Type) {
+    //   //this.query.Type = 'ApprovalRequest';
+    //   this.schemaService
+    //     .read(this.query)
+    //     .then((response: any) => {
+    //       if (response.data && response.data.length) {
+    //         this.schemaList = response.data;
+    //       }
+    //     })
+    //     .catch((err) => {});
+    //   this.query.Type = undefined;
+    // }
 
     if (this.item.IDSchemaMapping) {
       this.schemaService

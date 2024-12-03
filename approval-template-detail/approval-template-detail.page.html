@@ -166,20 +166,29 @@
                 </ion-list-header>
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
+                
                 <app-form-control
                   [field]="{id:'CreatedBy', type : 'text', label: 'Created by', form : formGroup }"
                 ></app-form-control>
                 <app-form-control
                   [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"
                 ></app-form-control>
+                <app-form-control
+                [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"
+              ></app-form-control>
+              <app-form-control
+                [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"
+              ></app-form-control>
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
+                <app-form-control (change)="saveChange()"
+                [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"
+              ></app-form-control>
+            
                 <app-form-control
-                  [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"
-                ></app-form-control>
-                <app-form-control
-                  [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"
-                ></app-form-control>
+                [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"
+              ></app-form-control>
+            
               </ion-col>
             </ion-row>
           </form>
@@ -513,7 +522,7 @@
               </ion-col>
               <ion-col size="12" size-sm size-xl="6">
                 <app-form-control
-                  [field]="{id:'IDSchemaMapping', label: 'IDSchemaMapping', type : 'ng-select',dataSource: schemaList, bindValue:'Id', bindLabel:'Name', form : formGroup }"
+                  [field]="{id:'IDSchemaMapping', label: 'Schema mapping', type : 'ng-select',dataSource: schemaList, bindValue:'Id', bindLabel:'Name', form : formGroup }"
                   (change)="changeSchema()"
                 ></app-form-control>
 

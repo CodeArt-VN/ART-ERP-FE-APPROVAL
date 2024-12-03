@@ -160,30 +160,6 @@ export class ApprovalRuleDetailPage extends PageBase {
       _Config: [this.patchConfig(rule.Config)],
       ApprovalMode: [rule.ApprovalMode, Validators.required],
       ApproverList: [rule.ApproverList],
-      IsDisabled: new FormControl({
-        value: rule.IsDisabled,
-        disabled: true,
-      }),
-      IsDeleted: new FormControl({
-        value: rule.IsDeleted,
-        disabled: true,
-      }),
-      CreatedBy: new FormControl({
-        value: rule.CreatedBy,
-        disabled: true,
-      }),
-      CreatedDate: new FormControl({
-        value: rule.CreatedDate,
-        disabled: true,
-      }),
-      ModifiedBy: new FormControl({
-        value: rule.ModifiedBy,
-        disabled: true,
-      }),
-      ModifiedDate: new FormControl({
-        value: rule.ModifiedDate,
-        disabled: true,
-      }),
       _approvalListIds: [approverList?.map((r) => r.Id)],
       _approverListDataSource: {
         searchProvider: this.staffService,
