@@ -63,7 +63,7 @@
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'SubType', label: 'SubType', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }"
+                  [field]="{id:'SubType', label: 'Sub type', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
@@ -98,31 +98,31 @@
                 ></app-form-control>
 
                 <app-form-control
-                  [field]="{id:'IsSentToAdministrationManager', label: 'IsSentToAdministrationManager', type : 'checkbox', form : formGroup }"
+                  [field]="{id:'IsSentToAdministrationManager', label: 'Sent to administration manager', type : 'checkbox', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'IsSentToSpecializedManager', label: 'IsSentToSpecializedManager', type : 'checkbox',form : formGroup }"
+                  [field]="{id:'IsSentToSpecializedManager', label: 'Sent to specialized manager', type : 'checkbox',form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <!-- TODO: Những người duyệt có thể chọn -->
                 <app-form-control
-                  [field]="{id:'IsUserCanChooseApprover', label: 'IsUserCanChooseApprover', type : 'checkbox', form : formGroup }"
+                  [field]="{id:'IsUserCanChooseApprover', label: 'User can choose approver', type : 'checkbox', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
                   *ngIf="formGroup.get('IsUserCanChooseApprover').value"
-                  [field]="{id:'_SelectableApproverList', label: 'Selectable Approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SelectableApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
+                  [field]="{id:'_SelectableApproverList', label: 'Selectable approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SelectableApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
                   (change)="changeStaffSelection($event,'SelectableApproverList')"
                 ></app-form-control>
                 <!-- TODO: Người duyệt cố định -->
                 <app-form-control
-                  [field]="{id:'_FixedApproverList', label: 'Fixed Approvers', type : 'ng-select-staff', dataSource: formGroup.get('_FixedApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
+                  [field]="{id:'_FixedApproverList', label: 'Fixed approvers', type : 'ng-select-staff', dataSource: formGroup.get('_FixedApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
                   (change)="changeStaffSelection($event,'FixedApproverList')"
                 ></app-form-control>
                 <!-- TODO: Quyền duyệt tối cao -->
                 <app-form-control
-                  [field]="{id:'_SupperApproverList', label: 'Super Approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SupperApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
+                  [field]="{id:'_SupperApproverList', label: 'Super approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SupperApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
                   (change)="changeStaffSelection($event,'SupperApproverList')"
                 ></app-form-control>
               </ion-col>
@@ -173,22 +173,15 @@
                 <app-form-control
                   [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"
                 ></app-form-control>
+               
+              </ion-col>
+              <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
                 [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"
               ></app-form-control>
               <app-form-control
                 [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"
               ></app-form-control>
-              </ion-col>
-              <ion-col size="12" size-sm size-xl="4">
-                <app-form-control (change)="saveChange()"
-                [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"
-              ></app-form-control>
-            
-                <app-form-control
-                [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"
-              ></app-form-control>
-            
               </ion-col>
             </ion-row>
           </form>
