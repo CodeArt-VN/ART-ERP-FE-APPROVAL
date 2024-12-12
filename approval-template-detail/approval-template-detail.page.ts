@@ -24,7 +24,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
   schemaDetailList: any;
   filter: any;
   requestTypeList: any;
-  timeOffTypeList: any;
+  requestSubTypeList:any;
   approvalModes: [];
   _schemaListDetail: any;
   _schemaListMappingDetail: any;
@@ -258,15 +258,14 @@ export class ApprovalTemplateDetailPage extends PageBase {
     }
     Promise.all([
       this.env.getType('RequestType'),
-      this.env.getType('TimeOffType'),
       this.env.getType('ApprovalProcess'),
       this.schemaService
         .read()
     ]).then((values: any) => {
       this.requestTypeList = values[0];
-      this.timeOffTypeList = values[1];
-      this.approvalModes = values[2];
-      this.schemaList =  values[3].data;
+      // this.timeOffTypeList = values[1];
+      this.approvalModes = values[1];
+      this.schemaList =  values[2].data;
 
       super.preLoadData(event);
     });
@@ -284,18 +283,6 @@ export class ApprovalTemplateDetailPage extends PageBase {
     this.formGroup.get('_SelectableApproverListDataSource').value.initSearch();
     this.formGroup.get('_SupperApproverListDataSource').value.initSearch();
     this.formGroup.get('IDBranch').markAsDirty();
-    // if (this.item.Type) {
-    //   //this.query.Type = 'ApprovalRequest';
-    //   this.schemaService
-    //     .read(this.query)
-    //     .then((response: any) => {
-    //       if (response.data && response.data.length) {
-    //         this.schemaList = response.data;
-    //       }
-    //     })
-    //     .catch((err) => {});
-    //   this.query.Type = undefined;
-    // }
 
     if (this.item.IDSchemaMapping) {
       this.schemaService
@@ -306,6 +293,9 @@ export class ApprovalTemplateDetailPage extends PageBase {
           }
         })
         .catch((err) => {});
+    }
+    if(this.item.Type){
+      this.changeType(false);
     }
   }
 
@@ -351,7 +341,23 @@ export class ApprovalTemplateDetailPage extends PageBase {
       return (config = JSON.parse(config));
     }
   }
-
+  changeType(markAsDirty = true){
+    if(this.formGroup.get('Type').value == 'TimeOff'){
+      this.env.getType('TimeOffType').then(rs=>{
+        this.requestSubTypeList = rs;
+      })
+    }
+    else{
+      this.env.getType(this.formGroup.get('Type').value).then(rs=>{
+        this.requestSubTypeList = rs;
+      })
+    }
+    if(markAsDirty){
+      this.formGroup.get('SubType').setValue(null);
+      this.formGroup.get('SubType').markAsDirty();
+      this.saveChange();
+    }
+  }
   changeSchema() {
     this.query.Type = undefined;
     this.schemaService

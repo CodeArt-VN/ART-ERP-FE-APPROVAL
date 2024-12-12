@@ -60,10 +60,10 @@
                 </app-form-control>
                 <app-form-control
                   [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup }"
-                  (change)="saveChange()"
+                  (change)="changeType()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'SubType', label: 'Sub type', type : 'ng-select',dataSource:timeOffTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }"
+                  [field]="{id:'SubType', label: 'Sub type', type : 'ng-select',dataSource:requestSubTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
