@@ -32,6 +32,8 @@ export class RequestDetailPage extends PageBase {
   isSupperApprover;
   currentApprover;
   commentForm: FormGroup;
+
+  jsonViewerConfig:any = {};
   constructor(
     public pageProvider: APPROVAL_RequestProvider,
     public branchProvider: BRA_BranchProvider,
@@ -64,12 +66,11 @@ export class RequestDetailPage extends PageBase {
     Promise.all([
       this.env.getType('RequestType'),
       this.env.getStatus('ApprovalStatus'),
-      this.env.getType('TimeOffType'),
-      this.env.getType('TimeOffType'),
+      // this.env.getType('TimeOffType'),
     ]).then((values: any) => {
       this.requestTypeList = values[0];
       this.statusList = values[1];
-      this.timeOffTypeList = values[2];
+      // this.timeOffTypeList = values[2];
       super.preLoadData(event);
     });
 
@@ -79,7 +80,7 @@ export class RequestDetailPage extends PageBase {
   loadedData(event?: any): void {
     this.mappingList = [];
     this.item._Type = this.requestTypeList.find((d) => d.Code == this.item.Type);
-    this.item._SubType = this.timeOffTypeList.find((d) => d.Code == this.item.SubType);
+    // this.item._SubType = this.timeOffTypeList.find((d) => d.Code == this.item.SubType);
     this.item._Status = this.statusList.find((d) => d.Code == this.item.Status);
 
     this.item.StartText = lib.dateFormat(this.item.Start, 'dd/mm');
@@ -123,6 +124,12 @@ export class RequestDetailPage extends PageBase {
 
     }
     super.loadedData(event);
+    if(this.item.Type == "DataCorrection" && this.item.UDF16){
+      let obj = JSON.parse(this.item.UDF16);
+      this.jsonViewerConfig.showProperties = [];
+      this.jsonViewerConfig.notShowProperties = [];
+      if(obj) this.jsonViewerConfig.showProperties = Object.keys(obj);
+    }
   }
 
   checkPermision() {
@@ -132,32 +139,35 @@ export class RequestDetailPage extends PageBase {
     // let lockStatus = ['Forward']; //'Approved', 'Denied',
     this.pageConfig.canApprove = false;
     if (canApproveStatus.includes(this.item.Status)) {
-      if (this.approvalTemplate?.IsSupperApprover ||(this.currentApprover && this.item.ApprovalMode?.trim() != 'SequentialApprovals')) {
-        this.pageConfig.canApprove = true;
-      } 
-      else {
-        if (this.currentApprover) { // Duyệt tuần tự
-          let approverIdx = this.item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID);
-          if (approverIdx != 0) {
-            for(let index = approverIdx-1; index =0; index--){
-              const Approver = this.item._Approvers[index];
-              if (Approver.Status != 'Approved') {
-                  break;
-              } 
-              if (index == 0 ) {
-                this.pageConfig.canApprove = true;
-              } 
+      if(!(this.item.Status == "Unapproved" && this.item.Type == "DataCorrection")){
+        if (this.approvalTemplate?.IsSupperApprover ||(this.currentApprover && this.item.ApprovalMode?.trim() != 'SequentialApprovals')) {
+          this.pageConfig.canApprove = true;
+        } 
+        else {
+          if (this.currentApprover) { // Duyệt tuần tự
+            let approverIdx = this.item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID);
+            if (approverIdx != 0) {
+              for(let index = approverIdx-1; index =0; index--){
+                const Approver = this.item._Approvers[index];
+                if (Approver.Status != 'Approved') {
+                    break;
+                } 
+                if (index == 0 ) {
+                  this.pageConfig.canApprove = true;
+                } 
+              }
             }
-          }
-          else{
-            this.pageConfig.canApprove = true;
+            else{
+              this.pageConfig.canApprove = true;
+            }
           }
         }
       }
     }
     this.pageConfig.canDisapprove = false;
-    if(canDisapproveStatus.includes(this.item.Status) &&(this.approvalTemplate?.IsSupperApprover || this.currentApprover)){
-      this.pageConfig.canDisapprove = true;
+    if(canDisapproveStatus.includes(this.item.Status) && (this.approvalTemplate?.IsSupperApprover || this.currentApprover))
+    {
+      if (!(this.item.Status == "Approved" && this.item.Type == "DataCorrection")) this.pageConfig.canDisapprove = true;;
     }
 
   }
@@ -191,14 +201,15 @@ export class RequestDetailPage extends PageBase {
           this.submitAttempt = false;
 
           if (result) {
-            this.env.showMessage('Return success', 'success');
+            this.env.showMessage('Success', 'success');
             this.refresh();
           } else {
-            this.env.showMessage('Return failure', 'warning');
+            this.env.showMessage('Failure', 'warning');
           }
         })
         .catch((err) => {
           this.submitAttempt = false;
+          this.env.showMessage(err.error?.ExceptionMessage || err, 'danger');
           console.log(err);
         });
     }
@@ -283,5 +294,19 @@ export class RequestDetailPage extends PageBase {
       this.commentForm.controls.Remark.setValue('');
       this.loadComment();
     });
+  }
+  addNotShowProperty(index){
+    if(this.jsonViewerConfig.notShowProperties){
+      this.jsonViewerConfig.notShowProperties.push(this.jsonViewerConfig.showProperties[index]);
+      this.jsonViewerConfig.showProperties.splice(index, 1);
+      this.jsonViewerConfig.notShowProperties = [...this.jsonViewerConfig.notShowProperties];
+    }
+  }
+  addShowProperty(index){
+    if(this.jsonViewerConfig.showProperties){
+      this.jsonViewerConfig.showProperties.push(this.jsonViewerConfig.notShowProperties[index]);
+      this.jsonViewerConfig.notShowProperties.splice(index, 1);
+      this.jsonViewerConfig.notShowProperties = [...this.jsonViewerConfig.notShowProperties];
+    }
   }
 }

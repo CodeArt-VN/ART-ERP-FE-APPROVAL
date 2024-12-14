@@ -3,7 +3,9 @@
   width: calc(10/16 * 2.5rem);
   margin-right: 8px;
 }
-
+app-data-table header, app-data-table .row.header, .table header, .table .row.header{
+  width: fit-content;
+}
 @media screen and (max-width: calc(1365px)) {
   //1610px
   .empty,
@@ -70,7 +72,7 @@
     &.selected {
       background-color: rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.15) !important;
     }
-
+  
     .cell {
       padding: 1px 7px 1px 0 !important;
     }
