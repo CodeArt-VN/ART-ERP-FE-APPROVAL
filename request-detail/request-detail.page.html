@@ -1,5 +1,13 @@
 <ion-header>
-  <app-toolbar [page]="this" [ShowFeature]="true"></app-toolbar>
+  <app-toolbar [page]="this" [ShowFeature]="true">
+    <ion-button *ngIf="item?.Type == 'PurchaseRequest'" (click)="openModal()"
+      title="{{'Open item vendor model' | translate}}">
+      {{'Open item vendor model' || translate}}
+    </ion-button>
+
+
+
+  </app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
@@ -7,41 +15,39 @@
     <div class="ion-padding">
       <ng-container *ngIf="item.Type == 'DataCorrection'">
         <ion-item lines="none" class="ion-no-padding">
-          <ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare"> {{'Show compare' | translate}}</ion-toggle>
+          <ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare"> {{'Show
+            compare' | translate}}</ion-toggle>
         </ion-item>
         <ion-item lines="none" class="ion-no-padding">
-          <ion-toggle justify="space-between"class="c-checkbox" [(ngModel)]="jsonViewerConfig.isShowDifference">{{'Show difference' | translate}}</ion-toggle>
+          <ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isShowDifference">{{'Show
+            difference' | translate}}</ion-toggle>
         </ion-item>
-          <ion-row>
-            <ion-col>
+        <ion-row>
+          <ion-col>
             <div class="c-control" *ngIf="jsonViewerConfig.showProperties.length >0">
               <label class="c-label">{{ 'Show properties' | translate }}</label>
               <span class="c-input" style="flex-wrap: wrap; height: auto">
-                <ion-chip *ngFor="let property of jsonViewerConfig.showProperties;let j = index"
-                  color="primary"
-                  style="height: auto; margin: 2px;"
-                >
-                  <ion-label >{{property | translate}}</ion-label>
+                <ion-chip *ngFor="let property of jsonViewerConfig.showProperties;let j = index" color="primary"
+                  style="height: auto; margin: 2px;">
+                  <ion-label>{{property | translate}}</ion-label>
                   <ion-icon name="close" (click)="addNotShowProperty(j)"></ion-icon>
                 </ion-chip>
-                </span>
-                </div>
-                <div class="c-control"*ngIf="jsonViewerConfig.notShowProperties.length >0">
-                  <label class="c-label">{{ 'Not show properties' | translate }}</label>
-                  <span class="c-input" style="flex-wrap: wrap; height: auto">
-                    <ion-chip *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index"
-                      color="danger"
-                      style="height: auto; margin: 2px"
-                    >
-                      <ion-label >{{property | translate}}</ion-label>
-                      <ion-icon name="close" (click)="addShowProperty(j)"></ion-icon>
-                    </ion-chip>
-                    </span>
-                    </div>
-              </ion-col>
-          </ion-row>
+              </span>
+            </div>
+            <div class="c-control" *ngIf="jsonViewerConfig.notShowProperties.length >0">
+              <label class="c-label">{{ 'Not show properties' | translate }}</label>
+              <span class="c-input" style="flex-wrap: wrap; height: auto">
+                <ion-chip *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index" color="danger"
+                  style="height: auto; margin: 2px">
+                  <ion-label>{{property | translate}}</ion-label>
+                  <ion-icon name="close" (click)="addShowProperty(j)"></ion-icon>
+                </ion-chip>
+              </span>
+            </div>
+          </ion-col>
+        </ion-row>
       </ng-container>
-     
+
     </div>
   </ion-fab>
   <div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
@@ -70,12 +76,9 @@
             </ng-container>
             <ion-item *ngIf="item.UDF16 && item.Type == 'DataCorrection'">
               <ion-label>
-                <app-json-viewer
-                  [item]="item.UDF16"
-                  [isCompare]="jsonViewerConfig.isCompare"
+                <app-json-viewer [item]="item.UDF16" [isCompare]="jsonViewerConfig.isCompare"
                   [isShowDifference]="jsonViewerConfig.isShowDifference"
-                  [notShowProperties]="jsonViewerConfig.notShowProperties"
-                >
+                  [notShowProperties]="jsonViewerConfig.notShowProperties">
                 </app-json-viewer>
               </ion-label>
             </ion-item>
@@ -107,12 +110,8 @@
                 <div class="giao-nhan">
                   <!-- PGNTT -->
                   <section class="sheet padding-10mm rpt p1">
-                    <app-po-note
-                      [ID]="item.UDF01"
-                      [PONConvertToLargerUoM]="true"
-                      [PONShowPackingUoM]="true"
-                      [PONShowEACaseOnly]="false"
-                    ></app-po-note>
+                    <app-po-note [ID]="item.UDF01" [PONConvertToLargerUoM]="true" [PONShowPackingUoM]="true"
+                      [PONShowEACaseOnly]="false"></app-po-note>
                   </section>
                 </div>
               </div>
@@ -150,6 +149,87 @@
             </ion-item>
           </ion-list>
 
+          <ion-list *ngIf="item.Type == 'PurchaseRequest' && purchaseRequestFormGroup">
+            <ion-grid fixed>
+              <form [formGroup]="purchaseRequestFormGroup">
+                <ion-row class="hr-group">
+
+                  <ion-col size="12" size-sm size-xl="6">
+                    <!-- <app-form-control
+                      [clearable]="true"
+                      [virtualScroll]="true"
+                      [field]="{id:'IDStorer', label: 'Goods owner', type : 'ng-select', form : formGroup,  dataSource: storerList,  bindLabel: 'Name',  bindValue: 'Id' }"
+                      (change)="saveOrder()"
+                    ></app-form-control> -->
+                    <!-- <app-form-control [clearable]="true" [virtualScroll]="true" (change)="saveChangePurchaseRequest()"
+                      [field]="{id:'IDVendor',label:'Vendor', type : 'ng-select', form : purchaseRequestFormGroup,  dataSource: vendorList,  bindLabel: 'Name',  bindValue: 'Id' }">
+                    </app-form-control> -->
+                    <app-form-control
+                    [field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
+                    (change)="_vendorDataSource.addSelectedItem($event);saveChangePurchaseRequest()"
+                  >
+                  </app-form-control>
+                    <app-form-control [field]="{id :'ContentType', label:'Content type' ,
+                    type:'ng-select',dataSource:contentTypeList,
+                    bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}" (change)="saveChangePurchaseRequest()">
+                    </app-form-control>
+                    <app-form-control [field]="{id :'Remark', label:'Remark' ,
+                    type:'textarea',form:purchaseRequestFormGroup}" (change)="saveChangePurchaseRequest()">
+                    </app-form-control>
+                    <!-- <app-form-control
+                      [clearable]="true"
+                      [virtualScroll]="true"
+                      [field]="{id:'IDBranch', label:'Branch', type : 'ng-select', form : purchaseRequestFormGroup,  dataSource: branchList,  bindLabel: 'Name',  bindValue: 'Id' }"
+                      (change)="saveOrder()"
+                    ></app-form-control> -->
+                  </ion-col>
+                  <ion-col size="12" size-sm size-xl="6">
+                    <!-- <div class="c-control">
+                      <label class="c-label" for="ExpectedReceiptDate">{{'Required date' | translate}}
+                        <span
+                          *ngIf="!purchaseRequestFormGroup.controls.ExpectedReceiptDate.valid && !purchaseRequestFormGroup.controls.ExpectedReceiptDate.pending && (purchaseRequestFormGroup.controls.ExpectedReceiptDate.dirty || submitAttempt)"
+                          ion-text color="danger">(*)</span>
+                      </label>
+                      <input (change)="saveOrder();" formControlName="ExpectedReceiptDate" class="c-input"
+                        id="ExpectedReceiptDate" type="datetime-local" />
+                    </div> -->
+                    <app-form-control [clearable]="true" [virtualScroll]="true"
+                      [field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseRequestFormGroup }"
+                      (change)="changeRequiredDate();">
+                    </app-form-control>
+
+                    <app-form-control [clearable]="true" [virtualScroll]="true"
+                    [field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
+                    (change)="changeRequiredDate()"></app-form-control>
+
+                    <div class="c-control">
+                      <label class="c-label" for="TotalAfterTax">{{'Value' | translate}}
+                        <span
+                          *ngIf="!purchaseRequestFormGroup.controls.TotalAfterTax.valid && !purchaseRequestFormGroup.controls.TotalAfterTax.pending && (purchaseRequestFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
+                          ion-text color="danger">(*)</span>
+                      </label>
+                      <span class="c-input disable">
+                        <b>{{calcTotalAfterTax() | number: '1.0-0'}}</b>
+                      </span>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </form>
+            </ion-grid>
+
+            <app-purchase-items (renderFormArray)="renderFormArray($event)"[markAsPristine]="markAsPristine" [orderLines]="itemPurchaseRequest.OrderLines" [canEdit]="pageConfig.canEdit" (onChange)="saveOrderBack($event)"
+              (removeItem)="removeItem($event)">
+            </app-purchase-items>
+
+            <div *ngIf="isAutoSave">
+              <ion-button *ngIf="item?.Type == 'PurchaseRequest'" (click)="saveChangePurchaseRequest(true);"
+                title="{{'Submit request' | translate}}">
+                {{'Submit purchase request' || translate}}
+              </ion-button>
+            </div>
+
+          </ion-list>
+
           <ion-list *ngIf="item?.Id">
             <ion-list-header>
               <ion-label color="primary">{{'Discussion' | translate}}</ion-label>
@@ -169,25 +249,15 @@
                   <ion-button (click)="addComment()" fill="clear" class="send">
                     <ion-icon slot="icon-only" name="paper-plane"></ion-icon>
                   </ion-button>
-                  <textarea
-                    (keydown.enter)="addComment()"
-                    placeholder="{{'Write your discussion' | translate}}"
-                    rows="1"
-                    class="c-input remark"
-                    id="Remark"
-                    formControlName="Remark"
-                    type="textarea"
-                  ></textarea>
+                  <textarea (keydown.enter)="addComment()" placeholder="{{'Write your discussion' | translate}}"
+                    rows="1" class="c-input remark" id="Remark" formControlName="Remark" type="textarea"></textarea>
                 </div>
               </ion-item>
 
               <ion-item lines="none" *ngFor="let i of commentList" class="log">
                 <ion-avatar slot="start">
-                  <ion-img
-                    #img
-                    [src]="imgPath + i._Staff.Code + '.jpg'"
-                    (ionError)="img.src = 'assets/avartar-empty.jpg'"
-                  ></ion-img>
+                  <ion-img #img [src]="imgPath + i._Staff.Code + '.jpg'"
+                    (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
                 </ion-avatar>
                 <ion-label>
                   <h3>{{i._Staff.FullName}}</h3>
@@ -207,11 +277,8 @@
             <ion-list>
               <ion-item>
                 <ion-avatar slot="start">
-                  <ion-img
-                    #img
-                    [src]="imgPath + item._Staff.Code + '.jpg'"
-                    (ionError)="img.src = 'assets/avartar-empty.jpg'"
-                  ></ion-img>
+                  <ion-img #img [src]="imgPath + item._Staff.Code + '.jpg'"
+                    (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
                 </ion-avatar>
                 <ion-label>
                   <h2>{{item._Staff.FullName}}</h2>
@@ -225,11 +292,8 @@
             <ion-list>
               <ion-item *ngFor="let i of item._Approvers">
                 <ion-avatar slot="start">
-                  <ion-img
-                    #img
-                    [src]="imgPath + i.Code + '.jpg'"
-                    (ionError)="img.src = 'assets/avartar-empty.jpg'"
-                  ></ion-img>
+                  <ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'">
+                  </ion-img>
                 </ion-avatar>
                 <ion-label>
                   <h2>{{i.FullName}}</h2>
@@ -237,12 +301,8 @@
                     <ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa duyệt'}}</ion-text>
                   </h3>
                 </ion-label>
-                <ion-icon
-                  *ngIf="i._Status"
-                  slot="end"
-                  [color]="i._Status.Color"
-                  [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"
-                ></ion-icon>
+                <ion-icon *ngIf="i._Status" slot="end" [color]="i._Status.Color"
+                  [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
               </ion-item>
             </ion-list>
             <ion-list-header *ngIf="item._Followers?.length>0">
@@ -251,11 +311,8 @@
             <ion-list>
               <ion-item *ngFor="let i of item._Followers">
                 <ion-avatar slot="start">
-                  <ion-img
-                    #img
-                    [src]="imgPath + i.Code + '.jpg'"
-                    (ionError)="img.src = 'assets/avartar-empty.jpg'"
-                  ></ion-img>
+                  <ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'">
+                  </ion-img>
                 </ion-avatar>
                 <ion-label>
                   <h2>{{i.FullName}}</h2>
@@ -267,17 +324,13 @@
               <ion-list-header>
                 <ion-label color="primary">{{'Main activities' | translate}}</ion-label>
               </ion-list-header>
-              <ion-item  *ngFor="let i of item._Logs" class="log main-active-item" lines="none">
+              <ion-item *ngFor="let i of item._Logs" class="log main-active-item" lines="none">
                 <ion-label slot="start" class="time">
                   <p>{{i.Date}}</p>
                   <h2>{{i.Time}}</h2>
                 </ion-label>
-                <ion-icon
-                  class="icon"
-                  slot="start"
-                  [color]="i._Status?.Color"
-                  [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"
-                ></ion-icon>
+                <ion-icon class="icon" slot="start" [color]="i._Status?.Color"
+                  [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
                 <!-- <ion-avatar slot="start">
                                     <ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
                                 </ion-avatar> -->
