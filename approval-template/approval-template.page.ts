@@ -10,9 +10,10 @@ import {
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-approval-template',
-  templateUrl: 'approval-template.page.html',
-  styleUrls: ['approval-template.page.scss'],
+    selector: 'app-approval-template',
+    templateUrl: 'approval-template.page.html',
+    styleUrls: ['approval-template.page.scss'],
+    standalone: false
 })
 export class ApprovalTemplatePage extends PageBase {
   selectedBranch = null;

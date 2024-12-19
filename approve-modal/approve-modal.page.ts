@@ -13,9 +13,10 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-approve-modal',
-  templateUrl: './approve-modal.page.html',
-  styleUrls: ['./approve-modal.page.scss'],
+    selector: 'app-approve-modal',
+    templateUrl: './approve-modal.page.html',
+    styleUrls: ['./approve-modal.page.scss'],
+    standalone: false
 })
 export class ApproveModalPage extends PageBase {
   timesheetList = [];

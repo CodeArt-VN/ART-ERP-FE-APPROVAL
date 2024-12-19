@@ -16,9 +16,10 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 
 @Component({
-  selector: 'app-approval-template-detail',
-  templateUrl: './approval-template-detail.page.html',
-  styleUrls: ['./approval-template-detail.page.scss'],
+    selector: 'app-approval-template-detail',
+    templateUrl: './approval-template-detail.page.html',
+    styleUrls: ['./approval-template-detail.page.scss'],
+    standalone: false
 })
 export class ApprovalTemplateDetailPage extends PageBase {
   schemaDetailList: any;

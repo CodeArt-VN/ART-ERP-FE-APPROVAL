@@ -16,9 +16,10 @@ import { CommonService } from 'src/app/services/core/common.service';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 
 @Component({
-  selector: 'app-approval-rule-detail',
-  templateUrl: './approval-rule-detail.page.html',
-  styleUrls: ['./approval-rule-detail.page.scss'],
+    selector: 'app-approval-rule-detail',
+    templateUrl: './approval-rule-detail.page.html',
+    styleUrls: ['./approval-rule-detail.page.scss'],
+    standalone: false
 })
 export class ApprovalRuleDetailPage extends PageBase {
   schemaDetailList: any;

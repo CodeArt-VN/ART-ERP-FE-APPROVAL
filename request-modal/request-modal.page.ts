@@ -10,9 +10,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { Subject, concat, distinctUntilChanged, of } from 'rxjs';
 
 @Component({
-  selector: 'app-request-modal',
-  templateUrl: './request-modal.page.html',
-  styleUrls: ['./request-modal.page.scss'],
+    selector: 'app-request-modal',
+    templateUrl: './request-modal.page.html',
+    styleUrls: ['./request-modal.page.scss'],
+    standalone: false
 })
 export class RequestModalPage extends PageBase {
   requestTypeList = [];

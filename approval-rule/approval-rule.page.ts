@@ -10,9 +10,10 @@ import {
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-approval-rule',
-  templateUrl: 'approval-rule.page.html',
-  styleUrls: ['approval-rule.page.scss'],
+    selector: 'app-approval-rule',
+    templateUrl: 'approval-rule.page.html',
+    styleUrls: ['approval-rule.page.scss'],
+    standalone: false
 })
 export class ApprovalRulePage extends PageBase {
   showCheckedOnly = false;

@@ -17,9 +17,10 @@ import { ApproveModalPage } from '../approve-modal/approve-modal.page';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-request-detail',
-  templateUrl: './request-detail.page.html',
-  styleUrls: ['./request-detail.page.scss'],
+    selector: 'app-request-detail',
+    templateUrl: './request-detail.page.html',
+    styleUrls: ['./request-detail.page.scss'],
+    standalone: false
 })
 export class RequestDetailPage extends PageBase {
   requestTypeList = [];

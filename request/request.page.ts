@@ -19,9 +19,10 @@ import { CommonService } from 'src/app/services/core/common.service';
 import { getDateMeta } from '@fullcalendar/core/internal';
 
 @Component({
-  selector: 'app-request',
-  templateUrl: 'request.page.html',
-  styleUrls: ['request.page.scss'],
+    selector: 'app-request',
+    templateUrl: 'request.page.html',
+    styleUrls: ['request.page.scss'],
+    standalone: false
 })
 export class RequestPage extends PageBase {
   schema: any;
