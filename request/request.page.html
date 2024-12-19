@@ -1,22 +1,9 @@
 <ion-header>
-  <app-list-toolbar
-    pageTitle="{{'Request' | translate}}"
+  <app-toolbar
     [page]="this"
-    [pageConfig]="pageConfig"
-    [selectedItems]="selectedItems"
-    [query]="query"
-    (add)="add()"
-    (refresh)="refresh()"
-    (export)="export()"
-    (import)="import($event)"
-    (help)="help()"
-    (unselect)="unselect()"
-    (archiveItems)="archiveItems()"
-    (deleteItems)="deleteItems()"
-    (submitOrdersForApproval)="submit()"
-    (cancelOrders)="cancelRequest()"
-    (changeBranch)="changeBranch($event)"
-  ></app-list-toolbar>
+    [ShowSubmit]="pageConfig.ShowSubmit"
+    [ShowCancel]="pageConfig.ShowCancel"
+  ></app-toolbar>
   <ion-toolbar style="--padding-start: 4px">
     <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
       <ion-segment-button value="All">
