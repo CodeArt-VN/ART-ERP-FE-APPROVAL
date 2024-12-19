@@ -250,7 +250,7 @@ export class RequestPage extends PageBase {
     }
     this.refresh();
   }
-  cancelRequest() {
+  cancel() {
     if (!this.pageConfig.canCancel) return;
     if (this.submitAttempt) return;
 
@@ -343,5 +343,21 @@ export class RequestPage extends PageBase {
             });
         });
     }
+  }
+  changeSelection(i, e = null) {
+    super.changeSelection(i, e);
+    this.pageConfig.ShowSubmit = this.pageConfig.canSubmit ;
+    this.pageConfig.ShowCancel = this.pageConfig.canCancel;
+    this.selectedItems?.forEach((i) => {
+      let notShowCancel = ['Closed'];
+      if (notShowCancel.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
+        this.pageConfig.ShowCancel = false;
+      }
+      
+      let notShowSubmit = ['Pending', 'Approved', 'InProgress', 'Forward', 'Denied', 'Cancelled','Closed'];
+      if (notShowSubmit.indexOf(i.Status) > -1|| (!i.UDF01 && i.Type =='PurchaseRequest')) {
+        this.pageConfig.ShowSubmit = false;
+      }
+    });
   }
 }

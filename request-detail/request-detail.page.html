@@ -1,5 +1,10 @@
 <ion-header>
-  <app-toolbar [page]="this" [ShowFeature]="true"></app-toolbar>
+  <app-toolbar [page]="this" [ShowFeature]="true">
+    <ion-button *ngIf="item?.Type == 'PurchaseRequest'" (click)="openModal()"
+      title="{{'Open item vendor model' | translate}}">
+      {{'Open item vendor model' || translate}}
+    </ion-button>
+  </app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
@@ -148,6 +153,63 @@
                 </ion-row>
               </ion-grid>
             </ion-item>
+          </ion-list>
+
+          <ion-list *ngIf="item.Type == 'PurchaseRequest' && purchaseRequestFormGroup">
+            <ion-grid fixed>
+              <form [formGroup]="purchaseRequestFormGroup">
+                <ion-row class="hr-group">
+
+                  <ion-col size="12" size-sm size-xl="6">
+                    <app-form-control
+                    [field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
+                    (change)="saveChangePurchaseRequest()"
+                  >
+                  </app-form-control>
+                    <app-form-control [field]="{id :'ContentType', label:'Content type' ,
+                    type:'ng-select',dataSource:contentTypeList,
+                    bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}" (change)="saveChangePurchaseRequest()">
+                    </app-form-control>
+                    <app-form-control [field]="{id :'Remark', label:'Remark' ,
+                    type:'textarea',form:purchaseRequestFormGroup}" (change)="saveChangePurchaseRequest()">
+                    </app-form-control>
+                  </ion-col>
+                  <ion-col size="12" size-sm size-xl="6">
+                    <app-form-control [clearable]="true" [virtualScroll]="true"
+                      [field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseRequestFormGroup }"
+                      (change)="changeRequiredDate();">
+                    </app-form-control>
+
+                    <app-form-control [clearable]="true" [virtualScroll]="true"
+                    [field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
+                    (change)="changeRequiredDate()"></app-form-control>
+
+                    <div class="c-control">
+                      <label class="c-label" for="TotalAfterTax">{{'Value' | translate}}
+                        <span
+                          *ngIf="!purchaseRequestFormGroup.controls.TotalAfterTax.valid && !purchaseRequestFormGroup.controls.TotalAfterTax.pending && (purchaseRequestFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
+                          ion-text color="danger">(*)</span>
+                      </label>
+                      <span class="c-input disable">
+                        <b>{{calcTotalAfterTax() | number: '1.0-0'}}</b>
+                      </span>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </form>
+            </ion-grid>
+
+            <app-purchase-items (renderFormArray)="renderFormArray($event)" [canEdit]="pageConfig.canEdit" [orderLines]="itemPurchaseRequest.OrderLines"  (onChange)="saveOrderBack($event)"
+              (removeItem)="removeItem($event)">
+            </app-purchase-items>
+
+            <div *ngIf="!isAutoSave">
+              <ion-button *ngIf="item?.Type == 'PurchaseRequest'" (click)="saveChangePurchaseRequest(true);"
+                title="{{'Submit request' | translate}}">
+                {{'Submit purchase request' || translate}}
+              </ion-button>
+            </div>
+
           </ion-list>
 
           <ion-list *ngIf="item?.Id">
