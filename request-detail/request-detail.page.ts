@@ -248,6 +248,10 @@ export class RequestDetailPage extends PageBase {
                 this.purchaseRequestFormGroup.controls['IDRequester'].markAsDirty();
                 this._staffDataSource.selected = [this.item._Staff];
               }
+              this._currentContentType = this.itemPurchaseRequest?.ContentType;
+              if(this.itemPurchaseRequest.Status != 'Draft' && this.itemPurchaseRequest.Status != 'Unapproved'){
+                this.purchaseRequestFormGroup.disable();
+              }
             }
           })
           .finally(() => {
@@ -323,9 +327,45 @@ export class RequestDetailPage extends PageBase {
           this.formGroup.get('IDVendor').setValue(this._currentVendor?.Id);
         });
     }
+    else{
+      this.saveChange();
+    }
 
   }
-
+  _currentContentType;
+  changeContentType(e){
+    console.log(e);
+    let orderLines = this.formGroup.get('OrderLines') as FormArray;
+    if (orderLines.controls.length > 0) {
+      this.env
+        .showPrompt(
+          'Tất cả hàng hoá trong danh sách sẽ bị xoá khi bạn chọn nhà cung cấp khác. Bạn chắc chắn chứ? ',
+          null,
+          'Thông báo',
+        )
+        .then(() => {
+          let deletedFields = orderLines
+            .getRawValue()
+            .filter((f) => f.Id)
+            .map((o) => o.Id);
+          this.formGroup.get('DeletedFields').setValue(deletedFields);
+          this.formGroup.get('DeletedFields').markAsDirty();
+          orderLines.clear();
+          this.item.OrderLines = [];
+          console.log(orderLines);
+          console.log(this.item.OrderLines);
+          this.saveChange();
+          this._currentContentType = e.Code;
+          return;
+        })
+        .catch(() => {
+          this.formGroup.get('ContentType').setValue(this._currentContentType);
+        });
+    }else{
+      this._currentContentType = e.Code;
+      this.saveChange();
+    }
+  }
   renderFormArray(e) {
     this.purchaseRequestFormGroup.controls.OrderLines = e;
   }

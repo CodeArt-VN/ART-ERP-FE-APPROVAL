@@ -177,7 +177,7 @@
                       [field]="{id :'ContentType', label:'Content type' ,
                     type:'ng-select',dataSource:contentTypeList,
                     bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}"
-                      (change)="saveChangePurchaseRequest()"
+                      (change)="changeContentType(e)"
                     >
                     </app-form-control>
                     <app-form-control
@@ -230,6 +230,7 @@
                 </ion-segment>
               </ion-toolbar>
               <app-purchase-items
+              [contentType]="_currentContentType"
               (renderFormArray)="renderFormArray($event)"
               [canEdit]="pageConfig.canEdit"
               [IDVendor]="purchaseRequestFormGroup.get('IDVendor').value"
