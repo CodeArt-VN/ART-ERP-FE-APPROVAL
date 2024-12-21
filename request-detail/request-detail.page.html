@@ -1,9 +1,12 @@
 <ion-header>
   <app-toolbar [page]="this" [ShowFeature]="true">
-    <ion-button *ngIf="item?.Type == 'PurchaseRequest'" (click)="openModal()"
-      title="{{'Open item vendor model' | translate}}">
+    <!-- <ion-button
+      *ngIf="item?.Type == 'PurchaseRequest'"
+      (click)="openModal()"
+      title="{{'Open item vendor model' | translate}}"
+    >
       {{'Open item vendor model' || translate}}
-    </ion-button>
+    </ion-button> -->
   </app-toolbar>
 </ion-header>
 
@@ -12,41 +15,46 @@
     <div class="ion-padding">
       <ng-container *ngIf="item.Type == 'DataCorrection'">
         <ion-item lines="none" class="ion-no-padding">
-          <ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare"> {{'Show compare' | translate}}</ion-toggle>
+          <ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare">
+            {{'Show compare' | translate}}</ion-toggle
+          >
         </ion-item>
         <ion-item lines="none" class="ion-no-padding">
-          <ion-toggle justify="space-between"class="c-checkbox" [(ngModel)]="jsonViewerConfig.isShowDifference">{{'Show difference' | translate}}</ion-toggle>
+          <ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isShowDifference"
+            >{{'Show difference' | translate}}</ion-toggle
+          >
         </ion-item>
-          <ion-row>
-            <ion-col>
+        <ion-row>
+          <ion-col>
             <div class="c-control" *ngIf="jsonViewerConfig.showProperties.length >0">
               <label class="c-label">{{ 'Show properties' | translate }}</label>
               <span class="c-input" style="flex-wrap: wrap; height: auto">
-                <ion-chip *ngFor="let property of jsonViewerConfig.showProperties;let j = index"
+                <ion-chip
+                  *ngFor="let property of jsonViewerConfig.showProperties;let j = index"
                   color="primary"
-                  style="height: auto; margin: 2px;"
+                  style="height: auto; margin: 2px"
                 >
-                  <ion-label >{{property | translate}}</ion-label>
+                  <ion-label>{{property | translate}}</ion-label>
                   <ion-icon name="close" (click)="addNotShowProperty(j)"></ion-icon>
                 </ion-chip>
-                </span>
-                </div>
-                <div class="c-control"*ngIf="jsonViewerConfig.notShowProperties.length >0">
-                  <label class="c-label">{{ 'Not show properties' | translate }}</label>
-                  <span class="c-input" style="flex-wrap: wrap; height: auto">
-                    <ion-chip *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index"
-                      color="danger"
-                      style="height: auto; margin: 2px"
-                    >
-                      <ion-label >{{property | translate}}</ion-label>
-                      <ion-icon name="close" (click)="addShowProperty(j)"></ion-icon>
-                    </ion-chip>
-                    </span>
-                    </div>
-              </ion-col>
-          </ion-row>
+              </span>
+            </div>
+            <div class="c-control" *ngIf="jsonViewerConfig.notShowProperties.length >0">
+              <label class="c-label">{{ 'Not show properties' | translate }}</label>
+              <span class="c-input" style="flex-wrap: wrap; height: auto">
+                <ion-chip
+                  *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index"
+                  color="danger"
+                  style="height: auto; margin: 2px"
+                >
+                  <ion-label>{{property | translate}}</ion-label>
+                  <ion-icon name="close" (click)="addShowProperty(j)"></ion-icon>
+                </ion-chip>
+              </span>
+            </div>
+          </ion-col>
+        </ion-row>
       </ng-container>
-     
     </div>
   </ion-fab>
   <div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
@@ -159,36 +167,51 @@
             <ion-grid fixed>
               <form [formGroup]="purchaseRequestFormGroup">
                 <ion-row class="hr-group">
-
                   <ion-col size="12" size-sm size-xl="6">
                     <app-form-control
-                    [field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
-                    (change)="saveChangePurchaseRequest()"
-                  >
-                  </app-form-control>
-                    <app-form-control [field]="{id :'ContentType', label:'Content type' ,
-                    type:'ng-select',dataSource:contentTypeList,
-                    bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}" (change)="saveChangePurchaseRequest()">
+                      [field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
+                      (change)="changeVendor($event)"
+                    >
                     </app-form-control>
-                    <app-form-control [field]="{id :'Remark', label:'Remark' ,
-                    type:'textarea',form:purchaseRequestFormGroup}" (change)="saveChangePurchaseRequest()">
+                    <app-form-control
+                      [field]="{id :'ContentType', label:'Content type' ,
+                    type:'ng-select',dataSource:contentTypeList,
+                    bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}"
+                      (change)="saveChangePurchaseRequest()"
+                    >
+                    </app-form-control>
+                    <app-form-control
+                      [field]="{id :'Remark', label:'Remark' ,
+                    type:'textarea',form:purchaseRequestFormGroup}"
+                      (change)="saveChangePurchaseRequest()"
+                    >
                     </app-form-control>
                   </ion-col>
                   <ion-col size="12" size-sm size-xl="6">
-                    <app-form-control [clearable]="true" [virtualScroll]="true"
+                    <app-form-control
+                      [clearable]="true"
+                      [virtualScroll]="true"
                       [field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseRequestFormGroup }"
-                      (change)="changeRequiredDate();">
+                      (change)="changeRequiredDate();"
+                    >
                     </app-form-control>
 
-                    <app-form-control [clearable]="true" [virtualScroll]="true"
-                    [field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
-                    (change)="changeRequiredDate()"></app-form-control>
+                    <app-form-control
+                      [clearable]="true"
+                      [virtualScroll]="true"
+                      [field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
+                      (change)="changeRequiredDate()"
+                    ></app-form-control>
 
                     <div class="c-control">
-                      <label class="c-label" for="TotalAfterTax">{{'Value' | translate}}
+                      <label class="c-label" for="TotalAfterTax"
+                        >{{'Value' | translate}}
                         <span
                           *ngIf="!purchaseRequestFormGroup.controls.TotalAfterTax.valid && !purchaseRequestFormGroup.controls.TotalAfterTax.pending && (purchaseRequestFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
-                          ion-text color="danger">(*)</span>
+                          ion-text
+                          color="danger"
+                          >(*)</span
+                        >
                       </label>
                       <span class="c-input disable">
                         <b>{{calcTotalAfterTax() | number: '1.0-0'}}</b>
@@ -198,18 +221,35 @@
                 </ion-row>
               </form>
             </ion-grid>
-
-            <app-purchase-items (renderFormArray)="renderFormArray($event)" [canEdit]="pageConfig.canEdit" [orderLines]="itemPurchaseRequest.OrderLines"  (onChange)="saveOrderBack($event)"
-              (removeItem)="removeItem($event)">
+            <div class="row-full shadow">
+              <ion-toolbar color="primary">
+                <ion-segment scrollable="true">
+                  <ion-segment-button >
+                    <ion-label>{{'Product list' | translate}}</ion-label>
+                  </ion-segment-button>
+                </ion-segment>
+              </ion-toolbar>
+              <app-purchase-items
+              (renderFormArray)="renderFormArray($event)"
+              [canEdit]="pageConfig.canEdit"
+              [IDVendor]="purchaseRequestFormGroup.get('IDVendor').value"
+              [orderLines]="itemPurchaseRequest.OrderLines"
+              (onChange)="saveOrderBack($event)"
+              (removeItem)="removeItem($event)"
+            >
             </app-purchase-items>
+            </div>
+
 
             <div *ngIf="!isAutoSave">
-              <ion-button *ngIf="item?.Type == 'PurchaseRequest'" (click)="saveChangePurchaseRequest(true);"
-                title="{{'Submit request' | translate}}">
+              <ion-button
+                *ngIf="item?.Type == 'PurchaseRequest'"
+                (click)="saveChangePurchaseRequest(true);"
+                title="{{'Submit request' | translate}}"
+              >
                 {{'Submit purchase request' || translate}}
               </ion-button>
             </div>
-
           </ion-list>
 
           <ion-list *ngIf="item?.Id">
@@ -329,7 +369,7 @@
               <ion-list-header>
                 <ion-label color="primary">{{'Main activities' | translate}}</ion-label>
               </ion-list-header>
-              <ion-item  *ngFor="let i of item._Logs" class="log main-active-item" lines="none">
+              <ion-item *ngFor="let i of item._Logs" class="log main-active-item" lines="none">
                 <ion-label slot="start" class="time">
                   <p>{{i.Date}}</p>
                   <h2>{{i.Time}}</h2>
@@ -343,7 +383,7 @@
                 <!-- <ion-avatar slot="start">
                                     <ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
                                 </ion-avatar> -->
-                <ion-label style="margin-left: 8px;">
+                <ion-label style="margin-left: 8px">
                   <h2>{{i.FullName}}</h2>
                   <h3>
                     <ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa duyệt'}}</ion-text>

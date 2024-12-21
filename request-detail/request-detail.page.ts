@@ -26,18 +26,19 @@ import { catchError, concat, distinctUntilChanged, of, Subject, switchMap, tap }
   selector: 'app-request-detail',
   templateUrl: './request-detail.page.html',
   styleUrls: ['./request-detail.page.scss'],
-  standalone:false
+  standalone: false,
 })
 export class RequestDetailPage extends PageBase {
   requestTypeList = [];
   statusList = [];
   timeOffTypeList = [];
   commentList = [];
+  __currentVendor;
   imgPath = '';
   mappingList = [];
   approvalTemplate: any;
   isSupperApprover;
-  currentApprover;
+  _currentVendor;
   commentForm: FormGroup;
   purchaseRequestFormGroup: FormGroup;
   branchList = [];
@@ -72,7 +73,7 @@ export class RequestDetailPage extends PageBase {
     },
   };
 
-  preloadItems:any = [];
+  preloadItems: any = [];
 
   _vendorDataSource = {
     searchProvider: this.contactProvider,
@@ -135,9 +136,8 @@ export class RequestDetailPage extends PageBase {
     public loadingController: LoadingController,
     public commonService: CommonService,
     public contactProvider: CRM_ContactProvider,
-   
-    public staffProvider: HRM_StaffProvider,
 
+    public staffProvider: HRM_StaffProvider,
   ) {
     super();
     this.pageConfig.isDetailPage = true;
@@ -148,12 +148,14 @@ export class RequestDetailPage extends PageBase {
       Id: [0],
       Remark: ['', Validators.required],
     });
-
   }
 
   preLoadData(event?: any): void {
     this.query.IDStaff = this.env.user.StaffID;
-    this.contentTypeList = [{ Code: 'Item', Name: 'Item' }, { Code: 'Service', Name: 'Service' }];
+    this.contentTypeList = [
+      { Code: 'Item', Name: 'Item' },
+      { Code: 'Service', Name: 'Service' },
+    ];
     Promise.all([
       this.env.getType('RequestType'),
       this.env.getStatus('ApprovalStatus'),
@@ -175,7 +177,7 @@ export class RequestDetailPage extends PageBase {
     this.item._Approvers.forEach((i) => {
       i._Status = this.statusList.find((d) => d.Code == i.Status);
       if (i.Id == this.env.user.StaffID) {
-        this.currentApprover = i;
+        this._currentVendor = i;
       }
     });
 
@@ -202,13 +204,12 @@ export class RequestDetailPage extends PageBase {
           });
         }
       });
-    }
-    else {
+    } else {
       this.checkPermision();
     }
     super.loadedData(event);
-    if(["Approved","Cancelled","Submitted"].includes(this.item.Status)) this.pageConfig.canEdit=false;
-    if (this.item.Type == "DataCorrection" && this.item.UDF16) {
+    if (['Approved', 'Cancelled', 'Submitted'].includes(this.item.Status)) this.pageConfig.canEdit = false;
+    if (this.item.Type == 'DataCorrection' && this.item.UDF16) {
       let obj = JSON.parse(this.item.UDF16);
       this.jsonViewerConfig.showProperties = [];
       this.jsonViewerConfig.notShowProperties = [];
@@ -221,43 +222,48 @@ export class RequestDetailPage extends PageBase {
         this._vendorDataSource.selected.push(...resp['data']);
       });
 
-      if(this.item.UDF01 > 0 ){
-        this.purchaseRequestProvider.getAnItem(this.item.UDF01)
-        .then((response: any) => {
-          if (response) {
-            this.itemPurchaseRequest= response
-            this.cdr.detectChanges();
+      if (this.item.UDF01 > 0) {
+        this.purchaseRequestProvider
+          .getAnItem(this.item.UDF01)
+          .then((response: any) => {
+            if (response) {
+              this.itemPurchaseRequest = response;
+              this.cdr.detectChanges();
 
-            if (this.itemPurchaseRequest.hasOwnProperty('IsDeleted') && this.itemPurchaseRequest.IsDeleted) this.nav('not-found', 'back');
-            this.purchaseRequestFormGroup?.patchValue(this.itemPurchaseRequest);
-            this.purchaseRequestFormGroup?.markAsPristine();
-            if (this.itemPurchaseRequest._Vendor) {
-              this._vendorDataSource.selected = [...this._vendorDataSource.selected, this.itemPurchaseRequest._Vendor];
+              if (this.itemPurchaseRequest.hasOwnProperty('IsDeleted') && this.itemPurchaseRequest.IsDeleted)
+                this.nav('not-found', 'back');
+              this.purchaseRequestFormGroup?.patchValue(this.itemPurchaseRequest);
+              this.purchaseRequestFormGroup?.markAsPristine();
+              if (this.itemPurchaseRequest._Vendor) {
+                this._vendorDataSource.selected = [
+                  ...this._vendorDataSource.selected,
+                  this.itemPurchaseRequest._Vendor,
+                ];
+              }
+              if (this.itemPurchaseRequest._Requester) {
+                this._staffDataSource.selected = [this.itemPurchaseRequest._Requester];
+              }
+              if (!this.itemPurchaseRequest || (!this.itemPurchaseRequest?.IDRequester && this.item._Staff)) {
+                this.purchaseRequestFormGroup.get('IDRequester').setValue(this.item._Staff.Id);
+                this.purchaseRequestFormGroup.controls['IDRequester'].markAsDirty();
+                this._staffDataSource.selected = [this.item._Staff];
+              }
             }
-            if (this.itemPurchaseRequest._Requester) {
-              this._staffDataSource.selected = [this.itemPurchaseRequest._Requester];
-            }
-            if(!this.itemPurchaseRequest || !this.itemPurchaseRequest?.IDRequester && this.item._Staff){
-              this.purchaseRequestFormGroup.get('IDRequester').setValue(this.item._Staff.Id)
-              this.purchaseRequestFormGroup.controls['IDRequester'].markAsDirty();
-              this._staffDataSource.selected= [this.item._Staff];
-            }
-          } 
-        }).finally(()=>{
-          this._vendorDataSource.initSearch();
-          this._staffDataSource.initSearch();
-
-        })
+          })
+          .finally(() => {
+            this._vendorDataSource.initSearch();
+            this._staffDataSource.initSearch();
+          });
+      } else {
+        this.purchaseRequestFormGroup.controls['ContentType'].markAsDirty();
+        this.purchaseRequestFormGroup.get('IDRequester').setValue(this.item._Staff.Id);
+        this.purchaseRequestFormGroup.controls['IDRequester'].markAsDirty();
+        this._staffDataSource.selected = [this.item._Staff];
+        this._vendorDataSource.initSearch();
+        this._staffDataSource.initSearch();
       }
-      else{
-          this.purchaseRequestFormGroup.controls['ContentType'].markAsDirty();
-          this.purchaseRequestFormGroup.get('IDRequester').setValue(this.item._Staff.Id)
-          this.purchaseRequestFormGroup.controls['IDRequester'].markAsDirty();
-          this._staffDataSource.selected= [this.item._Staff];
-          this._vendorDataSource.initSearch();
-          this._staffDataSource.initSearch();
-      }
-      if(!this.pageConfig.canEdit) this.purchaseRequestFormGroup.disable();
+      if (!this.pageConfig.canEdit) this.purchaseRequestFormGroup.disable();
+      this.__currentVendor = this.purchaseRequestFormGroup.get('IDVendor').value;
     }
   }
 
@@ -290,7 +296,37 @@ export class RequestDetailPage extends PageBase {
     });
   }
 
-  renderFormArray(e){
+  changeVendor(e) {
+     let orderLines = this.formGroup.get('OrderLines') as FormArray;
+    if (orderLines.controls.length > 0) {
+      this.env
+        .showPrompt(
+          'Tất cả hàng hoá trong danh sách sẽ bị xoá khi bạn chọn nhà cung cấp khác. Bạn chắc chắn chứ? ',
+          null,
+          'Thông báo',
+        )
+        .then(() => {
+          let deletedFields = orderLines
+            .getRawValue()
+            .filter((f) => f.Id)
+            .map((o) => o.Id);
+          this.formGroup.get('DeletedFields').setValue(deletedFields);
+          this.formGroup.get('DeletedFields').markAsDirty();
+          orderLines.clear();
+          this.item.OrderLines = [];
+          console.log(orderLines);
+          console.log(this.item.OrderLines);
+          this.saveChange();
+          this._currentVendor = e;
+        })
+        .catch(() => {
+          this.formGroup.get('IDVendor').setValue(this._currentVendor?.Id);
+        });
+    }
+
+  }
+
+  renderFormArray(e) {
     this.purchaseRequestFormGroup.controls.OrderLines = e;
   }
 
@@ -307,20 +343,18 @@ export class RequestDetailPage extends PageBase {
     //   groups.controls.push(fg)
     // };
 
-    
     this.saveChangePurchaseRequest();
-  
   }
 
-   saveChangePurchaseRequest(isSubmit = false) {
+  saveChangePurchaseRequest(isSubmit = false) {
     this.purchaseRequestFormGroup.updateValueAndValidity();
-    return new Promise( (resolve, reject) => {
-      if( this.submitAttempt) reject(false);
+    return new Promise((resolve, reject) => {
+      if (this.submitAttempt) reject(false);
       if (this.isAutoSave || isSubmit) {
         this.purchaseRequestFormGroup.updateValueAndValidity();
         if (!this.purchaseRequestFormGroup.valid) {
           let invalidControls = this.findInvalidControlsRecursive(this.purchaseRequestFormGroup);
-          const translationPromises = invalidControls.map(control => this.env.translateResource(control));
+          const translationPromises = invalidControls.map((control) => this.env.translateResource(control));
           Promise.all(translationPromises).then((values: any[]) => {
             invalidControls = values;
             this.env.showMessage('Please recheck control(s): {{value}}', 'warning', invalidControls.join(' | '));
@@ -331,35 +365,35 @@ export class RequestDetailPage extends PageBase {
           let obj = {
             Id: this.item.Id,
             UDF01: this.item.UDF01,
-            Type:"PurchaseRequest",
-            PurchaseRequest: purchaseRequest
-          }
-  
-          console.log('PurchaseForm: ', this.purchaseRequestFormGroup.getRawValue())
+            Type: 'PurchaseRequest',
+            PurchaseRequest: purchaseRequest,
+          };
+
+          console.log('PurchaseForm: ', this.purchaseRequestFormGroup.getRawValue());
           this.submitAttempt = true;
-          this.pageProvider.save(obj).then((result:any) => {
-            if(result){
-              this.purchaseRequestFormGroup.markAsPristine();
-              this.markAsPristine = true;
-              this.purchaseRequestFormGroup.patchValue(result.PurchaseRequest);
-              this.itemPurchaseRequest = result.PurchaseRequest;
+          this.pageProvider
+            .save(obj)
+            .then((result: any) => {
+              if (result) {
+                this.purchaseRequestFormGroup.markAsPristine();
+                this.markAsPristine = true;
+                this.purchaseRequestFormGroup.patchValue(result.PurchaseRequest);
+                this.itemPurchaseRequest = result.PurchaseRequest;
+                this.cdr.detectChanges();
+                this.env.showMessage('Saving completed!', 'success');
+                this.submitAttempt = false;
+                resolve(true);
+              } else this.env.showMessage('Cannot save, please try again', 'danger');
+            })
+            .catch(() => {
               this.cdr.detectChanges();
-              this.env.showMessage('Saving completed!', 'success');
               this.submitAttempt = false;
-              resolve(true);
-            }
-            else this.env.showMessage('Cannot save, please try again', 'danger');
-          }).catch(() => {
-            this.cdr.detectChanges();
-            this.submitAttempt = false;
-            reject(false);
-          })
+              reject(false);
+            });
         }
       }
     });
-  
   }
-
 
   removeItem(Ids) {
     this.purchaseRequestDetailProvider.delete(Ids).then((resp) => {
@@ -379,15 +413,18 @@ export class RequestDetailPage extends PageBase {
     // let lockStatus = ['Forward']; //'Approved', 'Denied',
     this.pageConfig.canApprove = false;
     if (canApproveStatus.includes(this.item.Status)) {
-      if (!(this.item.Status == "Unapproved" && this.item.Type == "DataCorrection")) {
-        if (this.approvalTemplate?.IsSupperApprover || (this.currentApprover && this.item.ApprovalMode?.trim() != 'SequentialApprovals')) {
+      if (!(this.item.Status == 'Unapproved' && this.item.Type == 'DataCorrection')) {
+        if (
+          this.approvalTemplate?.IsSupperApprover ||
+          (this._currentVendor && this.item.ApprovalMode?.trim() != 'SequentialApprovals')
+        ) {
           this.pageConfig.canApprove = true;
-        }
-        else {
-          if (this.currentApprover) { // Duyệt tuần tự
+        } else {
+          if (this._currentVendor) {
+            // Duyệt tuần tự
             let approverIdx = this.item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID);
             if (approverIdx != 0) {
-              for (let index = approverIdx - 1; index = 0; index--) {
+              for (let index = approverIdx - 1; (index = 0); index--) {
                 const Approver = this.item._Approvers[index];
                 if (Approver.Status != 'Approved') {
                   break;
@@ -396,8 +433,7 @@ export class RequestDetailPage extends PageBase {
                   this.pageConfig.canApprove = true;
                 }
               }
-            }
-            else {
+            } else {
               this.pageConfig.canApprove = true;
             }
           }
@@ -405,10 +441,12 @@ export class RequestDetailPage extends PageBase {
       }
     }
     this.pageConfig.canDisapprove = false;
-    if (canDisapproveStatus.includes(this.item.Status) && (this.approvalTemplate?.IsSupperApprover || this.currentApprover)) {
-      if (!(this.item.Status == "Approved" && this.item.Type == "DataCorrection")) this.pageConfig.canDisapprove = true;;
+    if (
+      canDisapproveStatus.includes(this.item.Status) &&
+      (this.approvalTemplate?.IsSupperApprover || this._currentVendor)
+    ) {
+      if (!(this.item.Status == 'Approved' && this.item.Type == 'DataCorrection')) this.pageConfig.canDisapprove = true;
     }
-
   }
 
   async disapprove() {
@@ -551,44 +589,12 @@ export class RequestDetailPage extends PageBase {
 
   changeRequiredDate() {
     let orderLines = this.purchaseRequestFormGroup.get('OrderLines').value;
-    orderLines.forEach(f => {
+    orderLines.forEach((f) => {
       if (!f.RequiredDate) f.RequiredDate = this.purchaseRequestFormGroup.get('RequiredDate').value;
-    })
-    this.purchaseRequestFormGroup.get('OrderLines').setValue([...orderLines])
+    });
+    this.purchaseRequestFormGroup.get('OrderLines').setValue([...orderLines]);
     this.saveChangePurchaseRequest();
   }
 
-
-  async openModal() {
-    let itemInVendors = this.purchaseRequestFormGroup.controls.OrderLines.value.filter(o=>o.Id).map(d =>{return {
-       IDItem:d.IDItem, Quantity: d.Quantity,UoMName:d.UoMName,IDDetail:d.Id,IDVendor:d.IDVendor
-      }} )
-    const modal = await this.modalController.create({
-      component: ItemInVendorModalPage,
-      componentProps: {
-        itemInVendors: itemInVendors,
-      },
-      cssClass: 'modal90',
-    });
-    await modal.present();
-    const { data } = await modal.onWillDismiss();
-    if (data) {
-     let groups = this.purchaseRequestFormGroup.controls.OrderLines as FormArray;
-     groups.controls.forEach(g => {
-        let item = data.find(d => d.IDDetail == g.get('Id').value);
-        if (item) {
-          let checkedId = item._Vendors.find(f => f.checked)?.Id || null;
-          if(g.get('IDVendor').value != checkedId){
-            g.get('IDVendor').setValue(checkedId);
-            g.get('IDVendor').markAsDirty();
-          }
-        }
-       
-      });
-      if(this.isAutoSave) this.saveChangePurchaseRequest();
-    }
-
-  }
-
-
+  
 }
