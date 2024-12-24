@@ -229,29 +229,32 @@ export class RequestDetailPage extends PageBase {
             if (response) {
               this.itemPurchaseRequest = response;
               this.cdr.detectChanges();
-
-              if (this.itemPurchaseRequest.hasOwnProperty('IsDeleted') && this.itemPurchaseRequest.IsDeleted)
-                this.nav('not-found', 'back');
-              this.purchaseRequestFormGroup?.patchValue(this.itemPurchaseRequest);
-              this.purchaseRequestFormGroup?.markAsPristine();
-              if (this.itemPurchaseRequest._Vendor) {
-                this._vendorDataSource.selected = [
-                  ...this._vendorDataSource.selected,
-                  this.itemPurchaseRequest._Vendor,
-                ];
+              if(this.itemPurchaseRequest){
+                if (this.itemPurchaseRequest.hasOwnProperty('IsDeleted') && this.itemPurchaseRequest.IsDeleted)
+                  this.nav('not-found', 'back');
+                this.purchaseRequestFormGroup?.patchValue(this.itemPurchaseRequest);
+                this.purchaseRequestFormGroup?.markAsPristine();
+                if (this.itemPurchaseRequest._Vendor) {
+                  this._vendorDataSource.selected = [
+                    ...this._vendorDataSource.selected,
+                    this.itemPurchaseRequest._Vendor,
+                  ];
+                }
+                if (this.itemPurchaseRequest._Requester) {
+                  this._staffDataSource.selected = [this.itemPurchaseRequest._Requester];
+                }
+                if (!this.itemPurchaseRequest || (!this.itemPurchaseRequest?.IDRequester && this.item._Staff)) {
+                  this.purchaseRequestFormGroup.get('IDRequester').setValue(this.item._Staff.Id);
+                  this.purchaseRequestFormGroup.controls['IDRequester'].markAsDirty();
+                  this._staffDataSource.selected = [this.item._Staff];
+                }
+                this._currentContentType = this.itemPurchaseRequest?.ContentType;
+                if(this.itemPurchaseRequest.Status != 'Draft' && this.itemPurchaseRequest.Status != 'Unapproved'){
+                  this.purchaseRequestFormGroup.disable();
+                }
+                this._currentContentType = this.formGroup.controls['ContentType'].value;
               }
-              if (this.itemPurchaseRequest._Requester) {
-                this._staffDataSource.selected = [this.itemPurchaseRequest._Requester];
-              }
-              if (!this.itemPurchaseRequest || (!this.itemPurchaseRequest?.IDRequester && this.item._Staff)) {
-                this.purchaseRequestFormGroup.get('IDRequester').setValue(this.item._Staff.Id);
-                this.purchaseRequestFormGroup.controls['IDRequester'].markAsDirty();
-                this._staffDataSource.selected = [this.item._Staff];
-              }
-              this._currentContentType = this.itemPurchaseRequest?.ContentType;
-              if(this.itemPurchaseRequest.Status != 'Draft' && this.itemPurchaseRequest.Status != 'Unapproved'){
-                this.purchaseRequestFormGroup.disable();
-              }
+             
             }
           })
           .finally(() => {
@@ -295,6 +298,7 @@ export class RequestDetailPage extends PageBase {
       CreatedDate: [''],
       ModifieddDate: [''],
       OrderLines: [this.formBuilder.array([])],
+      DeletedFields: [[]],
       TotalDiscount: new FormControl({ value: '', disabled: true }),
       TotalAfterTax: new FormControl({ value: '', disabled: true }),
     });
@@ -335,7 +339,7 @@ export class RequestDetailPage extends PageBase {
   _currentContentType;
   changeContentType(e){
     console.log(e);
-    let orderLines = this.formGroup.get('OrderLines') as FormArray;
+    let orderLines = this.purchaseRequestFormGroup.get('OrderLines') as FormArray;
     if (orderLines.controls.length > 0) {
       this.env
         .showPrompt(
@@ -348,22 +352,20 @@ export class RequestDetailPage extends PageBase {
             .getRawValue()
             .filter((f) => f.Id)
             .map((o) => o.Id);
-          this.formGroup.get('DeletedFields').setValue(deletedFields);
-          this.formGroup.get('DeletedFields').markAsDirty();
+          this.purchaseRequestFormGroup.get('DeletedFields').setValue(deletedFields);
+          this.purchaseRequestFormGroup.get('DeletedFields').markAsDirty();
           orderLines.clear();
-          this.item.OrderLines = [];
-          console.log(orderLines);
-          console.log(this.item.OrderLines);
-          this.saveChange();
+          this.itemPurchaseRequest.OrderLines = [];
+          this.saveChangePurchaseRequest();
           this._currentContentType = e.Code;
           return;
         })
         .catch(() => {
-          this.formGroup.get('ContentType').setValue(this._currentContentType);
+          this.purchaseRequestFormGroup.get('ContentType').setValue(this._currentContentType);
         });
     }else{
       this._currentContentType = e.Code;
-      this.saveChange();
+      this.saveChangePurchaseRequest();
     }
   }
   renderFormArray(e) {
