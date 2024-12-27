@@ -214,7 +214,7 @@
                         >
                       </label>
                       <span class="c-input disable">
-                        <b>{{calcTotalAfterTax() | number: '1.0-0'}}</b>
+                        <b *ngIf="purchaseRequestFormGroup.controls.OrderLines?.controls?.length>0">{{calcTotalAfterTax() | number: '1.0-0'}}</b>
                       </span>
                     </div>
                   </ion-col>
@@ -232,7 +232,7 @@
               <app-purchase-items
               [contentType]="_currentContentType"
               (renderFormArray)="renderFormArray($event)"
-              [canEdit]="pageConfig.canEdit"
+              [canEdit]="pageConfig.canEditPurchaseRequest"
               [IDVendor]="purchaseRequestFormGroup.get('IDVendor').value"
               [orderLines]="itemPurchaseRequest.OrderLines"
               (onChange)="saveOrderBack($event)"

@@ -49,73 +49,17 @@ export class RequestDetailPage extends PageBase {
   jsonViewerConfig: any = {};
   itemPurchaseRequest: any = {};
   markAsPristine = false;
-  _staffDataSource = {
-    searchProvider: this.staffProvider,
-    loading: false,
-    input$: new Subject<string>(),
-    selected: [],
-    items$: null,
-    initSearch() {
-      this.loading = false;
-      this.items$ = concat(
-        of(this.selected),
-        this.input$.pipe(
-          distinctUntilChanged(),
-          tap(() => (this.loading = true)),
-          switchMap((term) =>
-            this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-              catchError(() => of([])), // empty list on error
-              tap(() => (this.loading = false)),
-            ),
-          ),
-        ),
-      );
-    },
-  };
+  _staffDataSource = this.buildSelectDataSource((term) => {
+    return this.staffProvider.search({ Take: 20, Skip: 0, Term: term });
+  });
+
 
   preloadItems: any = [];
 
-  _vendorDataSource = {
-    searchProvider: this.contactProvider,
-    loading: false,
-    input$: new Subject<string>(),
-    selected: [],
-    items$: null,
-    that: this,
-    initSearch() {
-      this.loading = false;
-      this.items$ = concat(
-        of(this.selected),
-        this.input$.pipe(
-          distinctUntilChanged(),
-          tap(() => (this.loading = true)),
-          switchMap((term) => {
-            if (!term) {
-              this.loading = false;
-              return of(this.selected);
-            } else {
-              return this.searchProvider
-                .search({
-                  Term: term,
-                  SortBy: ['Id_desc'],
-                  Take: 20,
-                  Skip: 0,
-                  IsVendor: true,
-                  SkipAddress: true,
-                })
-                .pipe(
-                  catchError(() => of([])), // empty list on error
-                  tap(() => (this.loading = false)),
-                );
-            }
-          }),
-        ),
-      );
-    },
-    addSelectedItem(items) {
-      this.selected = [...items];
-    },
-  };
+  _vendorDataSource = this.buildSelectDataSource((term) => {
+    return this.contactProvider.search({ SkipAddress: true,IsVendor: true, SortBy: ['Id_desc'],Take: 20, Skip: 0, Term: term });
+  });
+
 
   constructor(
     public pageProvider: APPROVAL_RequestProvider,
@@ -153,7 +97,7 @@ export class RequestDetailPage extends PageBase {
   preLoadData(event?: any): void {
     this.query.IDStaff = this.env.user.StaffID;
     this.contentTypeList = [
-      { Code: 'Item', Name: 'Item' },
+      { Code: 'Item', Name: 'Items' },
       { Code: 'Service', Name: 'Service' },
     ];
     Promise.all([
@@ -218,6 +162,8 @@ export class RequestDetailPage extends PageBase {
 
     if (this.item.Type == 'PurchaseRequest') {
       this.buildPurchaseForm();
+      this.pageConfig.canEditPurchaseRequest = this.pageConfig.canEdit;
+
       this.contactProvider.read({ IsVendor: true, Take: 20 }).then((resp) => {
         this._vendorDataSource.selected.push(...resp['data']);
       });
@@ -249,8 +195,9 @@ export class RequestDetailPage extends PageBase {
                   this._staffDataSource.selected = [this.item._Staff];
                 }
                 this._currentContentType = this.itemPurchaseRequest?.ContentType;
-                if(this.itemPurchaseRequest.Status != 'Draft' && this.itemPurchaseRequest.Status != 'Unapproved'){
+                if(!['Draft','Unapproved'].includes(this.itemPurchaseRequest.Status)){
                   this.purchaseRequestFormGroup.disable();
+                  this.pageConfig.canEditPurchaseRequest = false;
                 }
                 this._currentContentType = this.formGroup.controls['ContentType'].value;
               }
@@ -283,11 +230,11 @@ export class RequestDetailPage extends PageBase {
       Code: [''],
       Name: [''],
       ForeignName: [''],
-      Remark: ['', Validators.required],
+      Remark: [''],
       ForeignRemark: [''],
       ContentType: ['Item', Validators.required],
       Status: new FormControl({ value: 'Draft', disabled: true }, Validators.required),
-      RequiredDate: ['', Validators.required],
+      RequiredDate: [''],
       PostingDate: [''],
       DueDate: [''],
       DocumentDate: [''],
@@ -298,7 +245,7 @@ export class RequestDetailPage extends PageBase {
       CreatedDate: [''],
       ModifieddDate: [''],
       OrderLines: [this.formBuilder.array([])],
-      DeletedFields: [[]],
+      DeletedLines: [[]],
       TotalDiscount: new FormControl({ value: '', disabled: true }),
       TotalAfterTax: new FormControl({ value: '', disabled: true }),
     });
@@ -314,12 +261,12 @@ export class RequestDetailPage extends PageBase {
           'Thông báo',
         )
         .then(() => {
-          let deletedFields = orderLines
+          let DeletedLines = orderLines
             .getRawValue()
             .filter((f) => f.Id)
             .map((o) => o.Id);
-          this.formGroup.get('DeletedFields').setValue(deletedFields);
-          this.formGroup.get('DeletedFields').markAsDirty();
+          this.formGroup.get('DeletedLines').setValue(DeletedLines);
+          this.formGroup.get('DeletedLines').markAsDirty();
           orderLines.clear();
           this.item.OrderLines = [];
           console.log(orderLines);
@@ -348,12 +295,12 @@ export class RequestDetailPage extends PageBase {
           'Thông báo',
         )
         .then(() => {
-          let deletedFields = orderLines
+          let DeletedLines = orderLines
             .getRawValue()
             .filter((f) => f.Id)
             .map((o) => o.Id);
-          this.purchaseRequestFormGroup.get('DeletedFields').setValue(deletedFields);
-          this.purchaseRequestFormGroup.get('DeletedFields').markAsDirty();
+          this.purchaseRequestFormGroup.get('DeletedLines').setValue(DeletedLines);
+          this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
           orderLines.clear();
           this.itemPurchaseRequest.OrderLines = [];
           this.saveChangePurchaseRequest();
@@ -373,23 +320,10 @@ export class RequestDetailPage extends PageBase {
   }
 
   saveOrderBack(fg) {
-    // let dirtyValue : any = this.getDirtyValues(fg);
-    // let groups = this.purchaseRequestFormGroup.get('OrderLines') as FormArray;
-    // let existed = groups.controls.find(g=> g.get('Id').value == dirtyValue.Id)
-    // if(existed) {
-    //   existed.patchValue(dirtyValue);
-    //   existed.markAsDirty();
-    // }
-    // else {
-    //   fg.markAsDirty();
-    //   groups.controls.push(fg)
-    // };
-
     this.saveChangePurchaseRequest();
   }
 
   saveChangePurchaseRequest(isSubmit = false) {
-    this.purchaseRequestFormGroup.updateValueAndValidity();
     return new Promise((resolve, reject) => {
       if (this.submitAttempt) reject(false);
       if (this.isAutoSave || isSubmit) {
@@ -438,14 +372,29 @@ export class RequestDetailPage extends PageBase {
   }
 
   removeItem(Ids) {
-    this.purchaseRequestDetailProvider.delete(Ids).then((resp) => {
-      this.env.publishEvent({ Code: this.pageConfig.pageName });
-      this.env.showMessage('Deleted!', 'success');
-    });
+    let groups = <FormArray>this.purchaseRequestFormGroup.controls.OrderLines;
+    if(Ids && Ids.length>0){
+      this.purchaseRequestFormGroup.get('DeletedLines').setValue(Ids);
+      this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
+      this.saveChange().then(s=>{
+        Ids.forEach(id=>{
+          let index = groups.controls.findIndex((x) => x.get('Id').value == id);
+          if(index >= 0) groups.removeAt(index);
+        });
+      });
+    }
   }
 
   calcTotalAfterTax() {
-    return 0;
+    if (this.purchaseRequestFormGroup.get('OrderLines').getRawValue()) {
+      return this.purchaseRequestFormGroup
+        .get('OrderLines')
+        .getRawValue()
+        .map((x) => (x.UoMPrice * x.Quantity - x.TotalDiscount) * (1 + x.TaxRate / 100))
+        .reduce((a, b) => +a + +b, 0);
+    } else {
+      return 0;
+    }
   }
 
   checkPermision() {
