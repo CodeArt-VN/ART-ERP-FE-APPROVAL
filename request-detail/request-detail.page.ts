@@ -266,10 +266,16 @@ export class RequestDetailPage extends PageBase {
               .getRawValue()
               .filter((f) => f.Id && (f.IDVendor != e.Id && !(f._Vendors?.map(v => v.Id)?.includes(e.Id))))
               .map((o) => o.Id);
+
+              orderLines.controls.filter((f) => f.get('_Vendors').value.map(v => v.Id).includes(e.Id)).forEach((o) => {
+                o.get('IDVendor').setValue(e.Id);
+                o.get('IDVendor').markAsDirty();
+                });
             this.purchaseRequestFormGroup.get('DeletedLines').setValue(DeletedLines);
             this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
-            this.saveChangePurchaseRequest();
             this._currentVendor = e;
+            
+            this.saveChangePurchaseRequest();
           })
           .catch(() => {
             this.purchaseRequestFormGroup.get('IDVendor').setValue(this._currentVendor?.Id);
@@ -379,7 +385,7 @@ export class RequestDetailPage extends PageBase {
     if(Ids && Ids.length>0){
       this.purchaseRequestFormGroup.get('DeletedLines').setValue(Ids);
       this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
-      this.saveChange().then(s=>{
+      this.saveChangePurchaseRequest().then(s=>{
         Ids.forEach(id=>{
           let index = groups.controls.findIndex((x) => x.get('Id').value == id);
           if(index >= 0) groups.removeAt(index);
