@@ -366,10 +366,20 @@ export class ApprovalTemplateDetailPage extends PageBase {
       .then((response: any) => {
         if (response) {
           this._schemaListMappingDetail = response.Fields;
+          Object.keys(this.formGroup.value).forEach((key) => {
+            if(key.startsWith('UDFMapping') && this.formGroup.value[key]){
+              if (!this._schemaListMappingDetail.some(d=> d.Code == this.formGroup.value[key])) {
+                this.formGroup.get(key).setValue(null);
+                this.formGroup.get(key).markAsDirty();
+              }
+            }
+          });
         }
       })
-      .catch((err) => {});
-    this.saveChange();
+      .catch((err) => {})
+      .finally(()=>{
+        this.saveChange();
+      });
   }
   removeApprovalRule(index) {
     this.env.showPrompt('Bạn có chắc muốn xóa không?', null, 'Xóa approval rule').then((_) => {

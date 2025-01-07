@@ -4,7 +4,8 @@
 <!-- *ngIf="item && pageConfig.showSpinner==false" -->
 <ion-content appScrollbarTheme class="ion-padding">
   <div class="main-view">
-    <ion-grid fixed>
+      <div id="ng-select-aprrovalRuleDetail" style="position: absolute; z-index: 30005"></div>
+      <ion-grid fixed>
       <form [formGroup]="formGroup">
         <ion-row class="hr-group">
           <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
@@ -29,7 +30,7 @@
           <ion-col size="12" size-sm size-xl="4">
             <!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(change)="changeSchema($event)"> </app-form-control> -->
             <app-form-control
-              [field]="{id:'SetStatus', label: 'Auto approval status', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder: 'Search...', form : formGroup }"
+              [field]="{id:'SetStatus', label: 'Auto approval status', type : 'ng-select',dataSource: statusList,bindLabel:'Name',bindValue:'Code',placeholder: 'Search...', form : formGroup,appendTo:'#ng-select-aprrovalRuleDetail' }"
               (change)="saveChange()"
             >
             </app-form-control>
@@ -92,11 +93,11 @@
               </app-form-control>
               <!-- <app-form-control [field]="{id:'IDSchema', label: 'IDSchema', type : 'ng-select-schema', dataSource:_IDSchemaDataSource, bindLabel:'Name',bindValue:'Id' , form : formGroup }"(change)="changeSchema($event)"> </app-form-control> -->
               <app-form-control
-                [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c }"
+                [field]="{id:'ApprovalMode',label:'ApprovalMode', type : 'ng-select',dataSource: ApprovalModes, bindLabel:'Name',bindValue:'Code', form : c ,appendTo:'#ng-select-aprrovalRuleDetail'}"
                 (change)="saveChange()"
               ></app-form-control>
               <app-form-control
-                [field]="{id:'_approvalListIds', type : 'ng-select-staff', label: 'ApproverList',dataSource: c.controls._approverListDataSource.value , bindLabel:'FullName',bindValue:'Id', multiple: true, clearable: true, form : c }"
+                [field]="{id:'_approvalListIds', type : 'ng-select-staff', label: 'ApproverList',dataSource: c.controls._approverListDataSource.value , bindLabel:'FullName',bindValue:'Id', multiple: true, clearable: true, form : c,appendTo:'#ng-select-aprrovalRuleDetail' }"
                 (change)="changeApprovedBy($event,c)"
               ></app-form-control>
             </ion-col>

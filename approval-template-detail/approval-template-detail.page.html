@@ -20,6 +20,8 @@
     </ion-grid>
 
     <div class="row-full shadow full-screen">
+      <div id="ng-select-header" style="position: absolute; z-index: 30005"></div>
+
       <ion-toolbar color="primary">
         <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
           <ion-segment-button value="s1">
@@ -59,15 +61,15 @@
                   <small label *ngIf="formGroup.controls.Id?.value">Id: {{formGroup.controls.Id.value}}</small>
                 </app-form-control>
                 <app-form-control
-                  [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup }"
+                  [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource:requestTypeList ,bindValue:'Code', bindLabel:'Name', form : formGroup, appendTo : '#ng-select-header'}"
                   (change)="changeType()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'SubType', label: 'Sub type', type : 'ng-select',dataSource:requestSubTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup }"
+                  [field]="{id:'SubType', label: 'Sub type', type : 'ng-select',dataSource:requestSubTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup, appendTo : '#ng-select-header' }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'ApprovalMode', label: 'Approval mode', type : 'ng-select', dataSource:approvalModes ,bindValue:'Code', bindLabel:'Name', form : formGroup }"
+                  [field]="{id:'ApprovalMode', label: 'Approval mode', type : 'ng-select', dataSource:approvalModes ,bindValue:'Code', bindLabel:'Name', form : formGroup, appendTo : '#ng-select-header' }"
                   (change)="saveChange()"
                 ></app-form-control>
               </ion-col>
@@ -112,17 +114,17 @@
                 ></app-form-control>
                 <app-form-control
                   *ngIf="formGroup.get('IsUserCanChooseApprover').value"
-                  [field]="{id:'_SelectableApproverList', label: 'Selectable approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SelectableApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
+                  [field]="{id:'_SelectableApproverList', label: 'Selectable approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SelectableApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true, appendTo : '#ng-select-header'}"
                   (change)="changeStaffSelection($event,'SelectableApproverList')"
                 ></app-form-control>
                 <!-- TODO: Người duyệt cố định -->
                 <app-form-control
-                  [field]="{id:'_FixedApproverList', label: 'Fixed approvers', type : 'ng-select-staff', dataSource: formGroup.get('_FixedApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
+                  [field]="{id:'_FixedApproverList', label: 'Fixed approvers', type : 'ng-select-staff', dataSource: formGroup.get('_FixedApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true, appendTo : '#ng-select-header'}"
                   (change)="changeStaffSelection($event,'FixedApproverList')"
                 ></app-form-control>
                 <!-- TODO: Quyền duyệt tối cao -->
                 <app-form-control
-                  [field]="{id:'_SupperApproverList', label: 'Super approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SupperApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
+                  [field]="{id:'_SupperApproverList', label: 'Super approvers', type : 'ng-select-staff', dataSource: formGroup.get('_SupperApproverListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true, appendTo : '#ng-select-header'}"
                   (change)="changeStaffSelection($event,'SupperApproverList')"
                 ></app-form-control>
               </ion-col>
@@ -138,7 +140,7 @@
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
-                  [field]="{id:'_FollowerList', label: 'Followers', type : 'ng-select-staff', dataSource: formGroup.get('_FollowerListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true}"
+                  [field]="{id:'_FollowerList', label: 'Followers', type : 'ng-select-staff', dataSource: formGroup.get('_FollowerListDataSource').value ,bindValue:'Id', bindLabel:'FullName', form : formGroup , clearable:true,multiple:true, appendTo : '#ng-select-header'}"
                   (change)="changeStaffSelection($event,'FollowerList')"
                 ></app-form-control>
               </ion-col>
@@ -515,7 +517,7 @@
               </ion-col>
               <ion-col size="12" size-sm size-xl="6">
                 <app-form-control
-                  [field]="{id:'IDSchemaMapping', label: 'Schema mapping', type : 'ng-select',dataSource: schemaList, bindValue:'Id', bindLabel:'Name', form : formGroup }"
+                  [field]="{id:'IDSchemaMapping', label: 'Schema mapping', type : 'ng-select',dataSource: schemaList, bindValue:'Id', bindLabel:'Name', form : formGroup, appendTo : '#ng-select-header' }"
                   (change)="changeSchema()"
                 ></app-form-control>
 
@@ -531,7 +533,7 @@
                       >
                     </label>
                     <app-input-control
-                      [field]="{id:'UDFMapping' +c, label:'UDFMapping'+c , type : 'ng-select', dataSource: _schemaListMappingDetail, bindValue:'Code', bindLabel:'Name', form : formGroup }"
+                      [field]="{id:'UDFMapping' +c, label:'UDFMapping'+c , type : 'ng-select', dataSource: _schemaListMappingDetail, bindValue:'Code', bindLabel:'Name', form : formGroup, appendTo : '#ng-select-header' }"
                       (change)="saveChange()"
                     ></app-input-control>
                   </div>

@@ -131,7 +131,7 @@
               </div>
             </ion-col>
           </ion-row>
-          <ion-list *ngIf="pageConfig.canApprove || pageConfig.canDisapprove">
+          <ion-list *ngIf="pageConfig.canApprove || pageConfig.canDisapprove|| pageConfig.canDeny ||pageConfig.canForward">
             <ion-list-header>
               <ion-label color="primary">{{'Approve' | translate}}</ion-label>
             </ion-list-header>
@@ -143,12 +143,12 @@
                       {{'Approve' | translate}}
                     </ion-button>
                   </ion-col>
-                  <ion-col size="6" size-md="3" *ngIf="item.Status == 'Pending'">
+                  <ion-col size="6" size-md="3" *ngIf="pageConfig.canForward">
                     <ion-button color="warning" expand="block" (click)="submitApproval('Forward')">
                       {{'Forward' | translate}}
                     </ion-button>
                   </ion-col>
-                  <ion-col size="6" size-md="3" *ngIf="item.Status == 'Pending'|| item.Status == 'InProgress'">
+                  <ion-col size="6" size-md="3" *ngIf="pageConfig.canDeny">
                     <ion-button color="danger" expand="block" (click)="submitApproval('Denied')">
                       {{'Deny' | translate}}
                     </ion-button>
