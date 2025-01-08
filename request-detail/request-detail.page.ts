@@ -19,8 +19,6 @@ import { lib } from 'src/app/services/static/global-functions';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { ApproveModalPage } from '../approve-modal/approve-modal.page';
 import { environment } from 'src/environments/environment';
-import { ItemInVendorModalPage } from 'src/app/modals/item-in-vendor-modal/item-in-vendor-modal.component';
-import { catchError, concat, distinctUntilChanged, of, Subject, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-request-detail',
@@ -33,12 +31,12 @@ export class RequestDetailPage extends PageBase {
   statusList = [];
   timeOffTypeList = [];
   commentList = [];
-  __currentVendor;
+  _currentVendor;
   imgPath = '';
   mappingList = [];
   approvalTemplate: any;
   isSupperApprover;
-  _currentVendor;
+  _currentApprover;
   commentForm: FormGroup;
   purchaseRequestFormGroup: FormGroup;
   branchList = [];
@@ -121,7 +119,7 @@ export class RequestDetailPage extends PageBase {
     this.item._Approvers.forEach((i) => {
       i._Status = this.statusList.find((d) => d.Code == i.Status);
       if (i.Id == this.env.user.StaffID) {
-        this._currentVendor = i;
+        this._currentApprover = i;
       }
     });
 
@@ -217,7 +215,7 @@ export class RequestDetailPage extends PageBase {
         this._staffDataSource.initSearch();
       }
       if (!this.pageConfig.canEdit) this.purchaseRequestFormGroup.disable();
-      this.__currentVendor = this.purchaseRequestFormGroup.get('IDVendor').value;
+      this._currentVendor = this.purchaseRequestFormGroup.get('IDVendor').value;
     }
   }
 
@@ -266,10 +264,16 @@ export class RequestDetailPage extends PageBase {
               .getRawValue()
               .filter((f) => f.Id && (f.IDVendor != e.Id && !(f._Vendors?.map(v => v.Id)?.includes(e.Id))))
               .map((o) => o.Id);
+
+              orderLines.controls.filter((f) => f.get('_Vendors').value.map(v => v.Id).includes(e.Id)).forEach((o) => {
+                o.get('IDVendor').setValue(e.Id);
+                o.get('IDVendor').markAsDirty();
+                });
             this.purchaseRequestFormGroup.get('DeletedLines').setValue(DeletedLines);
             this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
-            this.saveChangePurchaseRequest();
             this._currentVendor = e;
+            
+            this.saveChangePurchaseRequest();
           })
           .catch(() => {
             this.purchaseRequestFormGroup.get('IDVendor').setValue(this._currentVendor?.Id);
@@ -379,7 +383,7 @@ export class RequestDetailPage extends PageBase {
     if(Ids && Ids.length>0){
       this.purchaseRequestFormGroup.get('DeletedLines').setValue(Ids);
       this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
-      this.saveChange().then(s=>{
+      this.saveChangePurchaseRequest().then(s=>{
         Ids.forEach(id=>{
           let index = groups.controls.findIndex((x) => x.get('Id').value == id);
           if(index >= 0) groups.removeAt(index);
@@ -403,6 +407,8 @@ export class RequestDetailPage extends PageBase {
   checkPermision() {
     let canDisapproveStatus = ['Approved', 'InProgress', 'Pending'];
     let canApproveStatus = ['InProgress', 'Pending', 'Unapproved'];
+    let canDenyStatus = [ 'InProgress', 'Pending'];
+    let canForwardStatus = [ 'Pending'];
     // let ignoredStatus = ['Draft', 'Approved', 'Denied'];
     // let lockStatus = ['Forward']; //'Approved', 'Denied',
     this.pageConfig.canApprove = false;
@@ -410,15 +416,15 @@ export class RequestDetailPage extends PageBase {
       if (!(this.item.Status == 'Unapproved' && this.item.Type == 'DataCorrection')) {
         if (
           this.approvalTemplate?.IsSupperApprover ||
-          (this._currentVendor && this.item.ApprovalMode?.trim() != 'SequentialApprovals')
+          (this._currentApprover && this.item.ApprovalMode?.trim() != 'SequentialApprovals')
         ) {
           this.pageConfig.canApprove = true;
         } else {
-          if (this._currentVendor) {
+          if (this._currentApprover) {
             // Duyệt tuần tự
             let approverIdx = this.item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID);
             if (approverIdx != 0) {
-              for (let index = approverIdx - 1; (index = 0); index--) {
+              for (let index = approverIdx - 1; (index == 0); index--) {
                 const Approver = this.item._Approvers[index];
                 if (Approver.Status != 'Approved') {
                   break;
@@ -435,11 +441,31 @@ export class RequestDetailPage extends PageBase {
       }
     }
     this.pageConfig.canDisapprove = false;
-    if (
-      canDisapproveStatus.includes(this.item.Status) &&
-      (this.approvalTemplate?.IsSupperApprover || this._currentVendor)
-    ) {
+    if (canDisapproveStatus.includes(this.item.Status) &&
+      (this.approvalTemplate?.IsSupperApprover || this._currentApprover)) {
       if (!(this.item.Status == 'Approved' && this.item.Type == 'DataCorrection')) this.pageConfig.canDisapprove = true;
+    }
+    this.pageConfig.canForward = false;
+    if (canForwardStatus.includes(this.item.Status)&&
+    (this.approvalTemplate?.IsSupperApprover || this._currentApprover) ) this.pageConfig.canForward = true
+    this.pageConfig.canDeny = false;
+    if (canDenyStatus.includes(this.item.Status)&&
+    (this.approvalTemplate?.IsSupperApprover || this._currentApprover) ) this.pageConfig.canDeny = true
+    if(this._currentApprover){
+      switch (this._currentApprover.Status) {
+        case 'Approved':
+          this.pageConfig.canApprove = false;
+          break;
+          case 'Unapproved':
+            this.pageConfig.canDisapprove = false;
+            break;
+          case 'Denied':
+            this.pageConfig.canDeny = false;
+            break;
+          case 'Forward':
+            this.pageConfig.canForward = false;
+            break;
+      }
     }
   }
 
