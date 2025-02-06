@@ -1,8 +1,7 @@
 <ion-header>
   <app-toolbar
     [page]="this"
-    [ShowSubmit]="pageConfig.ShowSubmit"
-    [ShowCancel]="pageConfig.ShowCancel"
+
   ></app-toolbar>
   <ion-toolbar style="--padding-start: 4px">
     <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">

@@ -62,6 +62,7 @@ export class RequestPage extends PageBase {
     super();
     this.imgPath = environment.staffAvatarsServer;
     this.pageConfig.isShowFeature = true;
+    this.pageConfig.ShowFeature = true;
     this.pageConfig.mainPageActive = true;
     this.pageConfig.canSubmitOrdersForApproval = true;
   }
