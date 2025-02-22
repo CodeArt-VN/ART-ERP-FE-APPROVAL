@@ -1,77 +1,76 @@
 .full-screen {
-  min-height: calc(100vh - 97px);
-  height: 100%;
+	min-height: calc(100vh - 97px);
+	height: 100%;
 }
 
 .remark {
-  white-space: pre-line !important;
+	white-space: pre-line !important;
 }
 
 .log {
-  align-items: stretch;
+	align-items: stretch;
 
-  .time {
-    max-width: 100px;
-    min-width:100px;
-  }
-  .icon {
-    // margin-left: -34px;
-    margin-left: -27px;
-    background: var(--feature-background-top);
-  }
+	.time {
+		max-width: 100px;
+		min-width: 100px;
+	}
+	.icon {
+		// margin-left: -34px;
+		margin-left: -27px;
+		background: var(--feature-background-top);
+	}
 }
 
 .send {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
+	position: absolute;
+	bottom: 8px;
+	right: 8px;
 }
 
 .A4 .sheet {
-  height: unset;
+	height: unset;
 }
 .sheet.rpt::ng-deep {
-  .top-zone {
-    min-height: 448px;
-  }
-  .noti {
-    margin-top: unset;
-  }
+	.top-zone {
+		min-height: 448px;
+	}
+	.noti {
+		margin-top: unset;
+	}
 }
 .sheet.padding-10mm {
-  padding: 0 10mm;
+	padding: 0 10mm;
 }
-::ng-deep{
-    .main-active-item{
-      padding-top: 8px;
-      padding-bottom: 8px;
-      position : relative;
-    ion-icon{
-      min-width: 25.6px;
-      max-width: 25.6px;
-      position: absolute;
-      left: calc(var(--padding-start) + var(--ion-safe-area-left, 0px) + 100px - 25.6px / 2);
-      margin: 0 !important;
-      top: 50%;
-      bottom: 50%;
-      transform: translate(1px, -50%);
-    }
-    ion-label{
-      margin-top: 0px;
-      margin-bottom: 0px;
-      display: flex !important;
-      flex-direction: column;
-      justify-content: center;
-    }
-   
-  }
-  .main-active-item::after {
-    content: '';
-    height: 100%;
-    width: 1px; /* Add width for visibility */
-    position: absolute; /* Position relative to parent */
-    top: 0 ; /* Adjust placement */
-    border-right: solid 1px var(--border-color);
-    left:calc(var(--padding-start) + var(--ion-safe-area-left, 0px) + 100px)
-  }
+::ng-deep {
+	.main-active-item {
+		padding-top: 8px;
+		padding-bottom: 8px;
+		position: relative;
+		ion-icon {
+			min-width: 25.6px;
+			max-width: 25.6px;
+			position: absolute;
+			left: calc(var(--padding-start) + var(--ion-safe-area-left, 0px) + 100px - 25.6px / 2);
+			margin: 0 !important;
+			top: 50%;
+			bottom: 50%;
+			transform: translate(1px, -50%);
+		}
+		ion-label {
+			margin-top: 0px;
+			margin-bottom: 0px;
+			display: flex !important;
+			flex-direction: column;
+			justify-content: center;
+		}
+	}
+	.main-active-item::after {
+		content: '';
+		height: 100%;
+		width: 1px; /* Add width for visibility */
+		position: absolute; /* Position relative to parent */
+		top: 0; /* Adjust placement */
+		border-right: solid 1px var(--border-color);
+		left: calc(var(--padding-start) + var(--ion-safe-area-left, 0px) + 100px);
+	}
 }

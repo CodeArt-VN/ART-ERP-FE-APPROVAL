@@ -7,14 +7,7 @@ import { ApprovalRulePage } from './approval-rule.page';
 import { ShareModule } from 'src/app/share.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ShareModule,
-
-    RouterModule.forChild([{ path: '', component: ApprovalRulePage }]),
-  ],
-  declarations: [ApprovalRulePage],
+	imports: [IonicModule, CommonModule, FormsModule, ShareModule, RouterModule.forChild([{ path: '', component: ApprovalRulePage }])],
+	declarations: [ApprovalRulePage],
 })
 export class ApprovalRulePageModule {}

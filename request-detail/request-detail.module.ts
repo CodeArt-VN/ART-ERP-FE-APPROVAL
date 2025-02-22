@@ -9,14 +9,14 @@ import { ApproveModalPage } from '../approve-modal/approve-modal.page';
 import { PurchaseItemsComponentPageModule } from '../../PURCHASE/purchase-request-detail/purchase-items/purchase-items.component.module';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: RequestDetailPage,
-  },
+	{
+		path: '',
+		component: RequestDetailPage,
+	},
 ];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule,PurchaseItemsComponentPageModule, RouterModule.forChild(routes)],
-  declarations: [RequestDetailPage, ApproveModalPage],
+	imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, PurchaseItemsComponentPageModule, RouterModule.forChild(routes)],
+	declarations: [RequestDetailPage, ApproveModalPage],
 })
 export class RequestDetailPageModule {}

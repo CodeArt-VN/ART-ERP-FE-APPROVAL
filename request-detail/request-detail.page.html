@@ -1,71 +1,59 @@
 <ion-header>
-  <app-toolbar [page]="this" >
-    <!-- <ion-button
+	<app-toolbar [page]="this">
+		<!-- <ion-button
       *ngIf="item?.Type == 'PurchaseRequest'"
       (click)="openModal()"
       title="{{'Open item vendor model' | translate}}"
     >
       {{'Open item vendor model' || translate}}
     </ion-button> -->
-  </app-toolbar>
+	</app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
-  <ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
-    <div class="ion-padding">
-      <ng-container *ngIf="item.Type == 'DataCorrection'">
-        <ion-item lines="none" class="ion-no-padding">
-          <ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare">
-            {{'Show compare' | translate}}</ion-toggle
-          >
-        </ion-item>
-        <ion-item lines="none" class="ion-no-padding">
-          <ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isShowDifference"
-            >{{'Show difference' | translate}}</ion-toggle
-          >
-        </ion-item>
-        <ion-row>
-          <ion-col>
-            <div class="c-control" *ngIf="jsonViewerConfig.showProperties.length >0">
-              <label class="c-label">{{ 'Show properties' | translate }}</label>
-              <span class="c-input" style="flex-wrap: wrap; height: auto">
-                <ion-chip
-                  *ngFor="let property of jsonViewerConfig.showProperties;let j = index"
-                  color="primary"
-                  style="height: auto; margin: 2px"
-                >
-                  <ion-label>{{property | translate}}</ion-label>
-                  <ion-icon name="close" (click)="addNotShowProperty(j)"></ion-icon>
-                </ion-chip>
-              </span>
-            </div>
-            <div class="c-control" *ngIf="jsonViewerConfig.notShowProperties.length >0">
-              <label class="c-label">{{ 'Not show properties' | translate }}</label>
-              <span class="c-input" style="flex-wrap: wrap; height: auto">
-                <ion-chip
-                  *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index"
-                  color="danger"
-                  style="height: auto; margin: 2px"
-                >
-                  <ion-label>{{property | translate}}</ion-label>
-                  <ion-icon name="close" (click)="addShowProperty(j)"></ion-icon>
-                </ion-chip>
-              </span>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ng-container>
-    </div>
-  </ion-fab>
-  <div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
-    <ion-grid *ngIf="item && pageConfig.showSpinner==false">
-      <ion-row>
-        <ion-col size="12" size-md="12" size-lg="12" size-xl="8">
-          <ion-list-header>
-            <ion-label color="primary">{{'Suggestions' | translate}}</ion-label>
-          </ion-list-header>
-          <ion-list>
-            <!-- <ion-item>
+	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<div class="ion-padding">
+			<ng-container *ngIf="item.Type == 'DataCorrection'">
+				<ion-item lines="none" class="ion-no-padding">
+					<ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare"> {{'Show compare' | translate}}</ion-toggle>
+				</ion-item>
+				<ion-item lines="none" class="ion-no-padding">
+					<ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isShowDifference">{{'Show difference' | translate}}</ion-toggle>
+				</ion-item>
+				<ion-row>
+					<ion-col>
+						<div class="c-control" *ngIf="jsonViewerConfig.showProperties.length >0">
+							<label class="c-label">{{ 'Show properties' | translate }}</label>
+							<span class="c-input" style="flex-wrap: wrap; height: auto">
+								<ion-chip *ngFor="let property of jsonViewerConfig.showProperties;let j = index" color="primary" style="height: auto; margin: 2px">
+									<ion-label>{{property | translate}}</ion-label>
+									<ion-icon name="close" (click)="addNotShowProperty(j)"></ion-icon>
+								</ion-chip>
+							</span>
+						</div>
+						<div class="c-control" *ngIf="jsonViewerConfig.notShowProperties.length >0">
+							<label class="c-label">{{ 'Not show properties' | translate }}</label>
+							<span class="c-input" style="flex-wrap: wrap; height: auto">
+								<ion-chip *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index" color="danger" style="height: auto; margin: 2px">
+									<ion-label>{{property | translate}}</ion-label>
+									<ion-icon name="close" (click)="addShowProperty(j)"></ion-icon>
+								</ion-chip>
+							</span>
+						</div>
+					</ion-col>
+				</ion-row>
+			</ng-container>
+		</div>
+	</ion-fab>
+	<div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
+		<ion-grid *ngIf="item && pageConfig.showSpinner==false">
+			<ion-row>
+				<ion-col size="12" size-md="12" size-lg="12" size-xl="8">
+					<ion-list-header>
+						<ion-label color="primary">{{'Suggestions' | translate}}</ion-label>
+					</ion-list-header>
+					<ion-list>
+						<!-- <ion-item>
               <ion-label>
                 <p>{{'Leaves classification' | translate}}</p>
                 <h2>
@@ -73,330 +61,286 @@
                 </h2>
               </ion-label>
             </ion-item> -->
-            <ng-container *ngIf="item.Type != 'DataCorrection'">
-              <ion-item *ngFor="let udf of mappingList">
-                <ion-label>
-                  <p>{{udf.Label | translate}}</p>
-                  <h2>{{udf.Value}}</h2>
-                </ion-label>
-              </ion-item>
-            </ng-container>
-            <ion-item *ngIf="item.UDF16 && item.Type == 'DataCorrection'">
-              <ion-label>
-                <app-json-viewer
-                  [item]="item.UDF16"
-                  [isCompare]="jsonViewerConfig.isCompare"
-                  [isShowDifference]="jsonViewerConfig.isShowDifference"
-                  [notShowProperties]="jsonViewerConfig.notShowProperties"
-                >
-                </app-json-viewer>
-              </ion-label>
-            </ion-item>
+						<ng-container *ngIf="item.Type != 'DataCorrection'">
+							<ion-item *ngFor="let udf of mappingList">
+								<ion-label>
+									<p>{{udf.Label | translate}}</p>
+									<h2>{{udf.Value}}</h2>
+								</ion-label>
+							</ion-item>
+						</ng-container>
+						<ion-item *ngIf="item.UDF16 && item.Type == 'DataCorrection'">
+							<ion-label>
+								<app-json-viewer
+									[item]="item.UDF16"
+									[isCompare]="jsonViewerConfig.isCompare"
+									[isShowDifference]="jsonViewerConfig.isShowDifference"
+									[notShowProperties]="jsonViewerConfig.notShowProperties"
+								>
+								</app-json-viewer>
+							</ion-label>
+						</ion-item>
 
-            <ion-item>
-              <ion-label>
-                <p>{{'Status' | translate}}</p>
-                <h2>
-                  <ion-text [color]="item._Status.Color"><b> {{item._Status.Name}}</b></ion-text>
-                </h2>
-              </ion-label>
-            </ion-item>
-          </ion-list>
-          <ion-row *ngIf="item.Type=='SaleOrder'">
-            <ion-col size="12" class="A4">
-              <div style="overflow: auto" *ngIf="item">
-                <div class="giao-nhan">
-                  <!-- PGNTT -->
-                  <section class="sheet padding-10mm rpt p1">
-                    <app-so-note [ID]="item.UDF01" [SOIsRemoveItemsWithZeroPriceOnOrderNote]="true"></app-so-note>
-                  </section>
-                </div>
-              </div>
-            </ion-col>
-          </ion-row>
-          <ion-row *ngIf="item.Type=='PurchaseOrder'">
-            <ion-col size="12" class="A4">
-              <div style="overflow: auto" *ngIf="item">
-                <div class="giao-nhan">
-                  <!-- PGNTT -->
-                  <section class="sheet padding-10mm rpt p1">
-                    <app-po-note
-                      [ID]="item.UDF01"
-                      [PONConvertToLargerUoM]="true"
-                      [PONShowPackingUoM]="true"
-                      [PONShowEACaseOnly]="false"
-                    ></app-po-note>
-                  </section>
-                </div>
-              </div>
-            </ion-col>
-          </ion-row>
-          <ion-list *ngIf="pageConfig.canApprove || pageConfig.canDisapprove|| pageConfig.canDeny ||pageConfig.canForward">
-            <ion-list-header>
-              <ion-label color="primary">{{'Approve' | translate}}</ion-label>
-            </ion-list-header>
-            <ion-item>
-              <ion-grid fixed>
-                <ion-row>
-                  <ion-col size="6" size-md="3" *ngIf="pageConfig.canApprove">
-                    <ion-button color="success" expand="block" (click)="submitApproval('Approved')">
-                      {{'Approve' | translate}}
-                    </ion-button>
-                  </ion-col>
-                  <ion-col size="6" size-md="3" *ngIf="pageConfig.canForward">
-                    <ion-button color="warning" expand="block" (click)="submitApproval('Forward')">
-                      {{'Forward' | translate}}
-                    </ion-button>
-                  </ion-col>
-                  <ion-col size="6" size-md="3" *ngIf="pageConfig.canDeny">
-                    <ion-button color="danger" expand="block" (click)="submitApproval('Denied')">
-                      {{'Deny' | translate}}
-                    </ion-button>
-                  </ion-col>
-                  <ion-col size="6" size-md="3" *ngIf="pageConfig.canDisapprove">
-                    <ion-button color="danger" expand="block" (click)="disapprove()">
-                      {{'Disapprove' | translate}}
-                    </ion-button>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-          </ion-list>
+						<ion-item>
+							<ion-label>
+								<p>{{'Status' | translate}}</p>
+								<h2>
+									<ion-text [color]="item._Status.Color"><b> {{item._Status.Name}}</b></ion-text>
+								</h2>
+							</ion-label>
+						</ion-item>
+					</ion-list>
+					<ion-row *ngIf="item.Type=='SaleOrder'">
+						<ion-col size="12" class="A4">
+							<div style="overflow: auto" *ngIf="item">
+								<div class="giao-nhan">
+									<!-- PGNTT -->
+									<section class="sheet padding-10mm rpt p1">
+										<app-so-note [ID]="item.UDF01" [SOIsRemoveItemsWithZeroPriceOnOrderNote]="true"></app-so-note>
+									</section>
+								</div>
+							</div>
+						</ion-col>
+					</ion-row>
+					<ion-row *ngIf="item.Type=='PurchaseOrder'">
+						<ion-col size="12" class="A4">
+							<div style="overflow: auto" *ngIf="item">
+								<div class="giao-nhan">
+									<!-- PGNTT -->
+									<section class="sheet padding-10mm rpt p1">
+										<app-po-note [ID]="item.UDF01" [PONConvertToLargerUoM]="true" [PONShowPackingUoM]="true" [PONShowEACaseOnly]="false"></app-po-note>
+									</section>
+								</div>
+							</div>
+						</ion-col>
+					</ion-row>
+					<ion-list *ngIf="pageConfig.canApprove || pageConfig.canDisapprove|| pageConfig.canDeny ||pageConfig.canForward">
+						<ion-list-header>
+							<ion-label color="primary">{{'Approve' | translate}}</ion-label>
+						</ion-list-header>
+						<ion-item>
+							<ion-grid fixed>
+								<ion-row>
+									<ion-col size="6" size-md="3" *ngIf="pageConfig.canApprove">
+										<ion-button color="success" expand="block" (click)="submitApproval('Approved')"> {{'Approve' | translate}} </ion-button>
+									</ion-col>
+									<ion-col size="6" size-md="3" *ngIf="pageConfig.canForward">
+										<ion-button color="warning" expand="block" (click)="submitApproval('Forward')"> {{'Forward' | translate}} </ion-button>
+									</ion-col>
+									<ion-col size="6" size-md="3" *ngIf="pageConfig.canDeny">
+										<ion-button color="danger" expand="block" (click)="submitApproval('Denied')"> {{'Deny' | translate}} </ion-button>
+									</ion-col>
+									<ion-col size="6" size-md="3" *ngIf="pageConfig.canDisapprove">
+										<ion-button color="danger" expand="block" (click)="disapprove()"> {{'Disapprove' | translate}} </ion-button>
+									</ion-col>
+								</ion-row>
+							</ion-grid>
+						</ion-item>
+					</ion-list>
 
-          <ion-list *ngIf="item.Type == 'PurchaseRequest' && purchaseRequestFormGroup">
-            <ion-grid fixed>
-              <form [formGroup]="purchaseRequestFormGroup">
-                <ion-row class="hr-group">
-                  <ion-col size="12" size-sm size-xl="6">
-                    <app-form-control
-                      [field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
-                      (change)="changeVendor($event)"
-                    >
-                    </app-form-control>
-                    <app-form-control
-                      [field]="{id :'ContentType', label:'Content type' ,
+					<ion-list *ngIf="item.Type == 'PurchaseRequest' && purchaseRequestFormGroup">
+						<ion-grid fixed>
+							<form [formGroup]="purchaseRequestFormGroup">
+								<ion-row class="hr-group">
+									<ion-col size="12" size-sm size-xl="6">
+										<app-form-control
+											[field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
+											(change)="changeVendor($event)"
+										>
+										</app-form-control>
+										<app-form-control
+											[field]="{id :'ContentType', label:'Content type' ,
                     type:'ng-select',dataSource:contentTypeList,
                     bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}"
-                      (change)="changeContentType($event)"
-                    >
-                    </app-form-control>
-                    <app-form-control
-                      [field]="{id :'Remark', label:'Remark' ,
+											(change)="changeContentType($event)"
+										>
+										</app-form-control>
+										<app-form-control
+											[field]="{id :'Remark', label:'Remark' ,
                     type:'textarea',form:purchaseRequestFormGroup}"
-                      (change)="saveChangePurchaseRequest()"
-                    >
-                    </app-form-control>
-                  </ion-col>
-                  <ion-col size="12" size-sm size-xl="6">
-                    <app-form-control
-                      [clearable]="true"
-                      [virtualScroll]="true"
-                      [field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseRequestFormGroup }"
-                      (change)="changeRequiredDate();"
-                    >
-                    </app-form-control>
+											(change)="saveChangePurchaseRequest()"
+										>
+										</app-form-control>
+									</ion-col>
+									<ion-col size="12" size-sm size-xl="6">
+										<app-form-control
+											[clearable]="true"
+											[virtualScroll]="true"
+											[field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseRequestFormGroup }"
+											(change)="changeRequiredDate();"
+										>
+										</app-form-control>
 
-                    <app-form-control
-                      [clearable]="true"
-                      [virtualScroll]="true"
-                      [field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
-                      (change)="changeRequiredDate()"
-                    ></app-form-control>
+										<app-form-control
+											[clearable]="true"
+											[virtualScroll]="true"
+											[field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
+											(change)="changeRequiredDate()"
+										></app-form-control>
 
-                    <div class="c-control">
-                      <label class="c-label" for="TotalAfterTax"
-                        >{{'Value' | translate}}
-                        <span
-                          *ngIf="!purchaseRequestFormGroup.controls.TotalAfterTax.valid && !purchaseRequestFormGroup.controls.TotalAfterTax.pending && (purchaseRequestFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
-                          ion-text
-                          color="danger"
-                          >(*)</span
-                        >
-                      </label>
-                      <span class="c-input disable">
-                        <b *ngIf="purchaseRequestFormGroup.controls.OrderLines?.controls?.length>0">{{calcTotalAfterTax() | number: '1.0-0'}}</b>
-                      </span>
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </form>
-            </ion-grid>
-            <div class="row-full shadow">
-              <ion-toolbar color="primary">
-                <ion-segment scrollable="true">
-                  <ion-segment-button >
-                    <ion-label>{{'Product list' | translate}}</ion-label>
-                  </ion-segment-button>
-                </ion-segment>
-              </ion-toolbar>
-              <app-purchase-items
-              [contentType]="_currentContentType"
-              (renderFormArray)="renderFormArray($event)"
-              [canEdit]="pageConfig.canEditPurchaseRequest"
-              [IDVendor]="purchaseRequestFormGroup.get('IDVendor').value"
-              [orderLines]="itemPurchaseRequest.OrderLines"
-              (onChange)="saveOrderBack($event)"
-              (removeItem)="removeItem($event)"
-            >
-            </app-purchase-items>
-            </div>
+										<div class="c-control">
+											<label class="c-label" for="TotalAfterTax"
+												>{{'Value' | translate}}
+												<span
+													*ngIf="!purchaseRequestFormGroup.controls.TotalAfterTax.valid && !purchaseRequestFormGroup.controls.TotalAfterTax.pending && (purchaseRequestFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
+													ion-text
+													color="danger"
+													>(*)</span
+												>
+											</label>
+											<span class="c-input disable">
+												<b *ngIf="purchaseRequestFormGroup.controls.OrderLines?.controls?.length>0">{{calcTotalAfterTax() | number: '1.0-0'}}</b>
+											</span>
+										</div>
+									</ion-col>
+								</ion-row>
+							</form>
+						</ion-grid>
+						<div class="row-full shadow">
+							<ion-toolbar color="primary">
+								<ion-segment scrollable="true">
+									<ion-segment-button>
+										<ion-label>{{'Product list' | translate}}</ion-label>
+									</ion-segment-button>
+								</ion-segment>
+							</ion-toolbar>
+							<app-purchase-items
+								[contentType]="_currentContentType"
+								(renderFormArray)="renderFormArray($event)"
+								[canEdit]="pageConfig.canEditPurchaseRequest"
+								[IDVendor]="purchaseRequestFormGroup.get('IDVendor').value"
+								[orderLines]="itemPurchaseRequest.OrderLines"
+								(onChange)="saveOrderBack($event)"
+								(removeItem)="removeItem($event)"
+							>
+							</app-purchase-items>
+						</div>
 
+						<div *ngIf="!isAutoSave">
+							<ion-button *ngIf="item?.Type == 'PurchaseRequest'" (click)="saveChangePurchaseRequest(true);" title="{{'Submit request' | translate}}">
+								{{'Submit purchase request' || translate}}
+							</ion-button>
+						</div>
+					</ion-list>
 
-            <div *ngIf="!isAutoSave">
-              <ion-button
-                *ngIf="item?.Type == 'PurchaseRequest'"
-                (click)="saveChangePurchaseRequest(true);"
-                title="{{'Submit request' | translate}}"
-              >
-                {{'Submit purchase request' || translate}}
-              </ion-button>
-            </div>
-          </ion-list>
+					<ion-list *ngIf="item?.Id">
+						<ion-list-header>
+							<ion-label color="primary">{{'Discussion' | translate}}</ion-label>
+						</ion-list-header>
+						<ion-item lines="none">
+							<ion-avatar slot="start">
+								<ion-img #img [src]="env.user.Avatar" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+							</ion-avatar>
+							<ion-label>
+								<h2>{{env.user.FullName}}</h2>
+							</ion-label>
+						</ion-item>
 
-          <ion-list *ngIf="item?.Id">
-            <ion-list-header>
-              <ion-label color="primary">{{'Discussion' | translate}}</ion-label>
-            </ion-list-header>
-            <ion-item lines="none">
-              <ion-avatar slot="start">
-                <ion-img #img [src]="env.user.Avatar" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
-              </ion-avatar>
-              <ion-label>
-                <h2>{{env.user.FullName}}</h2>
-              </ion-label>
-            </ion-item>
+						<form [formGroup]="commentForm">
+							<ion-item lines="none">
+								<div class="c-control">
+									<ion-button (click)="addComment()" fill="clear" class="send">
+										<ion-icon slot="icon-only" name="paper-plane"></ion-icon>
+									</ion-button>
+									<textarea
+										(keydown.enter)="addComment()"
+										placeholder="{{'Write your discussion' | translate}}"
+										rows="1"
+										class="c-input remark"
+										id="Remark"
+										formControlName="Remark"
+										type="textarea"
+									></textarea>
+								</div>
+							</ion-item>
 
-            <form [formGroup]="commentForm">
-              <ion-item lines="none">
-                <div class="c-control">
-                  <ion-button (click)="addComment()" fill="clear" class="send">
-                    <ion-icon slot="icon-only" name="paper-plane"></ion-icon>
-                  </ion-button>
-                  <textarea
-                    (keydown.enter)="addComment()"
-                    placeholder="{{'Write your discussion' | translate}}"
-                    rows="1"
-                    class="c-input remark"
-                    id="Remark"
-                    formControlName="Remark"
-                    type="textarea"
-                  ></textarea>
-                </div>
-              </ion-item>
+							<ion-item lines="none" *ngFor="let i of commentList" class="log">
+								<ion-avatar slot="start">
+									<ion-img #img [src]="imgPath + i._Staff.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+								</ion-avatar>
+								<ion-label>
+									<h3>{{i._Staff.FullName}}</h3>
+									<p><i>{{i.Date}}</i></p>
+									<h4 class="remark">{{i.Remark}}</h4>
+								</ion-label>
+							</ion-item>
+						</form>
+					</ion-list>
+				</ion-col>
 
-              <ion-item lines="none" *ngFor="let i of commentList" class="log">
-                <ion-avatar slot="start">
-                  <ion-img
-                    #img
-                    [src]="imgPath + i._Staff.Code + '.jpg'"
-                    (ionError)="img.src = 'assets/avartar-empty.jpg'"
-                  ></ion-img>
-                </ion-avatar>
-                <ion-label>
-                  <h3>{{i._Staff.FullName}}</h3>
-                  <p><i>{{i.Date}}</i></p>
-                  <h4 class="remark">{{i.Remark}}</h4>
-                </ion-label>
-              </ion-item>
-            </form>
-          </ion-list>
-        </ion-col>
+				<ion-col size="12" size-md="12" size-lg="12" size-xl="4">
+					<div class="row-full shadow full-screen">
+						<ion-list-header>
+							<ion-label color="primary">{{'Requester' | translate}}</ion-label>
+						</ion-list-header>
+						<ion-list>
+							<ion-item>
+								<ion-avatar slot="start">
+									<ion-img #img [src]="imgPath + item._Staff.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+								</ion-avatar>
+								<ion-label>
+									<h2>{{item._Staff.FullName}}</h2>
+								</ion-label>
+							</ion-item>
+						</ion-list>
 
-        <ion-col size="12" size-md="12" size-lg="12" size-xl="4">
-          <div class="row-full shadow full-screen">
-            <ion-list-header>
-              <ion-label color="primary">{{'Requester' | translate}}</ion-label>
-            </ion-list-header>
-            <ion-list>
-              <ion-item>
-                <ion-avatar slot="start">
-                  <ion-img
-                    #img
-                    [src]="imgPath + item._Staff.Code + '.jpg'"
-                    (ionError)="img.src = 'assets/avartar-empty.jpg'"
-                  ></ion-img>
-                </ion-avatar>
-                <ion-label>
-                  <h2>{{item._Staff.FullName}}</h2>
-                </ion-label>
-              </ion-item>
-            </ion-list>
+						<ion-list-header>
+							<ion-label color="primary">{{'Approver' | translate}}</ion-label>
+						</ion-list-header>
+						<ion-list>
+							<ion-item *ngFor="let i of item._Approvers">
+								<ion-avatar slot="start">
+									<ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+								</ion-avatar>
+								<ion-label>
+									<h2>{{i.FullName}}</h2>
+									<h3>
+										<ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa duyệt'}}</ion-text>
+									</h3>
+								</ion-label>
+								<ion-icon *ngIf="i._Status" slot="end" [color]="i._Status.Color" [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
+							</ion-item>
+						</ion-list>
+						<ion-list-header *ngIf="item._Followers?.length>0">
+							<ion-label color="primary">{{'Followers' | translate}}</ion-label>
+						</ion-list-header>
+						<ion-list>
+							<ion-item *ngFor="let i of item._Followers">
+								<ion-avatar slot="start">
+									<ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+								</ion-avatar>
+								<ion-label>
+									<h2>{{i.FullName}}</h2>
+								</ion-label>
+							</ion-item>
+						</ion-list>
 
-            <ion-list-header>
-              <ion-label color="primary">{{'Approver' | translate}}</ion-label>
-            </ion-list-header>
-            <ion-list>
-              <ion-item *ngFor="let i of item._Approvers">
-                <ion-avatar slot="start">
-                  <ion-img
-                    #img
-                    [src]="imgPath + i.Code + '.jpg'"
-                    (ionError)="img.src = 'assets/avartar-empty.jpg'"
-                  ></ion-img>
-                </ion-avatar>
-                <ion-label>
-                  <h2>{{i.FullName}}</h2>
-                  <h3>
-                    <ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa duyệt'}}</ion-text>
-                  </h3>
-                </ion-label>
-                <ion-icon
-                  *ngIf="i._Status"
-                  slot="end"
-                  [color]="i._Status.Color"
-                  [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"
-                ></ion-icon>
-              </ion-item>
-            </ion-list>
-            <ion-list-header *ngIf="item._Followers?.length>0">
-              <ion-label color="primary">{{'Followers' | translate}}</ion-label>
-            </ion-list-header>
-            <ion-list>
-              <ion-item *ngFor="let i of item._Followers">
-                <ion-avatar slot="start">
-                  <ion-img
-                    #img
-                    [src]="imgPath + i.Code + '.jpg'"
-                    (ionError)="img.src = 'assets/avartar-empty.jpg'"
-                  ></ion-img>
-                </ion-avatar>
-                <ion-label>
-                  <h2>{{i.FullName}}</h2>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-
-            <ion-list *ngIf="item._Logs.length">
-              <ion-list-header>
-                <ion-label color="primary">{{'Main activities' | translate}}</ion-label>
-              </ion-list-header>
-              <ion-item *ngFor="let i of item._Logs" class="log main-active-item" lines="none">
-                <ion-label slot="start" class="time">
-                  <p>{{i.Date}}</p>
-                  <h2>{{i.Time}}</h2>
-                </ion-label>
-                <ion-icon
-                  class="icon"
-                  slot="start"
-                  [color]="i._Status?.Color"
-                  [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"
-                ></ion-icon>
-                <!-- <ion-avatar slot="start">
+						<ion-list *ngIf="item._Logs.length">
+							<ion-list-header>
+								<ion-label color="primary">{{'Main activities' | translate}}</ion-label>
+							</ion-list-header>
+							<ion-item *ngFor="let i of item._Logs" class="log main-active-item" lines="none">
+								<ion-label slot="start" class="time">
+									<p>{{i.Date}}</p>
+									<h2>{{i.Time}}</h2>
+								</ion-label>
+								<ion-icon class="icon" slot="start" [color]="i._Status?.Color" [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
+								<!-- <ion-avatar slot="start">
                                     <ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
                                 </ion-avatar> -->
-                <ion-label style="margin-left: 8px">
-                  <h2>{{i.FullName}}</h2>
-                  <h3>
-                    <ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa duyệt'}}</ion-text>
-                  </h3>
-                  <p class="remark" *ngIf="i.Remark">{{i.Remark}}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
-  <app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+								<ion-label style="margin-left: 8px">
+									<h2>{{i.FullName}}</h2>
+									<h3>
+										<ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa duyệt'}}</ion-text>
+									</h3>
+									<p class="remark" *ngIf="i.Remark">{{i.Remark}}</p>
+								</ion-label>
+							</ion-item>
+						</ion-list>
+					</div>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</div>
+	<app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 </ion-content>

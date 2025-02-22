@@ -7,14 +7,14 @@ import { ShareModule } from 'src/app/share.module';
 import { ApprovalTemplateDetailPage } from './approval-template-detail.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: ApprovalTemplateDetailPage,
-  },
+	{
+		path: '',
+		component: ApprovalTemplateDetailPage,
+	},
 ];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
-  declarations: [ApprovalTemplateDetailPage],
+	imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
+	declarations: [ApprovalTemplateDetailPage],
 })
 export class ApprovalTemplateDetailPageModule {}
