@@ -255,7 +255,7 @@ export class RequestPage extends PageBase {
 			});
 			//this.selectedItems = this.selectedItems.filter(i => (i.Status == 'Pending' || i.Status == 'Unapproved'));
 			this.env
-				.showPrompt({ code: 'Bạn có chắc muốn HỦY {{value}} yêu cầu đang chọn?', value: { value: this.selectedItems.length } }, null, {
+				.showPrompt({ code: 'CANCEL_ROWS_CONFIRM_MESSAGE', value: { value: this.selectedItems.length } }, null, {
 					code: 'Duyệt {{value}} yêu cầu',
 					value: { value: this.selectedItems.length },
 				})
@@ -294,8 +294,8 @@ export class RequestPage extends PageBase {
 			this.selectedItems = this.selectedItems.filter((i) => i.Status == 'Draft' || i.Status == 'Unapproved');
 
 			this.env
-				.showPrompt({ code: 'Bạn có chắc muốn gửi duyệt {{value}} đơn hàng đang chọn?', value: { value: this.selectedItems.length } }, null, {
-					code: 'Gửi duyệt {{value}} mua hàng',
+				.showPrompt({ code: 'SUBMIT_FOR_APPROVE_MESSAGE', value: { value: this.selectedItems.length } }, null, {
+					code: 'SUBMIT_FOR_APPROVE',
 					value: { value: this.selectedItems.length },
 				})
 				.then((_) => {
