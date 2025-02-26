@@ -164,7 +164,7 @@
 						<ion-button color="warning" (click)="submit('Pending')" *ngIf="formGroup.get('Type').value != 'PurchaseRequest'"
 							>{{'submit Request For Approval' | translate}}</ion-button
 						>
-						<ion-button color="primary" (click)="submit()" fill="outline">{{'Save draft' | translate}}</ion-button>
+						<ion-button color="primary" (click)="submitForm()" fill="outline">{{'Save draft' | translate}}</ion-button>
 					</div>
 				</ion-col>
 			</ion-row>

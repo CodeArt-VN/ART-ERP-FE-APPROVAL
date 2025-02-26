@@ -83,7 +83,7 @@ export class ApproveModalPage extends PageBase {
 		);
 	}
 
-	submit() {
+	submitForm() {
 		this.formGroup.updateValueAndValidity();
 		if (!this.formGroup.valid) {
 			this.env.showMessage('Please recheck information highlighted in red above', 'warning');

@@ -281,7 +281,7 @@ export class RequestPage extends PageBase {
 				});
 		}
 	}
-	submit() {
+	submitForApproval() {
 		if (this.submitAttempt) return;
 
 		let itemsCanNotProcess = this.selectedItems.filter((i) => !(i.Status == 'Draft' || i.Status == 'Unapproved'));
@@ -335,7 +335,7 @@ export class RequestPage extends PageBase {
 				this.pageConfig.ShowCancel = false;
 			}
 
-			let notShowSubmit = ['Pending', 'Approved', 'InProgress', 'Forward', 'Denied', 'Cancelled', 'Closed'];
+			let notShowSubmit = ['Pending', 'Approved', 'InProgress', 'Forward', 'Denied', 'Canceled', 'Closed'];
 			if (notShowSubmit.indexOf(i.Status) > -1 || (!i.UDF01 && i.Type == 'PurchaseRequest')) {
 				this.pageConfig.ShowSubmit = false;
 			}

@@ -193,7 +193,7 @@ export class RequestModalPage extends PageBase {
 			}
 		});
 	}
-	submit(status = null) {
+	submitForm(status = null) {
 		if (status) {
 			this.formGroup.controls.Status.setValue(status);
 		}

@@ -148,7 +148,7 @@ export class RequestDetailPage extends PageBase {
 			this.checkPermision();
 		}
 		super.loadedData(event);
-		if (['Approved', 'Cancelled', 'Submitted'].includes(this.item.Status)) this.pageConfig.canEdit = false;
+		if (['Approved', 'Canceled', 'Submitted'].includes(this.item.Status)) this.pageConfig.canEdit = false;
 		if (this.item.Type == 'DataCorrection' && this.item.UDF16) {
 			let obj = JSON.parse(this.item.UDF16);
 			this.jsonViewerConfig.showProperties = [];

@@ -87,10 +87,10 @@
 				<ion-col>
 					<div class="c-control ion-text-right">
 						<label class="c-label" for=""></label>
-						<ion-button *ngIf=" item.Status == 'Approved'" (click)="submit()">{{'Approve' | translate}}</ion-button>
-						<ion-button *ngIf=" item.Status == 'Forward'" (click)="submit()">{{'Forward' | translate}}</ion-button>
-						<ion-button *ngIf=" item.Status == 'Denied'" (click)="submit()">{{'Deny' | translate}}</ion-button>
-						<ion-button *ngIf=" item.Status == 'Return'" (click)="submit()">{{'Return' | translate}}</ion-button>
+						<ion-button *ngIf=" item.Status == 'Approved'" (click)="submitForm()">{{'Approve' | translate}}</ion-button>
+						<ion-button *ngIf=" item.Status == 'Forward'" (click)="submitForm()">{{'Forward' | translate}}</ion-button>
+						<ion-button *ngIf=" item.Status == 'Denied'" (click)="submitForm()">{{'Deny' | translate}}</ion-button>
+						<ion-button *ngIf=" item.Status == 'Return'" (click)="submitForm()">{{'Return' | translate}}</ion-button>
 					</div>
 				</ion-col>
 			</ion-row>
