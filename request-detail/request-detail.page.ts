@@ -427,9 +427,9 @@ export class RequestDetailPage extends PageBase {
 				}
 			}
 		}
-		this.pageConfig.canDisapprove = false;
+		this.pageConfig.canApprove = false;
 		if (canDisapproveStatus.includes(this.item.Status) && (this.approvalTemplate?.IsSupperApprover || this._currentApprover)) {
-			if (!(this.item.Status == 'Approved' && this.item.Type == 'DataCorrection')) this.pageConfig.canDisapprove = true;
+			if (!(this.item.Status == 'Approved' && this.item.Type == 'DataCorrection')) this.pageConfig.canApprove = true;
 		}
 		this.pageConfig.canForward = false;
 		if (canForwardStatus.includes(this.item.Status) && (this.approvalTemplate?.IsSupperApprover || this._currentApprover)) this.pageConfig.canForward = true;
@@ -441,7 +441,7 @@ export class RequestDetailPage extends PageBase {
 					this.pageConfig.canApprove = false;
 					break;
 				case 'Unapproved':
-					this.pageConfig.canDisapprove = false;
+					this.pageConfig.canApprove = false;
 					break;
 				case 'Denied':
 					this.pageConfig.canDeny = false;
@@ -454,7 +454,7 @@ export class RequestDetailPage extends PageBase {
 	}
 
 	async disapprove() {
-		if (!this.pageConfig.canDisapprove) {
+		if (!this.pageConfig.canApprove) {
 			return;
 		}
 		let approval = {
