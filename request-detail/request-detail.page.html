@@ -229,7 +229,7 @@
 						</ion-list-header>
 						<ion-item lines="none">
 							<ion-avatar slot="start">
-								<ion-img #img [src]="env.user.Avatar" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+								<ion-img #img [src]="env.user.Avatar || 'assets/avartar-empty.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
 							</ion-avatar>
 							<ion-label>
 								<h2>{{env.user.FullName}}</h2>
