@@ -77,103 +77,120 @@ export class ApprovalTemplateDetailPage extends PageBase {
 			DeletedFields: [[]],
 
 			_SupperApproverList: [''],
-			_SupperApproverListDataSource: {
-				searchProvider: this.staffService,
-				loading: false,
-				input$: new Subject<string>(),
-				selected: [],
-				items$: null,
-				initSearch() {
-					this.loading = false;
-					this.items$ = concat(
-						of(this.selected),
-						this.input$.pipe(
-							distinctUntilChanged(),
-							tap(() => (this.loading = true)),
-							switchMap((term) =>
-								this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-									catchError(() => of([])), // empty list on error
-									tap(() => (this.loading = false))
-								)
-							)
-						)
-					);
-				},
-			},
+			_SupperApproverListDataSource: this.buildSelectDataSource((term) => {
+				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+			}),
+
+			// {
+			// 	searchProvider: this.staffService,
+			// 	loading: false,
+			// 	input$: new Subject<string>(),
+			// 	selected: [],
+			// 	items$: null,
+			// 	initSearch() {
+			// 		this.loading = false;
+			// 		this.items$ = concat(
+			// 			of(this.selected),
+			// 			this.input$.pipe(
+			// 				distinctUntilChanged(),
+			// 				tap(() => (this.loading = true)),
+			// 				switchMap((term) =>
+			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+			// 						catchError(() => of([])), // empty list on error
+			// 						tap(() => (this.loading = false))
+			// 					)
+			// 				)
+			// 			)
+			// 		);
+			// 	},
+			// },
 
 			_FixedApproverList: [''],
-			_FixedApproverListDataSource: {
-				searchProvider: this.staffService,
-				loading: false,
-				input$: new Subject<string>(),
-				selected: [],
-				items$: null,
-				initSearch() {
-					this.loading = false;
-					this.items$ = concat(
-						of(this.selected),
-						this.input$.pipe(
-							distinctUntilChanged(),
-							tap(() => (this.loading = true)),
-							switchMap((term) =>
-								this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-									catchError(() => of([])), // empty list on error
-									tap(() => (this.loading = false))
-								)
-							)
-						)
-					);
-				},
-			},
+			_FixedApproverListDataSource:  this.buildSelectDataSource((term) => {
+				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+			}),
+			
+			// {
+			// 	searchProvider: this.staffService,
+			// 	loading: false,
+			// 	input$: new Subject<string>(),
+			// 	selected: [],
+			// 	items$: null,
+			// 	initSearch() {
+			// 		this.loading = false;
+			// 		this.items$ = concat(
+			// 			of(this.selected),
+			// 			this.input$.pipe(
+			// 				distinctUntilChanged(),
+			// 				tap(() => (this.loading = true)),
+			// 				switchMap((term) =>
+			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+			// 						catchError(() => of([])), // empty list on error
+			// 						tap(() => (this.loading = false))
+			// 					)
+			// 				)
+			// 			)
+			// 		);
+			// 	},
+			// },
 
 			_SelectableApproverList: [''],
-			_SelectableApproverListDataSource: {
-				searchProvider: this.staffService,
-				loading: false,
-				input$: new Subject<string>(),
-				selected: [],
-				items$: null,
-				initSearch() {
-					this.loading = false;
-					this.items$ = concat(
-						of(this.selected),
-						this.input$.pipe(
-							distinctUntilChanged(),
-							tap(() => (this.loading = true)),
-							switchMap((term) =>
-								this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-									catchError(() => of([])), // empty list on error
-									tap(() => (this.loading = false))
-								)
-							)
-						)
-					);
-				},
-			},
+			_SelectableApproverListDataSource:  this.buildSelectDataSource((term) => {
+				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+			}),
+			
+			
+			// {
+			// 	searchProvider: this.staffService,
+			// 	loading: false,
+			// 	input$: new Subject<string>(),
+			// 	selected: [],
+			// 	items$: null,
+			// 	initSearch() {
+			// 		this.loading = false;
+			// 		this.items$ = concat(
+			// 			of(this.selected),
+			// 			this.input$.pipe(
+			// 				distinctUntilChanged(),
+			// 				tap(() => (this.loading = true)),
+			// 				switchMap((term) =>
+			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+			// 						catchError(() => of([])), // empty list on error
+			// 						tap(() => (this.loading = false))
+			// 					)
+			// 				)
+			// 			)
+			// 		);
+			// 	},
+			// },
 			_FollowerList: [''],
-			_FollowerListDataSource: {
-				searchProvider: this.staffService,
-				loading: false,
-				input$: new Subject<string>(),
-				selected: [],
-				items$: null,
-				initSearch() {
-					this.loading = false;
-					this.items$ = concat(
-						of(this.selected),
-						this.input$.pipe(
-							distinctUntilChanged(),
-							tap(() => (this.loading = true)),
-							switchMap((term) =>
-								this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-									catchError(() => of([])), // empty list on error
-									tap(() => (this.loading = false))
-								)
-							)
-						)
-					);
-				},
-			},
+			_FollowerListDataSource:  this.buildSelectDataSource((term) => {
+				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+			}),
+			
+			// {
+			// 	searchProvider: this.staffService,
+			// 	loading: false,
+			// 	input$: new Subject<string>(),
+			// 	selected: [],
+			// 	items$: null,
+			// 	initSearch() {
+			// 		this.loading = false;
+			// 		this.items$ = concat(
+			// 			of(this.selected),
+			// 			this.input$.pipe(
+			// 				distinctUntilChanged(),
+			// 				tap(() => (this.loading = true)),
+			// 				switchMap((term) =>
+			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+			// 						catchError(() => of([])), // empty list on error
+			// 						tap(() => (this.loading = false))
+			// 					)
+			// 				)
+			// 			)
+			// 		);
+			// 	},
+			// },
 
 			IsUseUDF01: new FormControl({ value: '', disabled: false }),
 			IsUseUDF02: new FormControl({ value: '', disabled: false }),

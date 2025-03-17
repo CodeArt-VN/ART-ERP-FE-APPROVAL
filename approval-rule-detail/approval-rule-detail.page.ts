@@ -159,29 +159,33 @@ export class ApprovalRuleDetailPage extends PageBase {
 			ApprovalMode: [rule.ApprovalMode, Validators.required],
 			ApproverList: [rule.ApproverList],
 			_approvalListIds: [approverList?.map((r) => r.Id)],
-			_approverListDataSource: {
-				searchProvider: this.staffService,
-				loading: false,
-				input$: new Subject<string>(),
-				selected: approverList,
-				items$: null,
-				initSearch() {
-					this.loading = false;
-					this.items$ = concat(
-						of(this.selected),
-						this.input$.pipe(
-							distinctUntilChanged(),
-							tap(() => (this.loading = true)),
-							switchMap((term) =>
-								this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-									catchError(() => of([])), // empty list on error
-									tap(() => (this.loading = false))
-								)
-							)
-						)
-					);
-				},
-			},
+			_approverListDataSource: this.buildSelectDataSource((term) => {
+				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+			}),
+
+			// {
+			// 	searchProvider: this.staffService,
+			// 	loading: false,
+			// 	input$: new Subject<string>(),
+			// 	selected: approverList,
+			// 	items$: null,
+			// 	initSearch() {
+			// 		this.loading = false;
+			// 		this.items$ = concat(
+			// 			of(this.selected),
+			// 			this.input$.pipe(
+			// 				distinctUntilChanged(),
+			// 				tap(() => (this.loading = true)),
+			// 				switchMap((term) =>
+			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+			// 						catchError(() => of([])), // empty list on error
+			// 						tap(() => (this.loading = false))
+			// 					)
+			// 				)
+			// 			)
+			// 		);
+			// 	},
+			// },
 		});
 		console.log(rule);
 		group.get('_approverListDataSource').value.initSearch();
