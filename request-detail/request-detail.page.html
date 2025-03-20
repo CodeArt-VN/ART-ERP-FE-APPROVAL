@@ -223,6 +223,41 @@
 						</div>
 					</ion-list>
 
+					<ion-row *ngIf="item.Type=='PurchaseQuotation' && itemPurchaseQuotation?.QuotationLines">
+						<div class="table-contain">
+							<app-data-table
+								class="box-shadow responsive"
+								[rows]="itemPurchaseQuotation?.QuotationLines"
+								[trackBy]="'Id'"
+								[showSpinner]="pageConfig.showSpinner"
+								[showFilter]="pageConfig.isShowSearch"
+							>
+								<datatable-column class="col-name" name="Item" property="Id">
+									<ng-template let-i="row" datatable-cell-template>
+										<span (mousedown)="$event.stopPropagation()"> #{{ i._Item.Id }} </span>
+										<a [ngClass]="{ 'no-check-dirty': noCheckDirty }" class="clickable" [routerLink]="['/item/' + i.Id]" (mousedown)="$event.stopPropagation()"
+											><ion-icon name="open-outline"></ion-icon
+										></a>
+										&nbsp;
+										<span [title]="i._Item.Name">
+											<b *ngIf="i._Item.Code" (mousedown)="$event.stopPropagation()">{{ i._Item.Code }}</b>
+											{{ i._Item.Name }}
+										</span>
+									</ng-template>
+								</datatable-column>
+								<datatable-column class="col-uom" name="Unit" property="UoMName"> </datatable-column>
+								<datatable-column class="col-number" name="Quantity" property="Quantity"> </datatable-column>
+								<datatable-column class="col-number" name="Quantity required" property="QuantityRequired"> </datatable-column>
+								<datatable-column class="col-number" name="Price" property="Price">
+									<ng-template let-i="row" datatable-cell-template> {{i.Price | number: '1.0-0'}} </ng-template>
+								</datatable-column>
+								<datatable-column class="col-number" name="Total" property="TotalAfterTax">
+									<ng-template let-i="row" datatable-cell-template> {{i.TotalAfterTax | number: '1.0-0'}} </ng-template>
+								</datatable-column>
+							</app-data-table>
+						</div>
+					</ion-row>
+
 					<ion-list *ngIf="item?.Id">
 						<ion-list-header>
 							<ion-label color="primary">{{'Discussion' | translate}}</ion-label>

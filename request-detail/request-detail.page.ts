@@ -19,6 +19,7 @@ import { lib } from 'src/app/services/static/global-functions';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { ApproveModalPage } from '../approve-modal/approve-modal.page';
 import { environment } from 'src/environments/environment';
+import { PURCHASE_QuotationService } from '../../PURCHASE/purchase-quotation.service';
 
 @Component({
 	selector: 'app-request-detail',
@@ -39,6 +40,7 @@ export class RequestDetailPage extends PageBase {
 	_currentApprover;
 	commentForm: FormGroup;
 	purchaseRequestFormGroup: FormGroup;
+	itemPurchaseQuotation: any;
 	branchList = [];
 	vendorList = [];
 	storerList = [];
@@ -63,6 +65,7 @@ export class RequestDetailPage extends PageBase {
 		public commentProvider: APPROVAL_CommentProvider,
 		public purchaseRequestProvider: PURCHASE_RequestProvider,
 		public purchaseRequestDetailProvider: PURCHASE_RequestDetailProvider,
+		public purchaseQuotationProvider: PURCHASE_QuotationService,
 		public approvalTemplateService: APPROVAL_TemplateProvider,
 		public popoverCtrl: PopoverController,
 		public modalController: ModalController,
@@ -210,6 +213,22 @@ export class RequestDetailPage extends PageBase {
 			if (!this.pageConfig.canEdit) this.purchaseRequestFormGroup.disable();
 			this._currentVendor = this.purchaseRequestFormGroup.get('IDVendor').value;
 		}
+
+		if (this.item.Type == 'PurchaseQuotation') {
+			if (this.item.UDF01 > 0) {
+				this.purchaseQuotationProvider
+					.getAnItem(this.item.UDF01)
+					.then((resp) => {
+						if (resp) {
+							this.itemPurchaseQuotation = resp;
+						}
+					})
+					.catch((err) => {
+						console.log(err);
+						this.env.showMessage(err, 'danger');
+					});
+			}
+		}
 	}
 
 	buildPurchaseForm() {
@@ -241,6 +260,7 @@ export class RequestDetailPage extends PageBase {
 			TotalAfterTax: new FormControl({ value: '', disabled: true }),
 		});
 	}
+
 	changeVendor(e) {
 		let orderLines = this.purchaseRequestFormGroup.get('OrderLines') as FormArray;
 
