@@ -242,9 +242,9 @@ export class RequestPage extends PageBase {
 		}
 		this.refresh();
 	}
-	// cancel() {
-	// 	if (!this.pageConfig.canCancel) return;
-	// 	if (this.submitAttempt) return;
+	cancel() {
+		if (!this.pageConfig.canCancel) return;
+		if (this.submitAttempt) return;
 
 		let itemsCanNotProcess = this.selectedItems.filter((i) => i.Status == 'Draft' || i.Status == 'Canceled');
 		if (itemsCanNotProcess.length == this.selectedItems.length) {
