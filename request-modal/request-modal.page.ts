@@ -45,6 +45,8 @@ export class RequestModalPage extends PageBase {
 			Type: ['', Validators.required],
 			SubType: [''],
 			ApprovalMode: [''],
+			Start : [''],
+			End : [''],
 			Status: ['Draft'],
 			SelectableApproverIds: [''],
 			Amount: [0],
@@ -178,6 +180,14 @@ export class RequestModalPage extends PageBase {
 			if (value) {
 				this.template = value;
 				this.formGroup.get('Type').setValue(this.template.Type);
+				if(this.template.Type == 'TimeOff'){
+					this.formGroup.get('Start').setValidators([Validators.required]);
+					this.formGroup.get('End').setValidators([Validators.required]);
+				}
+				else{
+					this.formGroup.get('Start').setValidators([]);
+					this.formGroup.get('End').setValidators([]);
+				}
 				let keys = Object.keys(this.template).filter((d) => d.includes('IsUseUDF'));
 				keys.forEach((d) => {
 					if (value[d]) {

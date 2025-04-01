@@ -29,19 +29,41 @@
 						[field]="{id:'IDApprovalTemplate', label:'Approval template', type : 'ng-select', dataSource: approvalTemplateList, bindLabel:'Name', bindValue:'Id', form : formGroup}"
 						(change)="changeTemplate($event)"
 					></app-form-control>
-					<div class="c-control" *ngIf="formGroup.controls.Type.value == 'TimeOff'">
-						<app-form-control
-							[field]="{
-              id: 'SubType',
-              label: 'SubType',
-              type: 'ng-select',
-              dataSource: timeOffTypeList,
-              bindValue: 'Code',
-              bindLabel: 'Name',
-              form: formGroup
-            }"
-						></app-form-control>
-					</div>
+					<ng-container *ngIf="formGroup.controls.Type.value == 'TimeOff'">
+						<div class="c-control">
+							<app-form-control
+								[field]="{
+							id: 'SubType',
+							label: 'SubType',
+							type: 'ng-select',
+							dataSource: timeOffTypeList,
+							bindValue: 'Code',
+							bindLabel: 'Name',
+							form: formGroup
+							}"
+							></app-form-control>
+						</div>
+						<div class="c-control">
+							<app-form-control
+								[field]="{
+							id: 'Start',
+							label: 'Start date',
+							type: 'datetime-local',
+							form: formGroup
+							}"
+							></app-form-control>
+						</div>
+						<div class="c-control">
+							<app-form-control
+								[field]="{
+							id: 'End',
+							label: 'End date',
+							type: 'datetime-local',
+							form: formGroup
+							}"
+							></app-form-control>
+						</div>
+					</ng-container>
 
 					<app-form-control
 						*ngIf="template?.IsUserCanChooseApprover && template?.SelectableApproverList"

@@ -48,6 +48,9 @@ export class RequestDetailPage extends PageBase {
 	contentTypeList = [];
 	jsonViewerConfig: any = {};
 	itemPurchaseRequest: any = {};
+	propertiesLabelDataCorrection : any = null;
+	oldItem :any = {};
+	isLoadedOldItem = false
 	markAsPristine = false;
 	_staffDataSource = this.buildSelectDataSource((term) => {
 		return this.staffProvider.search({ Take: 20, Skip: 0, Term: term });
@@ -84,6 +87,7 @@ export class RequestDetailPage extends PageBase {
 	) {
 		super();
 		this.pageConfig.isDetailPage = true;
+		//this.pageConfig.isShowFeature = true;
 		this.imgPath = environment.staffAvatarsServer;
 		this.commentForm = formBuilder.group({
 			IDStaff: [this.env.user.StaffID],
@@ -153,10 +157,22 @@ export class RequestDetailPage extends PageBase {
 		super.loadedData(event);
 		if (['Approved', 'Canceled', 'Submitted'].includes(this.item.Status)) this.pageConfig.canEdit = false;
 		if (this.item.Type == 'DataCorrection' && this.item.UDF16) {
-			let obj = JSON.parse(this.item.UDF16);
-			this.jsonViewerConfig.showProperties = [];
-			this.jsonViewerConfig.notShowProperties = [];
-			if (obj) this.jsonViewerConfig.showProperties = Object.keys(obj);
+			if(this.item.SubType == 'Outlet'){
+				this.propertiesLabelDataCorrection =  {'Id': 'Id', 'CompanyName':'Company name', 'TaxCode':'Tax code', 'Email':'Email', 'BillingAddress':'Billing address', 'IsDefault':'Default billing information', 'Remark':'Remark',
+					'TaxInfos' : 'Billing address','OtherPhone':'Other phone'
+					
+				};
+			}
+			this.contactProvider.getAnItem(this.item.UDF01).then((resp) => {
+				if(resp) {
+					this.oldItem = resp;
+					let obj = JSON.parse(this.item.UDF16);
+					this.jsonViewerConfig.showProperties = [];
+					this.jsonViewerConfig.notShowProperties = [];
+					if (obj) this.jsonViewerConfig.showProperties = Object.keys(obj);
+				}
+			}).finally(()=>this.isLoadedOldItem = true);
+	
 		}
 
 		if (this.item.Type == 'PurchaseRequest') {

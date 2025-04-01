@@ -124,11 +124,6 @@ export class RequestPage extends PageBase {
 					this.env.publishEvent({ Code: this.pageConfig.pageName });
 				})
 				.catch((err) => {
-					if (err.message != null) {
-						this.env.showMessage(err.message, 'danger');
-					} else {
-						this.env.showMessage('Cannot extract data', 'danger');
-					}
 					this.submitAttempt = false;
 					this.refresh();
 				});

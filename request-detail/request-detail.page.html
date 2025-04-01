@@ -13,7 +13,7 @@
 <ion-content appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
 	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
 		<div class="ion-padding">
-			<ng-container *ngIf="item.Type == 'DataCorrection'">
+			<ng-container *ngIf="item?.Type == 'DataCorrection'">
 				<ion-item lines="none" class="ion-no-padding">
 					<ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare"> {{'Show compare' | translate}}</ion-toggle>
 				</ion-item>
@@ -22,7 +22,7 @@
 				</ion-item>
 				<ion-row>
 					<ion-col>
-						<div class="c-control" *ngIf="jsonViewerConfig.showProperties.length >0">
+						<div class="c-control" *ngIf="jsonViewerConfig.showProperties?.length >0">
 							<label class="c-label">{{ 'Show properties' | translate }}</label>
 							<span class="c-input" style="flex-wrap: wrap; height: auto">
 								<ion-chip *ngFor="let property of jsonViewerConfig.showProperties;let j = index" color="primary" style="height: auto; margin: 2px">
@@ -31,7 +31,7 @@
 								</ion-chip>
 							</span>
 						</div>
-						<div class="c-control" *ngIf="jsonViewerConfig.notShowProperties.length >0">
+						<div class="c-control" *ngIf="jsonViewerConfig.notShowProperties?.length >0">
 							<label class="c-label">{{ 'Not show properties' | translate }}</label>
 							<span class="c-input" style="flex-wrap: wrap; height: auto">
 								<ion-chip *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index" color="danger" style="height: auto; margin: 2px">
@@ -61,7 +61,21 @@
                 </h2>
               </ion-label>
             </ion-item> -->
-						<ng-container *ngIf="item.Type != 'DataCorrection'">
+						<ng-container *ngIf="item?.Type == 'TimeOff'">
+							<ion-item>
+								<ion-label>
+									<p>{{'Start date' | translate}}</p>
+									<h2>{{item.Start}}</h2>
+								</ion-label>
+							</ion-item>
+							<ion-item>
+								<ion-label>
+									<p>{{'End date' | translate}}</p>
+									<h2>{{item.End}}</h2>
+								</ion-label>
+							</ion-item>
+						</ng-container>
+						<ng-container *ngIf="item?.Type != 'DataCorrection'">
 							<ion-item *ngFor="let udf of mappingList">
 								<ion-label>
 									<p>{{udf.Label | translate}}</p>
@@ -69,18 +83,20 @@
 								</ion-label>
 							</ion-item>
 						</ng-container>
-						<ion-item *ngIf="item.UDF16 && item.Type == 'DataCorrection'">
+						<ion-item *ngIf="item.UDF16 && item?.Type == 'DataCorrection' && isLoadedOldItem">
 							<ion-label>
 								<app-json-viewer
 									[item]="item.UDF16"
-									[isCompare]="jsonViewerConfig.isCompare"
+									[oldItem]="oldItem"
+									[properties]="this.propertiesLabelDataCorrection"
+									[isCompare]="true"
 									[isShowDifference]="jsonViewerConfig.isShowDifference"
 									[notShowProperties]="jsonViewerConfig.notShowProperties"
 								>
+								<!-- jsonViewerConfig.isCompare -->
 								</app-json-viewer>
 							</ion-label>
 						</ion-item>
-
 						<ion-item>
 							<ion-label>
 								<p>{{'Status' | translate}}</p>
@@ -138,7 +154,7 @@
 						</ion-item>
 					</ion-list>
 
-					<ion-list *ngIf="item.Type == 'PurchaseRequest' && purchaseRequestFormGroup">
+					<ion-list *ngIf="item?.Type == 'PurchaseRequest' && purchaseRequestFormGroup">
 						<ion-grid fixed>
 							<form [formGroup]="purchaseRequestFormGroup">
 								<ion-row class="hr-group">
