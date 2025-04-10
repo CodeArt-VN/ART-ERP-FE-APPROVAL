@@ -168,9 +168,11 @@ export class RequestDetailPage extends PageBase {
 					Remark: 'Remark',
 					TaxInfos: 'Billing address',
 					OtherPhone: 'Other phone',
-					DeletedAddressFields: 'Deleted address id',
-					DeletedTaxInfoFields: 'Deleted billing address id',
+					DeletedAddress: 'Deleted address',
+					DeletedTaxInfo: 'Deleted billing address',
 				};
+				this.jsonViewerConfig.notShowProperties = ["DeletedAddressFields", "DeletedTaxInfoFields"];
+
 			}
 			this.contactProvider
 				.getAnItem(this.item.UDF01)
@@ -179,7 +181,6 @@ export class RequestDetailPage extends PageBase {
 						this.oldItem = resp;
 						let obj = JSON.parse(this.item.UDF16);
 						this.jsonViewerConfig.showProperties = [];
-						this.jsonViewerConfig.notShowProperties = [];
 						if (obj) this.jsonViewerConfig.showProperties = Object.keys(obj);
 					}
 				})
