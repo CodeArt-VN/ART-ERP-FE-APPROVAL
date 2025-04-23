@@ -29,20 +29,19 @@
 						[field]="{id:'IDApprovalTemplate', label:'Approval template', type : 'ng-select', dataSource: approvalTemplateList, bindLabel:'Name', bindValue:'Id', form : formGroup}"
 						(change)="changeTemplate($event)"
 					></app-form-control>
-					<ng-container *ngIf="formGroup.controls.Type.value == 'TimeOff'">
-						<div class="c-control">
-							<app-form-control
-								[field]="{
-							id: 'SubType',
-							label: 'SubType',
-							type: 'ng-select',
-							dataSource: timeOffTypeList,
-							bindValue: 'Code',
-							bindLabel: 'Name',
-							form: formGroup
-							}"
-							></app-form-control>
-						</div>
+					<app-form-control
+						*ngIf="subTypeList.length>0"
+						[field]="{
+						id: 'SubType',
+						label: 'Sub type',
+						type: 'ng-select',
+						dataSource: subTypeList,
+						bindValue: 'Code',
+						bindLabel: 'Name',
+						form: formGroup
+						}"
+					></app-form-control>
+					<ng-container *ngIf="formGroup.controls.Type.value == 'TimeOff' || formGroup.controls.Type.value == 'Overtime'">
 						<div class="c-control">
 							<app-form-control
 								[field]="{

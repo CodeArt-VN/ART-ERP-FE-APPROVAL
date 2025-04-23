@@ -65,13 +65,38 @@
 							<ion-item>
 								<ion-label>
 									<p>{{'Start date' | translate}}</p>
-									<h2>{{item.Start}}</h2>
+									<h2>{{item.Start|date:'dd/MM/yyyy hh:mm'}}</h2>
 								</ion-label>
 							</ion-item>
 							<ion-item>
 								<ion-label>
 									<p>{{'End date' | translate}}</p>
-									<h2>{{item.End}}</h2>
+									<h2>{{item.End|date:'dd/MM/yyyy hh:mm'}}</h2>
+								</ion-label>
+							</ion-item>
+						</ng-container>
+						<ng-container *ngIf="item?.Type == 'Overtime'">
+							<ion-item>
+								<ion-label>
+									<p>{{'Start date' | translate}}</p>
+									<h2>{{item.Start |date:'dd/MM/yyyy HH:mm'}}</h2>
+								</ion-label>
+							</ion-item>
+							<ion-item>
+								<ion-label>
+									<p>{{'End date' | translate}}</p>
+									<h2>{{item.End|date:'dd/MM/yyyy HH:mm'}}</h2>
+								</ion-label>
+							</ion-item>
+							<ion-item *ngFor="let i of item._Overtime">
+								<ion-label>
+									<span>{{'From' | translate}} {{i.Start|date:'dd/MM/yyyy HH:mm'}}</span> -
+
+									<span>{{'to' | translate}} {{i.End|date:'dd/MM/yyyy HH:mm'}}</span>
+									|
+									<span>{{'rate' | translate}} {{i.Rate}}</span>
+									<span>{{'IDPolRate' | translate}} -{{i.IDPolRate}}</span>
+									<span>{{'IDStaff' | translate}} -{{i.IDStaff}}</span>
 								</ion-label>
 							</ion-item>
 						</ng-container>
@@ -93,7 +118,7 @@
 									[isShowDifference]="jsonViewerConfig.isShowDifference"
 									[notShowProperties]="jsonViewerConfig.notShowProperties"
 								>
-								<!-- jsonViewerConfig.isCompare -->
+									<!-- jsonViewerConfig.isCompare -->
 								</app-json-viewer>
 							</ion-label>
 						</ion-item>
@@ -311,7 +336,7 @@
 								</ion-avatar>
 								<ion-label>
 									<h3>{{i._Staff.FullName}}</h3>
-									<p><i>{{i.Date}}</i></p>
+									<p><i>{{i.CreatedDate | date:'dd/mm/yy'}}</i></p>
 									<h4 class="remark">{{i.Remark}}</h4>
 								</ion-label>
 							</ion-item>
@@ -372,8 +397,8 @@
 							</ion-list-header>
 							<ion-item *ngFor="let i of item._Logs" class="log main-active-item" lines="none">
 								<ion-label slot="start" class="time">
-									<p>{{i.Date}}</p>
-									<h2>{{i.Time}}</h2>
+									<p>{{i.CreatedDate | date:'dd/mm/yy'}}</p>
+									<h2>{{i.CreatedDate|date:'hh:MM'}}</h2>
 								</ion-label>
 								<ion-icon class="icon" slot="start" [color]="i._Status?.Color" [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
 								<!-- <ion-avatar slot="start">

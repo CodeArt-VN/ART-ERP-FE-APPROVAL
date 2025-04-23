@@ -18,7 +18,8 @@ import { Subject, concat, distinctUntilChanged, of } from 'rxjs';
 export class RequestModalPage extends PageBase {
 	requestTypeList = [];
 	statusList = [];
-	timeOffTypeList = [];
+	subTypeList = [];
+	overtimeTypeList = [];
 	approvalTemplateList = [];
 	template;
 	_approverListDataSource;
@@ -97,74 +98,10 @@ export class RequestModalPage extends PageBase {
 			UDF21: new FormControl({ value: '', disabled: true }),
 			UDF22: new FormControl({ value: '', disabled: true }),
 
-			//
-			// Code
-			// Name
-			// Remark
-			// Sort
-			// IsDisabled
-			// IsDeleted
-			// CreatedBy
-			// ModifiedBy
-			// CreatedDate
-			// ModifiedDate
-			// FileURL
-			// ApproverBy
-			// AmountNo
-			// Amount
-			// Reason
-			// DueDate
-			// ReceivedBy
-			// HandingOverWork
-			// Debator
-			// DebatorDepartment
-			// CurrentJobTitle
-			// DebateJobTitle
-			// Item
-			// Quantity
-			// Participant
-			// Requirement
-			// StartFrom
-			// EndTo
-			// ItemStatus
-			// CurrentAmount
-			// DesireAmount
-			// Employee
-			// FromDate
-			// ToDate
-			// UDF01
-			// UDF02
-			// UDF03
-			// UDF04
-			// UDF05
-			// UDF06
-			// UDF07
-			// UDF08
-			// UDF09
-			// UDF10
-			// UDF11
-			// UDF12
-			// UDF13
-			// UDF14
-			// UDF15
-			// UDF16
-			// UDF17
-			// UDF18
-			// UDF19
-			// UDF20
-			// UDF21
-			// UDF22
 		});
 	}
 
 	preLoadData(event?: any): void {
-		// this.requestTypeList = this.navParams.data.requestTypeList;
-		// this.statusList = this.navParams.data.statusList;
-
-		// this.item = this.navParams.data.item;
-		// this.id = this.navParams.data.id;
-		console.log(this);
-
 		super.loadedData(event);
 	}
 
@@ -176,13 +113,18 @@ export class RequestModalPage extends PageBase {
 				this.formGroup.get(udf).disable();
 				this.formGroup.get(key).setValue('');
 			});
+			this.subTypeList =[];
 		this.approvalTemplateService.getAnItem(e.Id).then((value: any) => {
 			if (value) {
 				this.template = value;
 				this.formGroup.get('Type').setValue(this.template.Type);
-				if(this.template.Type == 'TimeOff'){
+				if(['TimeOff','Overtime'].includes(this.template.Type)){
 					this.formGroup.get('Start').setValidators([Validators.required]);
 					this.formGroup.get('End').setValidators([Validators.required]);
+					this.env.getType(this.template.Type + "Type").then((data) => {
+						this.subTypeList = data;
+
+					});
 				}
 				else{
 					this.formGroup.get('Start').setValidators([]);

@@ -106,6 +106,7 @@ export class RequestDetailPage extends PageBase {
 		Promise.all([
 			this.env.getType('RequestType'),
 			this.env.getStatus('ApprovalStatus'),
+			this.env.getStatus('ApprovalStatus'),
 			// this.env.getType('TimeOffType'),
 		]).then((values: any) => {
 			this.requestTypeList = values[0];
@@ -130,8 +131,6 @@ export class RequestDetailPage extends PageBase {
 
 		this.item._Logs.forEach((i) => {
 			i._Status = this.statusList.find((d) => d.Code == i.Status);
-			i.Date = lib.dateFormat(i.CreatedDate, 'dd/mm/yy');
-			i.Time = lib.dateFormat(i.CreatedDate, 'hh:MM');
 		});
 		if (this.item.IDApprovalTemplate > 0) {
 			this.approvalTemplateService.getAnItem(this.item.IDApprovalTemplate).then((value) => {
@@ -156,6 +155,18 @@ export class RequestDetailPage extends PageBase {
 		}
 		super.loadedData(event);
 		if (['Approved', 'Canceled', 'Submitted'].includes(this.item.Status)) this.pageConfig.canEdit = false;
+		
+		if(this.item.Type == 'Overtime'){
+			var config = JSON.parse(this.item.UDF16);
+			if(config ){
+				this.item.TimeFrames = config.TimeFrames;
+				let staffIds = config.StaffIds;
+				console.log(this.item.TimeFrames);
+				console.log(staffIds);
+				
+			}
+		}
+		
 		if (this.item.Type == 'DataCorrection' && this.item.UDF16) {
 			if (this.item.SubType == 'BusinessPartner') {
 				this.propertiesLabelDataCorrection = {

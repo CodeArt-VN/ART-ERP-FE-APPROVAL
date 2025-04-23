@@ -58,7 +58,7 @@
 									(change)="changeType()"
 								></app-form-control>
 								<app-form-control
-									[field]="{id:'SubType', label: 'Sub type', type : 'ng-select',dataSource:requestSubTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup, appendTo : '#ng-select-header' }"
+									[field]="{id:'SubType', label: 'Sub type', type : 'ng-select',dataSource:requestSubTypeList , bindValue:'Code', bindLabel:'Name', form : formGroup,clearable:true, appendTo : '#ng-select-header' }"
 									(change)="saveChange()"
 								></app-form-control>
 								<app-form-control

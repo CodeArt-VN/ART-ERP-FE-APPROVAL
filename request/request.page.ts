@@ -68,13 +68,11 @@ export class RequestPage extends PageBase {
 		Promise.all([
 			this.env.getType('RequestType'),
 			this.env.getStatus('ApprovalStatus'),
-			this.env.getType('TimeOffType'),
 			this.approvalTemplateService.read(this.query, this.pageConfig.forceLoadData),
 		]).then((values: any) => {
 			this.requestTypeList = values[0];
 			this.statusList = values[1];
-			this.timeOffTypeList = values[2];
-			this.approvalTemplateList = values[3].data;
+			this.approvalTemplateList = values[2].data;
 			super.preLoadData(event);
 		});
 	}
@@ -104,7 +102,6 @@ export class RequestPage extends PageBase {
 			componentProps: {
 				requestTypeList: this.requestTypeList,
 				statusList: this.statusList,
-				timeOffTypeList: this.timeOffTypeList,
 				approvalTemplateList: this.approvalTemplateList,
 				item: i,
 				id: i.Id,

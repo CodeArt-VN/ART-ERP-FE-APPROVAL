@@ -354,14 +354,17 @@ export class ApprovalTemplateDetailPage extends PageBase {
 				this.requestSubTypeList = rs;
 			});
 		} else {
-			this.env.getType(this.formGroup.get('Type').value).then((rs) => {
+			this.env.getType(this.formGroup.get('Type').value+'Type').then((rs) => {
 				this.requestSubTypeList = rs;
 			});
 		}
 		if (markAsDirty) {
-			this.formGroup.get('SubType').setValue(null);
-			this.formGroup.get('SubType').markAsDirty();
+			if(this.formGroup.get('SubType').value){
+				this.formGroup.get('SubType').setValue(null);
+				this.formGroup.get('SubType').markAsDirty();
+			}
 			this.saveChange();
+			
 		}
 	}
 	changeSchema() {
