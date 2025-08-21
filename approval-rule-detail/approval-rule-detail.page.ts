@@ -188,6 +188,7 @@ export class ApprovalRuleDetailPage extends PageBase {
 			// },
 		});
 		console.log(rule);
+		group.get('_approverListDataSource').value.selected = approverList;
 		group.get('_approverListDataSource').value.initSearch();
 		// group.get('ApprovalMode').markAsDirty();
 		groups.push(group);
