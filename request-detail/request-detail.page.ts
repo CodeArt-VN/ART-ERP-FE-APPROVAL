@@ -475,9 +475,9 @@ export class RequestDetailPage extends PageBase {
 				}
 			}
 		}
-		this.pageConfig.canApprove = false;
+		// this.pageConfig.canApprove = false;
 		if (canDisapproveStatus.includes(this.item.Status) && (this.approvalTemplate?.IsSupperApprover || this._currentApprover)) {
-			if (!(this.item.Status == 'Approved' && this.item.Type == 'DataCorrection')) this.pageConfig.canApprove = true;
+			if (!(this.item.Status == 'Approved' && this.item.Type == 'DataCorrection')) this.pageConfig.canDisApprove = true;
 		}
 		this.pageConfig.canForward = false;
 		if (canForwardStatus.includes(this.item.Status) && (this.approvalTemplate?.IsSupperApprover || this._currentApprover)) this.pageConfig.canForward = true;
@@ -502,7 +502,7 @@ export class RequestDetailPage extends PageBase {
 	}
 
 	async disapprove() {
-		if (!this.pageConfig.canApprove) {
+		if (!this.pageConfig.canDisApprove) {
 			return;
 		}
 		let approval = {
