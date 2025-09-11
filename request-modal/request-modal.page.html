@@ -24,143 +24,92 @@
 		<ion-grid fixed>
 			<ion-row>
 				<ion-col size="12" size-sm="12" size-md="12">
-					<app-form-control [field]="{id:'Name', label:'Title', type : 'text', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel01').value"
+						[field]="{id:'UDF01', label:formGroup.get('UDFLabel01').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control
+						[field]="{id:'Name', label:'Title', type : 'text', form : formGroup}"></app-form-control>
 					<app-form-control
 						[field]="{id:'IDApprovalTemplate', label:'Approval template', type : 'ng-select', dataSource: approvalTemplateList, bindLabel:'Name', bindValue:'Id', form : formGroup}"
-						(change)="changeTemplate($event)"
-					></app-form-control>
+						(change)="changeTemplate($event)"></app-form-control>
 					<ng-container *ngIf="formGroup.controls.Type.value == 'TimeOff'">
 						<div class="c-control">
-							<app-form-control
-								[field]="{
+							<app-form-control [field]="{
 							id: 'SubType',
-							label: 'SubType',
+							label: 'Sub type',
 							type: 'ng-select',
 							dataSource: timeOffTypeList,
 							bindValue: 'Code',
 							bindLabel: 'Name',
 							form: formGroup
-							}"
-							></app-form-control>
+							}"></app-form-control>
 						</div>
-						<div class="c-control">
-							<app-form-control
-								[field]="{
+						<div class="c-control" *ngIf="formGroup.get('SubType').value">
+							<app-form-control (change)="changeDate()"[field]="{
 							id: 'Start',
 							label: 'Start date',
 							type: 'datetime-local',
 							form: formGroup
-							}"
-							></app-form-control>
+							}"></app-form-control>
 						</div>
-						<div class="c-control">
-							<app-form-control
-								[field]="{
+						<div class="c-control" *ngIf="formGroup.get('SubType').value">
+							<app-form-control  (change)="changeDate()"[field]="{
 							id: 'End',
 							label: 'End date',
 							type: 'datetime-local',
 							form: formGroup
-							}"
-							></app-form-control>
+							}"></app-form-control>
 						</div>
 					</ng-container>
 
-					<app-form-control
-						*ngIf="template?.IsUserCanChooseApprover && template?.SelectableApproverList"
-						[field]="{id:'SelectableApproverIds', label:'Selectable approvers', type : 'ng-select', dataSource: _approverListDataSource, bindLabel:'FullName', bindValue:'Id', form : formGroup, multiple: true, clearable:true}"
-					></app-form-control>
+					<app-form-control *ngIf="template?.IsUserCanChooseApprover && template?.SelectableApproverList"
+						[field]="{id:'SelectableApproverIds', label:'Selectable approvers', type : 'ng-select', dataSource: _approverListDataSource, bindLabel:'FullName', bindValue:'Id', form : formGroup, multiple: true, clearable:true}"></app-form-control>
 
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel01').value"
-						[field]="{id:'UDF01', label:formGroup.get('UDFLabel01').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel02').value"
-						[field]="{id:'UDF02', label:formGroup.get('UDFLabel02').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel03').value"
-						[field]="{id:'UDF03', label:formGroup.get('UDFLabel03').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel04').value"
-						[field]="{id:'UDF04', label:formGroup.get('UDFLabel04').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel05').value"
-						[field]="{id:'UDF05', label:formGroup.get('UDFLabel05').value, type : 'number', form : formGroup}"
-					></app-form-control>
 
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel06').value"
-						[field]="{id:'UDF06', label:formGroup.get('UDFLabel06').value, type : 'datetime-local', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel07').value"
-						[field]="{id:'UDF07', label:formGroup.get('UDFLabel07').value, type : 'datetime-local', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel08').value"
-						[field]="{id:'UDF08', label:formGroup.get('UDFLabel08').value, type : 'datetime-local', form : formGroup}"
-					></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel02').value"
+						[field]="{id:'UDF02', label:formGroup.get('UDFLabel02').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel03').value"
+						[field]="{id:'UDF03', label:formGroup.get('UDFLabel03').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel04').value"
+						[field]="{id:'UDF04', label:formGroup.get('UDFLabel04').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel05').value"
+						[field]="{id:'UDF05', label:formGroup.get('UDFLabel05').value, type : 'number', form : formGroup}"></app-form-control>
 
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel09').value"
-						[field]="{id:'UDF09', label:formGroup.get('UDFLabel09').value, type : 'text', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel10').value"
-						[field]="{id:'UDF10', label:formGroup.get('UDFLabel10').value, type : 'text', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel11').value"
-						[field]="{id:'UDF11', label:formGroup.get('UDFLabel11').value, type : 'text', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel12').value"
-						[field]="{id:'UDF12', label:formGroup.get('UDFLabel12').value, type : 'text', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel13').value"
-						[field]="{id:'UDF13', label:formGroup.get('UDFLabel13').value, type : 'textarea', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel14').value"
-						[field]="{id:'UDF14', label:formGroup.get('UDFLabel14').value, type : 'textarea', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel15').value"
-						[field]="{id:'UDF15', label:formGroup.get('UDFLabel15').value, type : 'textarea', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel16').value"
-						[field]="{id:'UDF16', label:formGroup.get('UDFLabel16').value, type : 'textarea', form : formGroup}"
-					></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel06').value"
+						[field]="{id:'UDF06', label:formGroup.get('UDFLabel06').value, type : 'datetime-local', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel07').value"
+						[field]="{id:'UDF07', label:formGroup.get('UDFLabel07').value, type : 'datetime-local', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel08').value"
+						[field]="{id:'UDF08', label:formGroup.get('UDFLabel08').value, type : 'datetime-local', form : formGroup}"></app-form-control>
 
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel17').value"
-						[field]="{id:'UDF17', label:formGroup.get('UDFLabel17').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel18').value"
-						[field]="{id:'UDF18', label:formGroup.get('UDFLabel18').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel19').value"
-						[field]="{id:'UDF19', label:formGroup.get('UDFLabel19').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel20').value"
-						[field]="{id:'UDF20', label:formGroup.get('UDFLabel20').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel21').value"
-						[field]="{id:'UDF21', label:formGroup.get('UDFLabel21').value, type : 'number', form : formGroup}"
-					></app-form-control>
-					<app-form-control
-						*ngIf="formGroup.get('UDFLabel22').value"
-						[field]="{id:'UDF22', label:formGroup.get('UDFLabel22').value, type : 'number', form : formGroup}"
-					></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel09').value"
+						[field]="{id:'UDF09', label:formGroup.get('UDFLabel09').value, type : 'text', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel10').value"
+						[field]="{id:'UDF10', label:formGroup.get('UDFLabel10').value, type : 'text', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel11').value"
+						[field]="{id:'UDF11', label:formGroup.get('UDFLabel11').value, type : 'text', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel12').value"
+						[field]="{id:'UDF12', label:formGroup.get('UDFLabel12').value, type : 'text', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel13').value"
+						[field]="{id:'UDF13', label:formGroup.get('UDFLabel13').value, type : 'textarea', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel14').value"
+						[field]="{id:'UDF14', label:formGroup.get('UDFLabel14').value, type : 'textarea', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel15').value"
+						[field]="{id:'UDF15', label:formGroup.get('UDFLabel15').value, type : 'textarea', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel16').value"
+						[field]="{id:'UDF16', label:formGroup.get('UDFLabel16').value, type : 'textarea', form : formGroup}"></app-form-control>
+
+					<app-form-control *ngIf="formGroup.get('UDFLabel17').value"
+						[field]="{id:'UDF17', label:formGroup.get('UDFLabel17').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel18').value"
+						[field]="{id:'UDF18', label:formGroup.get('UDFLabel18').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel19').value"
+						[field]="{id:'UDF19', label:formGroup.get('UDFLabel19').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel20').value"
+						[field]="{id:'UDF20', label:formGroup.get('UDFLabel20').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel21').value"
+						[field]="{id:'UDF21', label:formGroup.get('UDFLabel21').value, type : 'number', form : formGroup}"></app-form-control>
+					<app-form-control *ngIf="formGroup.get('UDFLabel22').value"
+						[field]="{id:'UDF22', label:formGroup.get('UDFLabel22').value, type : 'number', form : formGroup}"></app-form-control>
 				</ion-col>
 
 				<ion-col size="12" size-sm="12" size-md="12">
@@ -169,10 +118,7 @@
 							<span *ngIf="formGroup.controls.Type.value == 'Payment'">{{'Amount' | translate}}</span>
 							<span
 								*ngIf="!formGroup.controls.Amount.valid && !formGroup.controls.Amount.pending && (formGroup.controls.Amount.dirty || submitAttempt)"
-								ion-text
-								color="danger"
-								>(*)</span
-							>
+								ion-text color="danger">(*)</span>
 						</label>
 						<input class="c-input" id="Amount" formControlName="Amount" type="number" />
 					</div>
@@ -182,11 +128,12 @@
 				<ion-col>
 					<div class="c-control ion-text-right">
 						<label class="c-label" for=""></label>
-
-						<ion-button color="warning" (click)="submit('Pending')" *ngIf="formGroup.get('Type').value != 'PurchaseRequest'"
-							>{{'submit Request For Approval' | translate}}</ion-button
-						>
-						<ion-button color="primary" (click)="submitForm()" fill="outline">{{'Save draft' | translate}}</ion-button>
+<!-- 
+						<ion-button color="warning" (click)="submit('Pending')"
+							*ngIf="formGroup.get('Type').value != 'PurchaseRequest'">{{'submit Request For Approval' |
+							translate}}</ion-button> -->
+						<ion-button color="primary" (click)="submitForm()" fill="outline">{{'Save draft' |
+							translate}}</ion-button>
 					</div>
 				</ion-col>
 			</ion-row>

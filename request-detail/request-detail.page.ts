@@ -10,6 +10,7 @@ import {
 	BRA_BranchProvider,
 	CRM_ContactProvider,
 	HRM_StaffProvider,
+	HRM_StaffScheduleProvider,
 	PURCHASE_RequestDetailProvider,
 	PURCHASE_RequestProvider,
 } from 'src/app/services/static/services.service';
@@ -64,6 +65,7 @@ export class RequestDetailPage extends PageBase {
 
 	constructor(
 		public pageProvider: APPROVAL_RequestProvider,
+		public staffScheduleProvider: HRM_StaffScheduleProvider,
 		public branchProvider: BRA_BranchProvider,
 		public commentProvider: APPROVAL_CommentProvider,
 		public purchaseRequestProvider: PURCHASE_RequestProvider,
@@ -87,6 +89,8 @@ export class RequestDetailPage extends PageBase {
 	) {
 		super();
 		this.pageConfig.isDetailPage = true;
+		this.pageConfig.ShowApprove = false;
+		this.pageConfig.ShowDisapprove = false;
 		//this.pageConfig.isShowFeature = true;
 		this.imgPath = environment.staffAvatarsServer;
 		this.commentForm = formBuilder.group({
@@ -187,7 +191,7 @@ export class RequestDetailPage extends PageBase {
 				.finally(() => (this.isLoadedOldItem = true));
 		}
 
-		if (this.item.Type == 'PurchaseRequest') {
+		else if (this.item.Type == 'PurchaseRequest') {
 			this.buildPurchaseForm();
 			this.pageConfig.canEditPurchaseRequest = this.pageConfig.canEdit;
 
@@ -242,7 +246,7 @@ export class RequestDetailPage extends PageBase {
 			this._currentVendor = this.purchaseRequestFormGroup.get('IDVendor').value;
 		}
 
-		if (this.item.Type == 'PurchaseQuotation') {
+		else if (this.item.Type == 'PurchaseQuotation') {
 			if (this.item.UDF01 > 0) {
 				this.purchaseQuotationProvider
 					.getAnItem(this.item.UDF01)
@@ -256,6 +260,17 @@ export class RequestDetailPage extends PageBase {
 						this.env.showMessage(err, 'danger');
 					});
 			}
+		}
+		else if (this.item.Type == 'TimeOff') {
+			let today = lib.dateFormat(new Date(), 'yyyy-MM-dd');
+			Promise.all([this.staffProvider.getAnItem(this.item.IDStaff), this.staffScheduleProvider.read({ IDStaff: this.item.IDStaff, Type: 'TimeOff', WorkingDateFrom: today, WorkingDateTo: '2999-12-30' })])
+				.then((values: any) => {
+					this.item.Staff = values[0];
+					this.item.TimeOffList = values[1]['data'];
+				})
+				.catch((err) => {
+					console.log(err);
+				})
 		}
 	}
 
