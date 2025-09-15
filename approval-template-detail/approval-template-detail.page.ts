@@ -3,7 +3,7 @@ import { NavController, LoadingController, AlertController, PopoverController } 
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
-import { APPROVAL_ApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_StaffProvider, SYS_SchemaProvider } from 'src/app/services/static/services.service';
+import { APPROVAL_ApprovalRuleProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_LeaveTypeProvider, HRM_StaffProvider, SYS_SchemaProvider } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { ApiSetting } from 'src/app/services/static/api-setting';
@@ -29,6 +29,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
 	countUDF = [];
 	constructor(
 		public pageProvider: APPROVAL_TemplateProvider,
+		public leaveTypeProvider: HRM_LeaveTypeProvider,
 		public approvalRuleService: APPROVAL_ApprovalRuleProvider,
 		public schemaService: SYS_SchemaProvider,
 		public branchProvider: BRA_BranchProvider,
@@ -81,117 +82,25 @@ export class ApprovalTemplateDetailPage extends PageBase {
 				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
 			}),
 
-			// {
-			// 	searchProvider: this.staffService,
-			// 	loading: false,
-			// 	input$: new Subject<string>(),
-			// 	selected: [],
-			// 	items$: null,
-			// 	initSearch() {
-			// 		this.loading = false;
-			// 		this.items$ = concat(
-			// 			of(this.selected),
-			// 			this.input$.pipe(
-			// 				distinctUntilChanged(),
-			// 				tap(() => (this.loading = true)),
-			// 				switchMap((term) =>
-			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-			// 						catchError(() => of([])), // empty list on error
-			// 						tap(() => (this.loading = false))
-			// 					)
-			// 				)
-			// 			)
-			// 		);
-			// 	},
-			// },
 
 			_FixedApproverList: [''],
 			_FixedApproverListDataSource:  this.buildSelectDataSource((term) => {
 				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
 			}),
 			
-			// {
-			// 	searchProvider: this.staffService,
-			// 	loading: false,
-			// 	input$: new Subject<string>(),
-			// 	selected: [],
-			// 	items$: null,
-			// 	initSearch() {
-			// 		this.loading = false;
-			// 		this.items$ = concat(
-			// 			of(this.selected),
-			// 			this.input$.pipe(
-			// 				distinctUntilChanged(),
-			// 				tap(() => (this.loading = true)),
-			// 				switchMap((term) =>
-			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-			// 						catchError(() => of([])), // empty list on error
-			// 						tap(() => (this.loading = false))
-			// 					)
-			// 				)
-			// 			)
-			// 		);
-			// 	},
-			// },
-
+		
 			_SelectableApproverList: [''],
 			_SelectableApproverListDataSource:  this.buildSelectDataSource((term) => {
 				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
 			}),
 			
-			
-			// {
-			// 	searchProvider: this.staffService,
-			// 	loading: false,
-			// 	input$: new Subject<string>(),
-			// 	selected: [],
-			// 	items$: null,
-			// 	initSearch() {
-			// 		this.loading = false;
-			// 		this.items$ = concat(
-			// 			of(this.selected),
-			// 			this.input$.pipe(
-			// 				distinctUntilChanged(),
-			// 				tap(() => (this.loading = true)),
-			// 				switchMap((term) =>
-			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-			// 						catchError(() => of([])), // empty list on error
-			// 						tap(() => (this.loading = false))
-			// 					)
-			// 				)
-			// 			)
-			// 		);
-			// 	},
-			// },
+		
 			_FollowerList: [''],
 			_FollowerListDataSource:  this.buildSelectDataSource((term) => {
 				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
 			}),
 			
-			// {
-			// 	searchProvider: this.staffService,
-			// 	loading: false,
-			// 	input$: new Subject<string>(),
-			// 	selected: [],
-			// 	items$: null,
-			// 	initSearch() {
-			// 		this.loading = false;
-			// 		this.items$ = concat(
-			// 			of(this.selected),
-			// 			this.input$.pipe(
-			// 				distinctUntilChanged(),
-			// 				tap(() => (this.loading = true)),
-			// 				switchMap((term) =>
-			// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-			// 						catchError(() => of([])), // empty list on error
-			// 						tap(() => (this.loading = false))
-			// 					)
-			// 				)
-			// 			)
-			// 		);
-			// 	},
-			// },
-
+		
 			IsUseUDF01: new FormControl({ value: '', disabled: false }),
 			IsUseUDF02: new FormControl({ value: '', disabled: false }),
 			IsUseUDF03: new FormControl({ value: '', disabled: false }),
@@ -350,8 +259,8 @@ export class ApprovalTemplateDetailPage extends PageBase {
 	}
 	changeType(markAsDirty = true) {
 		if (this.formGroup.get('Type').value == 'TimeOff') {
-			this.env.getType('TimeOffType').then((rs) => {
-				this.requestSubTypeList = rs;
+			this.leaveTypeProvider.read().then((rs:any) => {
+				this.requestSubTypeList = rs.data;
 			});
 		} else {
 			this.env.getType(this.formGroup.get('Type').value).then((rs) => {
