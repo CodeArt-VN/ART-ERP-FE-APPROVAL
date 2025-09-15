@@ -263,10 +263,9 @@ export class RequestDetailPage extends PageBase {
 		}
 		else if (this.item.Type == 'TimeOff') {
 			let today = lib.dateFormat(new Date(), 'yyyy-MM-dd');
-			Promise.all([this.staffProvider.getAnItem(this.item.IDStaff), this.staffScheduleProvider.read({ IDStaff: this.item.IDStaff, Type: 'TimeOff', WorkingDateFrom: today, WorkingDateTo: '2999-12-30' })])
+			Promise.all([this.staffProvider.getAnItem(this.item.IDStaff)])
 				.then((values: any) => {
 					this.item.Staff = values[0];
-					this.item.TimeOffList = values[1]['data'];
 				})
 				.catch((err) => {
 					console.log(err);

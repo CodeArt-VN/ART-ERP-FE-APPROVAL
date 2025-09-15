@@ -43,7 +43,7 @@
 							form: formGroup
 							}"></app-form-control>
 						</div>
-						<div class="c-control" *ngIf="formGroup.get('SubType').value">
+						<!-- <div class="c-control" *ngIf="formGroup.get('SubType').value">
 							<app-form-control (change)="changeDate()"[field]="{
 							id: 'Start',
 							label: 'Start date',
@@ -58,7 +58,7 @@
 							type: 'datetime-local',
 							form: formGroup
 							}"></app-form-control>
-						</div>
+						</div> -->
 					</ng-container>
 
 					<app-form-control *ngIf="template?.IsUserCanChooseApprover && template?.SelectableApproverList"
