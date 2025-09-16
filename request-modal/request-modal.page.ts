@@ -3,7 +3,7 @@ import { NavController, LoadingController, AlertController, ModalController, Nav
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
-import { APPROVAL_TemplateProvider, WMS_ZoneProvider } from 'src/app/services/static/services.service';
+import { APPROVAL_RequestProvider, APPROVAL_TemplateProvider, HRM_StaffProvider, HRM_StaffScheduleProvider, WMS_ZoneProvider } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { lib } from 'src/app/services/static/global-functions';
@@ -23,7 +23,9 @@ export class RequestModalPage extends PageBase {
 	template;
 	_approverListDataSource;
 	constructor(
-		public pageProvider: WMS_ZoneProvider,
+		public pageProvider: APPROVAL_RequestProvider,
+		public staffProvider: HRM_StaffProvider,
+		public staffScheduleProvider: HRM_StaffScheduleProvider,
 		public approvalTemplateService: APPROVAL_TemplateProvider,
 		public modalController: ModalController,
 		public alertCtrl: AlertController,
@@ -45,8 +47,8 @@ export class RequestModalPage extends PageBase {
 			Type: ['', Validators.required],
 			SubType: [''],
 			ApprovalMode: [''],
-			Start : [''],
-			End : [''],
+			Start: [''],
+			End: [''],
 			Status: ['Draft'],
 			SelectableApproverIds: [''],
 			Amount: [0],
@@ -97,63 +99,6 @@ export class RequestModalPage extends PageBase {
 			UDF21: new FormControl({ value: '', disabled: true }),
 			UDF22: new FormControl({ value: '', disabled: true }),
 
-			//
-			// Code
-			// Name
-			// Remark
-			// Sort
-			// IsDisabled
-			// IsDeleted
-			// CreatedBy
-			// ModifiedBy
-			// CreatedDate
-			// ModifiedDate
-			// FileURL
-			// ApproverBy
-			// AmountNo
-			// Amount
-			// Reason
-			// DueDate
-			// ReceivedBy
-			// HandingOverWork
-			// Debator
-			// DebatorDepartment
-			// CurrentJobTitle
-			// DebateJobTitle
-			// Item
-			// Quantity
-			// Participant
-			// Requirement
-			// StartFrom
-			// EndTo
-			// ItemStatus
-			// CurrentAmount
-			// DesireAmount
-			// Employee
-			// FromDate
-			// ToDate
-			// UDF01
-			// UDF02
-			// UDF03
-			// UDF04
-			// UDF05
-			// UDF06
-			// UDF07
-			// UDF08
-			// UDF09
-			// UDF10
-			// UDF11
-			// UDF12
-			// UDF13
-			// UDF14
-			// UDF15
-			// UDF16
-			// UDF17
-			// UDF18
-			// UDF19
-			// UDF20
-			// UDF21
-			// UDF22
 		});
 	}
 
@@ -180,13 +125,24 @@ export class RequestModalPage extends PageBase {
 			if (value) {
 				this.template = value;
 				this.formGroup.get('Type').setValue(this.template.Type);
-				if(this.template.Type == 'TimeOff'){
+				if (this.template.Type == 'TimeOff') {
 					this.formGroup.get('Start').setValidators([Validators.required]);
 					this.formGroup.get('End').setValidators([Validators.required]);
+					this.formGroup.get('SubType').setValidators([Validators.required]);
+					let today = lib.dateFormat(new Date(), 'yyyy-MM-dd');
+					Promise.all([this.staffProvider.getAnItem(this.env.user.StaffID), this.staffScheduleProvider.read({ IDStaff: this.env.user.StaffID, Type: 'TimeOff', WorkingDateFrom: today, WorkingDateTo: '2999-12-30' })])
+						.then((values: any) => {
+							this.item.Staff = values[0];
+							this.item.TimeOffList = values[1]['data'];
+						})
+						.catch((err) => {
+							console.log(err);
+						})
 				}
-				else{
+				else {
 					this.formGroup.get('Start').setValidators([]);
 					this.formGroup.get('End').setValidators([]);
+					this.formGroup.get('SubType').setValidators([]);
 				}
 				let keys = Object.keys(this.template).filter((d) => d.includes('IsUseUDF'));
 				keys.forEach((d) => {
@@ -227,4 +183,43 @@ export class RequestModalPage extends PageBase {
 		}
 		return invalid;
 	}
+	changeDate() {
+		const startVal = this.formGroup.get('Start')?.value;
+		const endVal = this.formGroup.get('End')?.value;
+		const subType = this.formGroup.get('SubType')?.value;
+
+		if (!startVal || !endVal) {
+			return;
+		}
+
+		const start = new Date(startVal);
+		const end = new Date(endVal);
+
+		if (end < start) {
+			this.formGroup.get('End').setValue('');
+			this.env.showMessage('The end date must be greater than or equal to the start date', 'danger');
+			return;
+		}
+
+		let days = 0;
+		let currentDate = new Date(start);
+
+		while (currentDate <= end) {
+			days += 1;
+			const workingDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+
+		// Kiểm tra với LeaveDaysRemaining (nếu là Annual Leave)
+		if (subType === 'AL') {
+			const remaining = this.item.Staff.LeaveDaysRemaining ?? 0;
+			if (days > remaining) {
+				this.formGroup.get('End').setValue('');
+				this.env.showMessage('You only have {value} annual leave days left, you cannot request {value1} days', 'danger', { value: remaining, value1: days });
+				return;
+			}
+		}
+	}
+
+
 }

@@ -15,17 +15,20 @@
 		<div class="ion-padding">
 			<ng-container *ngIf="item?.Type == 'DataCorrection'">
 				<ion-item lines="none" class="ion-no-padding">
-					<ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare"> {{'Show compare' | translate}}</ion-toggle>
+					<ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isCompare">
+						{{'Show compare' | translate}}</ion-toggle>
 				</ion-item>
 				<ion-item lines="none" class="ion-no-padding">
-					<ion-toggle justify="space-between" class="c-checkbox" [(ngModel)]="jsonViewerConfig.isShowDifference">{{'Show difference' | translate}}</ion-toggle>
+					<ion-toggle justify="space-between" class="c-checkbox"
+						[(ngModel)]="jsonViewerConfig.isShowDifference">{{'Show difference' | translate}}</ion-toggle>
 				</ion-item>
 				<ion-row>
 					<ion-col>
 						<div class="c-control" *ngIf="jsonViewerConfig.showProperties?.length >0">
 							<label class="c-label">{{ 'Show properties' | translate }}</label>
 							<span class="c-input" style="flex-wrap: wrap; height: auto">
-								<ion-chip *ngFor="let property of jsonViewerConfig.showProperties;let j = index" color="primary" style="height: auto; margin: 2px">
+								<ion-chip *ngFor="let property of jsonViewerConfig.showProperties;let j = index"
+									color="primary" style="height: auto; margin: 2px">
 									<ion-label>{{property | translate}}</ion-label>
 									<ion-icon name="close" (click)="addNotShowProperty(j)"></ion-icon>
 								</ion-chip>
@@ -34,15 +37,19 @@
 						<div class="c-control" *ngIf="jsonViewerConfig.notShowProperties?.length >0">
 							<label class="c-label">{{ 'Not show properties' | translate }}</label>
 							<span class="c-input" style="flex-wrap: wrap; height: auto">
-								<ion-chip *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index" color="danger" style="height: auto; margin: 2px">
+								<ion-chip *ngFor="let property of jsonViewerConfig.notShowProperties;let j = index"
+									color="danger" style="height: auto; margin: 2px">
 									<ion-label>{{property | translate}}</ion-label>
 									<ion-icon name="close" (click)="addShowProperty(j)"></ion-icon>
 								</ion-chip>
 							</span>
 						</div>
 					</ion-col>
+
 				</ion-row>
 			</ng-container>
+
+
 		</div>
 	</ion-fab>
 	<div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
@@ -61,18 +68,71 @@
                 </h2>
               </ion-label>
             </ion-item> -->
+
 						<ng-container *ngIf="item?.Type == 'TimeOff'">
 							<ion-item>
 								<ion-label>
 									<p>{{'Start date' | translate}}</p>
-									<h2>{{item.Start}}</h2>
+									<h2>{{item.Start | date:'dd/MM/yyyy HH:mm'}}</h2>
 								</ion-label>
 							</ion-item>
 							<ion-item>
 								<ion-label>
 									<p>{{'End date' | translate}}</p>
-									<h2>{{item.End}}</h2>
+									<h2>{{item.End | date:'dd/MM/yyyy HH:mm'}}</h2>
 								</ion-label>
+							</ion-item>
+							<ng-container *ngIf="item.Staff">
+								<ion-item >
+									<ion-label>
+										<p>{{'Leave day allocated' | translate}}</p>
+										<h2>{{item.Staff.LeaveDaysAllocated }}</h2>
+									</ion-label>
+								</ion-item>
+								<ion-item>
+									<ion-label>
+										<p>{{'Leave day used' | translate}}</p>
+										<h2>{{item.Staff.LeaveDaysUsed}}</h2>
+									</ion-label>
+								</ion-item>
+								<ion-item>
+									<ion-label>
+										<p>{{'Leave day remaining' | translate}}</p>
+										<h2>{{item.Staff.LeaveDaysRemaining}}</h2>
+									</ion-label>
+								</ion-item>
+								<ion-item >
+									<ion-label>
+										<p>{{'Leave day scheduled' | translate}}</p>
+										<h2>{{item.Staff.LeaveDaysScheduled }}</h2>
+									</ion-label>
+								</ion-item>
+							</ng-container>
+
+
+							<ion-item *ngIf="item.TimeOffList">
+								<app-data-table class="box-shadow responsive" [rows]="item.TimeOffList"
+									[(selectedRows)]="selectedItems" [showSpinner]="showSpinnerPayment">
+									<!-- <datatable-column [checkbox]="true"></datatable-column> -->
+									<datatable-column class="col-id" name="Id" property="id">
+									</datatable-column>
+									<datatable-column class="col-date" format="dd/MM/yy" name="Working date"
+										property="WorkingDate">
+
+									</datatable-column>
+									<datatable-column class="col-date" format="dd/MM/yy hh:mm" name="Start"
+										property="start">
+
+									</datatable-column>
+									<datatable-column class="col-date" format="dd/MM/yy hh:mm" name="End"
+										property="end">
+
+									</datatable-column>
+									<datatable-column class="col-code" name="Type" property="TimeOffType">
+
+									</datatable-column>
+								</app-data-table>
+
 							</ion-item>
 						</ng-container>
 						<ng-container *ngIf="item?.Type != 'DataCorrection'">
@@ -85,15 +145,11 @@
 						</ng-container>
 						<ion-item *ngIf="item.UDF16 && item?.Type == 'DataCorrection' && isLoadedOldItem">
 							<ion-label>
-								<app-json-viewer
-									[item]="item.UDF16"
-									[oldItem]="oldItem"
-									[properties]="this.propertiesLabelDataCorrection"
-									[isCompare]="true"
+								<app-json-viewer [item]="item.UDF16" [oldItem]="oldItem"
+									[properties]="this.propertiesLabelDataCorrection" [isCompare]="true"
 									[isShowDifference]="jsonViewerConfig.isShowDifference"
-									[notShowProperties]="jsonViewerConfig.notShowProperties"
-								>
-								<!-- jsonViewerConfig.isCompare -->
+									[notShowProperties]="jsonViewerConfig.notShowProperties">
+									<!-- jsonViewerConfig.isCompare -->
 								</app-json-viewer>
 							</ion-label>
 						</ion-item>
@@ -112,7 +168,8 @@
 								<div class="giao-nhan">
 									<!-- PGNTT -->
 									<section class="sheet padding-10mm rpt p1">
-										<app-so-note [ID]="item.UDF01" [SOIsRemoveItemsWithZeroPriceOnOrderNote]="true"></app-so-note>
+										<app-so-note [ID]="item.UDF01"
+											[SOIsRemoveItemsWithZeroPriceOnOrderNote]="true"></app-so-note>
 									</section>
 								</div>
 							</div>
@@ -124,13 +181,15 @@
 								<div class="giao-nhan">
 									<!-- PGNTT -->
 									<section class="sheet padding-10mm rpt p1">
-										<app-po-note [ID]="item.UDF01" [PONConvertToLargerUoM]="true" [PONShowPackingUoM]="true" [PONShowEACaseOnly]="false"></app-po-note>
+										<app-po-note [ID]="item.UDF01" [PONConvertToLargerUoM]="true"
+											[PONShowPackingUoM]="true" [PONShowEACaseOnly]="false"></app-po-note>
 									</section>
 								</div>
 							</div>
 						</ion-col>
 					</ion-row>
-					<ion-list *ngIf="pageConfig.canApprove || pageConfig.canDisApprove|| pageConfig.canDeny ||pageConfig.canForward">
+					<ion-list
+						*ngIf="pageConfig.canApprove || pageConfig.canDisApprove|| pageConfig.canDeny ||pageConfig.canForward">
 						<ion-list-header>
 							<ion-label color="primary">{{'Approve' | translate}}</ion-label>
 						</ion-list-header>
@@ -138,16 +197,20 @@
 							<ion-grid fixed>
 								<ion-row>
 									<ion-col size="6" size-md="3" *ngIf="pageConfig.canApprove">
-										<ion-button color="success" expand="block" (click)="submitApproval('Approved')"> {{'Approve' | translate}} </ion-button>
+										<ion-button color="success" expand="block" (click)="submitApproval('Approved')">
+											{{'Approve' | translate}} </ion-button>
 									</ion-col>
 									<ion-col size="6" size-md="3" *ngIf="pageConfig.canForward">
-										<ion-button color="warning" expand="block" (click)="submitApproval('Forward')"> {{'Forward' | translate}} </ion-button>
+										<ion-button color="warning" expand="block" (click)="submitApproval('Forward')">
+											{{'Forward' | translate}} </ion-button>
 									</ion-col>
 									<ion-col size="6" size-md="3" *ngIf="pageConfig.canDeny">
-										<ion-button color="danger" expand="block" (click)="submitApproval('Denied')"> {{'Deny' | translate}} </ion-button>
+										<ion-button color="danger" expand="block" (click)="submitApproval('Denied')">
+											{{'Deny' | translate}} </ion-button>
 									</ion-col>
 									<ion-col size="6" size-md="3" *ngIf="pageConfig.canDisApprove">
-										<ion-button color="danger" expand="block" (click)="disapprove()"> {{'Disapprove' | translate}} </ion-button>
+										<ion-button color="danger" expand="block" (click)="disapprove()"> {{'Disapprove'
+											| translate}} </ion-button>
 									</ion-col>
 								</ion-row>
 							</ion-grid>
@@ -161,51 +224,37 @@
 									<ion-col size="12" size-sm size-xl="6">
 										<app-form-control
 											[field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
-											(change)="changeVendor($event)"
-										>
+											(change)="changeVendor($event)">
 										</app-form-control>
-										<app-form-control
-											[field]="{id :'ContentType', label:'Content type' ,
+										<app-form-control [field]="{id :'ContentType', label:'Content type' ,
                     type:'ng-select',dataSource:contentTypeList,
                     bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}"
-											(change)="changeContentType($event)"
-										>
+											(change)="changeContentType($event)">
 										</app-form-control>
-										<app-form-control
-											[field]="{id :'Remark', label:'Remark' ,
-                    type:'textarea',form:purchaseRequestFormGroup}"
-											(change)="saveChangePurchaseRequest()"
-										>
+										<app-form-control [field]="{id :'Remark', label:'Remark' ,
+                    type:'textarea',form:purchaseRequestFormGroup}" (change)="saveChangePurchaseRequest()">
 										</app-form-control>
 									</ion-col>
 									<ion-col size="12" size-sm size-xl="6">
-										<app-form-control
-											[clearable]="true"
-											[virtualScroll]="true"
+										<app-form-control [clearable]="true" [virtualScroll]="true"
 											[field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseRequestFormGroup }"
-											(change)="changeRequiredDate();"
-										>
+											(change)="changeRequiredDate();">
 										</app-form-control>
 
-										<app-form-control
-											[clearable]="true"
-											[virtualScroll]="true"
+										<app-form-control [clearable]="true" [virtualScroll]="true"
 											[field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
-											(change)="changeRequiredDate()"
-										></app-form-control>
+											(change)="changeRequiredDate()"></app-form-control>
 
 										<div class="c-control">
-											<label class="c-label" for="TotalAfterTax"
-												>{{'Value' | translate}}
+											<label class="c-label" for="TotalAfterTax">{{'Value' | translate}}
 												<span
 													*ngIf="!purchaseRequestFormGroup.controls.TotalAfterTax.valid && !purchaseRequestFormGroup.controls.TotalAfterTax.pending && (purchaseRequestFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
-													ion-text
-													color="danger"
-													>(*)</span
-												>
+													ion-text color="danger">(*)</span>
 											</label>
 											<span class="c-input disable">
-												<b *ngIf="purchaseRequestFormGroup.controls.OrderLines?.controls?.length>0">{{calcTotalAfterTax() | number: '1.0-0'}}</b>
+												<b
+													*ngIf="purchaseRequestFormGroup.controls.OrderLines?.controls?.length>0">{{calcTotalAfterTax()
+													| number: '1.0-0'}}</b>
 											</span>
 										</div>
 									</ion-col>
@@ -220,20 +269,18 @@
 									</ion-segment-button>
 								</ion-segment>
 							</ion-toolbar>
-							<app-purchase-items
-								[contentType]="_currentContentType"
+							<app-purchase-items [contentType]="_currentContentType"
 								(renderFormArray)="renderFormArray($event)"
 								[canEdit]="pageConfig.canEditPurchaseRequest"
 								[IDVendor]="purchaseRequestFormGroup.get('IDVendor').value"
-								[orderLines]="itemPurchaseRequest.OrderLines"
-								(onChange)="saveOrderBack($event)"
-								(removeItem)="removeItem($event)"
-							>
+								[orderLines]="itemPurchaseRequest.OrderLines" (onChange)="saveOrderBack($event)"
+								(removeItem)="removeItem($event)">
 							</app-purchase-items>
 						</div>
 
 						<div *ngIf="!isAutoSave">
-							<ion-button *ngIf="item?.Type == 'PurchaseRequest'" (click)="saveChangePurchaseRequest(true);" title="{{'Submit request' | translate}}">
+							<ion-button *ngIf="item?.Type == 'PurchaseRequest'"
+								(click)="saveChangePurchaseRequest(true);" title="{{'Submit request' | translate}}">
 								{{'Submit purchase request' || translate}}
 							</ion-button>
 						</div>
@@ -242,34 +289,36 @@
 					<ion-row *ngIf="item.Type=='PurchaseQuotation' && itemPurchaseQuotation?.QuotationLines">
 						<div class="table-contain safe-max-width">
 							<!-- responsive -->
-							<app-data-table
-								class="box-shadow"
-								[rows]="itemPurchaseQuotation?.QuotationLines"
-								[trackBy]="'Id'"
-								[showSpinner]="pageConfig.showSpinner"
-								[showFilter]="pageConfig.isShowSearch"
-							>
+							<app-data-table class="box-shadow" [rows]="itemPurchaseQuotation?.QuotationLines"
+								[trackBy]="'Id'" [showSpinner]="pageConfig.showSpinner"
+								[showFilter]="pageConfig.isShowSearch">
 								<datatable-column class="col-name" name="Item" property="Id">
 									<ng-template let-i="row" datatable-cell-template>
 										<span (mousedown)="$event.stopPropagation()"> #{{ i._Item.Id }} </span>
-										<a [ngClass]="{ 'no-check-dirty': noCheckDirty }" class="clickable" [routerLink]="['/item/' + i.Id]" (mousedown)="$event.stopPropagation()"
-											><ion-icon name="open-outline"></ion-icon
-										></a>
+										<a [ngClass]="{ 'no-check-dirty': noCheckDirty }" class="clickable"
+											[routerLink]="['/item/' + i.Id]"
+											(mousedown)="$event.stopPropagation()"><ion-icon
+												name="open-outline"></ion-icon></a>
 										&nbsp;
 										<span [title]="i._Item.Name">
-											<b *ngIf="i._Item.Code" (mousedown)="$event.stopPropagation()">{{ i._Item.Code }}</b>
+											<b *ngIf="i._Item.Code" (mousedown)="$event.stopPropagation()">{{
+												i._Item.Code }}</b>
 											{{ i._Item.Name }}
 										</span>
 									</ng-template>
 								</datatable-column>
 								<datatable-column class="col-uom" name="Unit" property="UoMName"> </datatable-column>
-								<datatable-column class="col-number" name="Quantity" property="Quantity"> </datatable-column>
-								<datatable-column class="col-number" name="Quantity required" property="QuantityRequired"> </datatable-column>
+								<datatable-column class="col-number" name="Quantity" property="Quantity">
+								</datatable-column>
+								<datatable-column class="col-number" name="Quantity required"
+									property="QuantityRequired"> </datatable-column>
 								<datatable-column class="col-number" name="Price" property="Price">
-									<ng-template let-i="row" datatable-cell-template> {{i.Price | number: '1.0-0'}} </ng-template>
+									<ng-template let-i="row" datatable-cell-template> {{i.Price | number: '1.0-0'}}
+									</ng-template>
 								</datatable-column>
 								<datatable-column class="col-number" name="Total" property="TotalAfterTax">
-									<ng-template let-i="row" datatable-cell-template> {{i.TotalAfterTax | number: '1.0-0'}} </ng-template>
+									<ng-template let-i="row" datatable-cell-template> {{i.TotalAfterTax | number:
+										'1.0-0'}} </ng-template>
 								</datatable-column>
 							</app-data-table>
 						</div>
@@ -281,7 +330,8 @@
 						</ion-list-header>
 						<ion-item lines="none">
 							<ion-avatar slot="start">
-								<ion-img #img [src]="env.user.Avatar || 'assets/avartar-empty.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+								<ion-img #img [src]="env.user.Avatar || 'assets/avartar-empty.jpg'"
+									(ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
 							</ion-avatar>
 							<ion-label>
 								<h2>{{env.user.FullName}}</h2>
@@ -294,21 +344,17 @@
 									<ion-button (click)="addComment()" fill="clear" class="send">
 										<ion-icon slot="icon-only" name="paper-plane"></ion-icon>
 									</ion-button>
-									<textarea
-										(keydown.enter)="addComment()"
-										placeholder="{{'Write your discussion' | translate}}"
-										rows="1"
-										class="c-input remark"
-										id="Remark"
-										formControlName="Remark"
-										type="textarea"
-									></textarea>
+									<textarea (keydown.enter)="addComment()"
+										placeholder="{{'Write your discussion' | translate}}" rows="1"
+										class="c-input remark" id="Remark" formControlName="Remark"
+										type="textarea"></textarea>
 								</div>
 							</ion-item>
 
 							<ion-item lines="none" *ngFor="let i of commentList" class="log">
 								<ion-avatar slot="start">
-									<ion-img #img [src]="imgPath + i._Staff.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+									<ion-img #img [src]="imgPath + i._Staff.Code + '.jpg'"
+										(ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
 								</ion-avatar>
 								<ion-label>
 									<h3>{{i._Staff.FullName}}</h3>
@@ -328,7 +374,8 @@
 						<ion-list>
 							<ion-item>
 								<ion-avatar slot="start">
-									<ion-img #img [src]="imgPath + item._Staff.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+									<ion-img #img [src]="imgPath + item._Staff.Code + '.jpg'"
+										(ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
 								</ion-avatar>
 								<ion-label>
 									<h2>{{item._Staff.FullName}}</h2>
@@ -342,15 +389,18 @@
 						<ion-list>
 							<ion-item *ngFor="let i of item._Approvers">
 								<ion-avatar slot="start">
-									<ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+									<ion-img #img [src]="imgPath + i.Code + '.jpg'"
+										(ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
 								</ion-avatar>
 								<ion-label>
 									<h2>{{i.FullName}}</h2>
 									<h3>
-										<ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa duyệt'}}</ion-text>
+										<ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa
+											duyệt'}}</ion-text>
 									</h3>
 								</ion-label>
-								<ion-icon *ngIf="i._Status" slot="end" [color]="i._Status.Color" [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
+								<ion-icon *ngIf="i._Status" slot="end" [color]="i._Status.Color"
+									[name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
 							</ion-item>
 						</ion-list>
 						<ion-list-header *ngIf="item._Followers?.length>0">
@@ -359,7 +409,8 @@
 						<ion-list>
 							<ion-item *ngFor="let i of item._Followers">
 								<ion-avatar slot="start">
-									<ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
+									<ion-img #img [src]="imgPath + i.Code + '.jpg'"
+										(ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
 								</ion-avatar>
 								<ion-label>
 									<h2>{{i.FullName}}</h2>
@@ -376,14 +427,16 @@
 									<p>{{i.Date}}</p>
 									<h2>{{i.Time}}</h2>
 								</ion-label>
-								<ion-icon class="icon" slot="start" [color]="i._Status?.Color" [name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
+								<ion-icon class="icon" slot="start" [color]="i._Status?.Color"
+									[name]="i.Status == 'Denied'? 'ban-outline':'checkmark-circle-outline'"></ion-icon>
 								<!-- <ion-avatar slot="start">
                                     <ion-img #img [src]="imgPath + i.Code + '.jpg'" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img>
                                 </ion-avatar> -->
 								<ion-label style="margin-left: 8px">
 									<h2>{{i.FullName}}</h2>
 									<h3>
-										<ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa duyệt'}}</ion-text>
+										<ion-text [color]="i._Status?.Color || 'danger'">{{i._Status?.Name||'Chưa
+											duyệt'}}</ion-text>
 									</h3>
 									<p class="remark" *ngIf="i.Remark">{{i.Remark}}</p>
 								</ion-label>
