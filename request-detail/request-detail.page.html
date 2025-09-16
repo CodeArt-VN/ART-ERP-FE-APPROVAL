@@ -70,18 +70,6 @@
             </ion-item> -->
 
 						<ng-container *ngIf="item?.Type == 'TimeOff'">
-							<ion-item>
-								<ion-label>
-									<p>{{'Start date' | translate}}</p>
-									<h2>{{item.Start | date:'dd/MM/yyyy HH:mm'}}</h2>
-								</ion-label>
-							</ion-item>
-							<ion-item>
-								<ion-label>
-									<p>{{'End date' | translate}}</p>
-									<h2>{{item.End | date:'dd/MM/yyyy HH:mm'}}</h2>
-								</ion-label>
-							</ion-item>
 							<ng-container *ngIf="item.Staff">
 								<ion-item >
 									<ion-label>
@@ -109,31 +97,6 @@
 								</ion-item>
 							</ng-container>
 
-
-							<ion-item *ngIf="item.TimeOffList">
-								<app-data-table class="box-shadow responsive" [rows]="item.TimeOffList"
-									[(selectedRows)]="selectedItems" [showSpinner]="showSpinnerPayment">
-									<!-- <datatable-column [checkbox]="true"></datatable-column> -->
-									<datatable-column class="col-id" name="Id" property="id">
-									</datatable-column>
-									<datatable-column class="col-date" format="dd/MM/yy" name="Working date"
-										property="WorkingDate">
-
-									</datatable-column>
-									<datatable-column class="col-date" format="dd/MM/yy hh:mm" name="Start"
-										property="start">
-
-									</datatable-column>
-									<datatable-column class="col-date" format="dd/MM/yy hh:mm" name="End"
-										property="end">
-
-									</datatable-column>
-									<datatable-column class="col-code" name="Type" property="TimeOffType">
-
-									</datatable-column>
-								</app-data-table>
-
-							</ion-item>
 						</ng-container>
 						<ng-container *ngIf="item?.Type != 'DataCorrection'">
 							<ion-item *ngFor="let udf of mappingList">
