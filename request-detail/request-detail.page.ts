@@ -147,6 +147,11 @@ export class RequestDetailPage extends PageBase {
 						if (this.approvalTemplate[d]) {
 							let label = this.approvalTemplate[d.replace('IsUseUDF', 'UDFLabel')];
 							let value = this.item[d.replace('IsUseUDF', 'UDF')];
+
+							let isDateField = label?.toLowerCase().includes('start date') || label?.toLowerCase().includes('end date');
+							if (isDateField && value) {
+								value = lib.dateFormat(value, 'dd/mm/yy hh:MM');
+							}
 							this.mappingList.push({
 								Label: label,
 								Value: value,

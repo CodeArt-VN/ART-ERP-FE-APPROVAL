@@ -126,8 +126,6 @@ export class RequestModalPage extends PageBase {
 				this.template = value;
 				this.formGroup.get('Type').setValue(this.template.Type);
 				if (this.template.Type == 'TimeOff') {
-					this.formGroup.get('Start').setValidators([Validators.required]);
-					this.formGroup.get('End').setValidators([Validators.required]);
 					this.formGroup.get('SubType').setValidators([Validators.required]);
 					let today = lib.dateFormat(new Date(), 'yyyy-MM-dd');
 					Promise.all([this.staffProvider.getAnItem(this.env.user.StaffID), this.staffScheduleProvider.read({ IDStaff: this.env.user.StaffID, Type: 'TimeOff', WorkingDateFrom: today, WorkingDateTo: '2999-12-30' })])
@@ -140,8 +138,6 @@ export class RequestModalPage extends PageBase {
 						})
 				}
 				else {
-					this.formGroup.get('Start').setValidators([]);
-					this.formGroup.get('End').setValidators([]);
 					this.formGroup.get('SubType').setValidators([]);
 				}
 				let keys = Object.keys(this.template).filter((d) => d.includes('IsUseUDF'));
