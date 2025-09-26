@@ -193,6 +193,7 @@ export class RequestPage extends PageBase {
 	}
 
 	filterBySubTab(key) {
+		this.pageConfig.isSubActive = true;
 		this.query.Follow = undefined;
 		this.query.MyRequest = undefined;
 		this.query.IDApprovalTemplate = undefined;
@@ -200,7 +201,7 @@ export class RequestPage extends PageBase {
 		this.refresh();
 	}
 	changeTemplateFilter(id) {
-		this.pageConfig.mainPageActive = false;
+		this.pageConfig.isSubActive = true;
 
 		this.query.Follow = undefined;
 		this.query.MyRequest = undefined;
@@ -209,10 +210,6 @@ export class RequestPage extends PageBase {
 			this.query.IDApprovalTemplate = id;
 		}
 		this.refresh();
-	}
-
-	backSubPage() {
-		this.pageConfig.mainPageActive = true;
 	}
 
 	segmentView = 'All';

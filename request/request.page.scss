@@ -1,23 +1,21 @@
-.col-staff.cell ion-avatar {
-	height: calc(10 / 16 * 2.5rem);
-	width: calc(10 / 16 * 2.5rem);
-	margin-right: 8px;
-}
+
 app-data-table header,
 app-data-table .row.header,
 .table header,
 .table .row.header {
 	width: fit-content;
 }
-@media screen and (max-width: calc(1365px)) {
-	//1610px
-	.empty,
-	.kid {
-		display: none;
+
+.col-staff {
+	ion-avatar {
+		height: calc(10 / 16 * 2.5rem);
+		width: calc(10 / 16 * 2.5rem);
+		min-width: calc(10 / 16 * 2.5rem);
+		margin-left: 0px;
+		margin-right: -5px;
 	}
-	.small-kid {
-		display: inline;
-	}
+}
+@media screen and (max-width: calc(1610px)) {
 	.table {
 		background-color: transparent;
 		min-width: unset !important;
@@ -113,26 +111,6 @@ app-data-table .row.header,
 			order: 4;
 		}
 
-		.col-code {
-			order: 2;
-			font-size: 110%;
-			min-width: fit-content !important;
-			max-width: fit-content !important;
-			padding-right: 0 !important;
-			white-space: nowrap !important;
-
-			span {
-				padding: 1px 7px 1px 0 !important;
-				border-left: solid 3px rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
-				background-color: rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.1);
-				border-radius: 2px;
-				font-size: 70%;
-				margin-bottom: 5px;
-				margin-right: 5px;
-				max-width: fit-content !important;
-				min-width: fit-content !important;
-			}
-		}
 
 		hr {
 			order: 3;
@@ -144,30 +122,14 @@ app-data-table .row.header,
 		}
 
 		.col-name {
-			max-width: fit-content !important;
-			min-width: fit-content !important;
+			min-width: 100% !important;
 			font-weight: bold;
 			order: 3;
 			color: var(--ion-color-medium) !important;
+			padding: 5px 0 !important;
 		}
 
-		.col-remark {
-			font-weight: normal !important;
-			white-space: pre-line !important;
-			order: 7;
-			min-width: calc(100% + 100px) !important;
-		}
 
-		.phone {
-			order: 4;
-			color: var(--ion-color-primary);
-		}
-		.regis {
-			font-size: 90% !important;
-			font-weight: bold;
-			border-left: solid 3px rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
-			background-color: rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
-		}
 
 		.col-status {
 			order: 4;
@@ -185,18 +147,27 @@ app-data-table .row.header,
 			}
 		}
 
-		.col-number {
-			order: 4;
-			position: absolute;
-			right: 8px;
-			min-width: fit-content;
-			margin-top: 20px;
-			font-size: 160%;
-			color: var(--ion-color-primary) !important;
-			font-weight: bold;
-		}
 		.follower {
 			display: none;
+		}
+	}
+
+	
+	.col-staff{
+		max-width: fit-content;
+	}
+
+	.col-approver{
+		position: absolute;
+		right: 13px;
+		justify-content: right;
+		top: 48px;
+
+		ion-avatar {
+			height: calc(10 / 16 * 3.5rem);
+			width: calc(10 / 16 * 3.5rem);
+			min-width: calc(10 / 16 * 3.5rem);
+			margin-right: -7px;
 		}
 	}
 }

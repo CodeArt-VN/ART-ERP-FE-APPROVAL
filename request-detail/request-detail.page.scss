@@ -27,6 +27,8 @@
 	right: 8px;
 }
 
+
+
 .A4 .sheet {
 	height: unset;
 }
@@ -42,6 +44,12 @@
 	padding: 0 10mm;
 }
 ::ng-deep {
+	.col-uom {
+		max-width: 70px;
+		text-align: center;
+		justify-content: center;
+	}
+	
 	.main-active-item {
 		padding-top: 8px;
 		padding-bottom: 8px;
