@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, ChangeDetectorRef, Input, Type } from '@angular/core';
 import { NavController, LoadingController, AlertController, ModalController, PopoverController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
@@ -137,6 +137,30 @@ export class RequestDetailPage extends PageBase {
 			i.Date = lib.dateFormat(i.CreatedDate, 'dd/mm/yy');
 			i.Time = lib.dateFormat(i.CreatedDate, 'hh:MM');
 		});
+		const approvalRequestUDFTypes = {
+			UDF01: 'number',
+			UDF02: 'number',
+			UDF03: 'number',
+			UDF04: 'number',
+			UDF05: 'number',
+			UDF06: 'Date',
+			UDF07: 'Date',
+			UDF08: 'Date',
+			UDF09: 'string',
+			UDF10: 'string',
+			UDF11: 'string',
+			UDF12: 'string',
+			UDF13: 'string',
+			UDF14: 'string',
+			UDF15: 'string',
+			UDF16: 'string',
+			UDF17: 'number',
+			UDF18: 'number',
+			UDF19: 'number',
+			UDF20: 'number',
+			UDF21: 'number',
+			UDF22: 'number',
+		};
 		if (this.item.IDApprovalTemplate > 0) {
 			this.approvalTemplateService.getAnItem(this.item.IDApprovalTemplate).then((value) => {
 				if (value) {
@@ -147,9 +171,8 @@ export class RequestDetailPage extends PageBase {
 						if (this.approvalTemplate[d]) {
 							let label = this.approvalTemplate[d.replace('IsUseUDF', 'UDFLabel')];
 							let value = this.item[d.replace('IsUseUDF', 'UDF')];
-
-							let isDateField = label?.toLowerCase().includes('start date') || label?.toLowerCase().includes('end date');
-							if (isDateField && value) {
+							let type = approvalRequestUDFTypes[d.replace('IsUseUDF', 'UDF')];
+							if (type === 'Date' && value) {
 								value = lib.dateFormat(value, 'dd/mm/yy hh:MM');
 							}
 							this.mappingList.push({
