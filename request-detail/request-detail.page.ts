@@ -40,15 +40,18 @@ export class RequestDetailPage extends PageBase {
 	isSupperApprover;
 	_currentApprover;
 	commentForm: FormGroup;
-	purchaseRequestFormGroup: FormGroup;
-	itemPurchaseQuotation: any;
+	purchaseRequestFormGroup: FormGroup; // FormGroup PurchaseRequest
+	itemPurchaseRequest: any = {}; // orderline PurchaseRequest
+	purchaseQuotationFormGroup: FormGroup; // FormGroup PurchaseRequest
+	itemPurchaseQuotation: any; // orderline PurchaseQuotation
+	statusLineListPQ = []; // status orderline PurchaseQuotation
 	branchList = [];
 	vendorList = [];
 	storerList = [];
 	paymentStatusList = [];
 	contentTypeList = [];
 	jsonViewerConfig: any = {};
-	itemPurchaseRequest: any = {};
+
 	propertiesLabelDataCorrection: any = null;
 	oldItem: any = {};
 	isLoadedOldItem = false;
@@ -62,6 +65,9 @@ export class RequestDetailPage extends PageBase {
 	_vendorDataSource = this.buildSelectDataSource((term) => {
 		return this.contactProvider.search({ SkipAddress: true, IsVendor: true, SortBy: ['Id_desc'], Take: 20, Skip: 0, Term: term });
 	});
+
+	quotationVendorView = false;
+	quotationShowToggleAllQty = true;
 
 	constructor(
 		public pageProvider: APPROVAL_RequestProvider,
@@ -203,8 +209,7 @@ export class RequestDetailPage extends PageBase {
 					DeletedAddress: 'Deleted address',
 					DeletedTaxInfo: 'Deleted billing address',
 				};
-				this.jsonViewerConfig.notShowProperties = ["DeletedAddressFields", "DeletedTaxInfoFields"];
-
+				this.jsonViewerConfig.notShowProperties = ['DeletedAddressFields', 'DeletedTaxInfoFields'];
 			}
 			this.contactProvider
 				.getAnItem(this.item.UDF01)
@@ -217,12 +222,9 @@ export class RequestDetailPage extends PageBase {
 					}
 				})
 				.finally(() => (this.isLoadedOldItem = true));
-		}
-
-		else if (this.item.Type == 'PurchaseRequest') {
+		} else if (this.item.Type == 'PurchaseRequest') {
 			this.buildPurchaseForm();
 			this.pageConfig.canEditPurchaseRequest = this.pageConfig.canEdit;
-
 			this.contactProvider.read({ IsVendor: true, Take: 20 }).then((resp) => {
 				this._vendorDataSource.selected.push(...resp['data']);
 			});
@@ -272,24 +274,64 @@ export class RequestDetailPage extends PageBase {
 			}
 			if (!this.pageConfig.canEdit) this.purchaseRequestFormGroup.disable();
 			this._currentVendor = this.purchaseRequestFormGroup.get('IDVendor').value;
-		}
+		} else if (this.item.Type == 'PurchaseQuotation') {
+			this.buildPurchaseQuotationForm();
+			this.pageConfig.canEditPurchaseRequest = this.pageConfig.canEdit;
+			Promise.all([this.contactProvider.read({ IsVendor: true, Take: 20 }), this.env.getStatus('PurchaseQuotationLine')]).then((values: any) => {
+				if (values[0] && values[0].data) {
+					this._vendorDataSource.selected.push(...values[0].data);
+				}
+				if (values[1]) this.statusLineListPQ = values[1];
+				if (this.item.UDF01 > 0) {
+					this.purchaseQuotationProvider
+						.getAnItem(this.item.UDF01)
+						.then((resp: any) => {
+							if (resp) {
+								this.itemPurchaseQuotation = resp;
 
-		else if (this.item.Type == 'PurchaseQuotation') {
-			if (this.item.UDF01 > 0) {
-				this.purchaseQuotationProvider
-					.getAnItem(this.item.UDF01)
-					.then((resp) => {
-						if (resp) {
-							this.itemPurchaseQuotation = resp;
-						}
-					})
-					.catch((err) => {
-						console.log(err);
-						this.env.showMessage(err, 'danger');
-					});
-			}
-		}
-		else if (this.item.Type == 'TimeOff') {
+								this.purchaseQuotationFormGroup.patchValue(this.itemPurchaseQuotation);
+								this.purchaseQuotationFormGroup.markAsPristine();
+
+								if (this.itemPurchaseQuotation._Vendor) {
+									this._vendorDataSource.selected = [...this._vendorDataSource.selected, this.itemPurchaseQuotation._Vendor];
+								}
+
+								if (!['Draft', 'Unapproved'].includes(this.itemPurchaseQuotation.Status)) {
+									this.purchaseQuotationFormGroup.disable();
+									this.pageConfig.canEditPurchaseQuotation = false;
+								}
+
+								if (!this.itemPurchaseQuotation.QuotationLines) {
+									this.itemPurchaseQuotation.QuotationLines = [];
+								}
+								this.cdr.detectChanges();
+							}
+						})
+						.catch((err) => {
+							console.log(err);
+							this.env.showMessage(err, 'danger');
+						})
+						.finally(() => {
+							this._vendorDataSource.initSearch();
+							this._staffDataSource.initSearch();
+						});
+				} else {
+					this.itemPurchaseQuotation = {
+						Id: 0,
+						Status: 'Draft',
+						ContentType: 'Item',
+						QuotationLines: [],
+					};
+					this.purchaseQuotationFormGroup.get('ContentType').markAsDirty();
+					this._vendorDataSource.initSearch();
+				}
+
+				if (!this.pageConfig.canEdit) {
+					this.purchaseQuotationFormGroup.disable();
+					this.pageConfig.canEditPurchaseQuotation = false;
+				}
+			});
+		} else if (this.item.Type == 'TimeOff') {
 			let today = lib.dateFormat(new Date(), 'yyyy-MM-dd');
 			Promise.all([this.staffProvider.getAnItem(this.item.IDStaff)])
 				.then((values: any) => {
@@ -297,7 +339,7 @@ export class RequestDetailPage extends PageBase {
 				})
 				.catch((err) => {
 					console.log(err);
-				})
+				});
 		}
 	}
 
@@ -314,7 +356,7 @@ export class RequestDetailPage extends PageBase {
 			ForeignRemark: [''],
 			ContentType: ['Item', Validators.required],
 			Status: new FormControl({ value: 'Draft', disabled: true }, Validators.required),
-			RequiredDate: [''],
+			RequiredDate: ['', Validators.required],
 			PostingDate: [''],
 			DueDate: [''],
 			DocumentDate: [''],
@@ -329,6 +371,256 @@ export class RequestDetailPage extends PageBase {
 			TotalDiscount: new FormControl({ value: '', disabled: true }),
 			TotalAfterTax: new FormControl({ value: '', disabled: true }),
 		});
+	}
+
+	buildPurchaseQuotationForm() {
+		this.purchaseQuotationFormGroup = this.formBuilder.group({
+			IDBranch: [this.item.IDBranch || this.env.selectedBranch],
+			IDRequester: [],
+			IDRequestBranch: [],
+			IDBusinessPartner: [null, Validators.required],
+			SourceKey: [''],
+			SourceType: [''],
+			Id: [0],
+			Code: [''],
+			//Name: ['', Validators.required],
+			ForeignName: [''],
+			Remark: [''],
+			ForeignRemark: [''],
+			ContentType: ['Item', Validators.required],
+			Status: ['Draft', Validators.required],
+			RequiredDate: ['', Validators.required],
+			ValidUntilDate: ['', Validators.required],
+			PostingDate: [''],
+			DueDate: [''],
+			DocumentDate: [''],
+			IsDisabled: [''],
+			IsDeleted: [''],
+			CreatedBy: [''],
+			ModifiedBy: [''],
+			CreatedDate: [''],
+			ModifiedDate: [''],
+			QuotationLines: this.formBuilder.array([]),
+			DeletedLines: [''],
+			TotalDiscount: [''],
+			TotalAfterTax: [''],
+		});
+	}
+	renderQuotationFormArray(formArray: FormArray) {
+		this.purchaseQuotationFormGroup.controls.QuotationLines = formArray as any;
+	}
+
+	changeQuotationRequiredDate() {
+		if (!this.purchaseQuotationFormGroup) return;
+		const lines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		const requiredDate = this.purchaseQuotationFormGroup.get('RequiredDate')?.value;
+		if (lines && requiredDate) {
+			lines.controls.forEach((ctrl) => {
+				const rd = ctrl.get('RequiredDate');
+				if (rd && !rd.value) {
+					rd.setValue(requiredDate);
+					rd.markAsDirty();
+					ctrl.markAsDirty();
+				}
+			});
+		}
+		this.saveQuotation();
+	}
+
+	_currentQuotationContentType;
+	changeQuotationContentType(e: any) {
+		if (!this.purchaseQuotationFormGroup) return;
+		const quotationLines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		const newCode = e?.Code || e?.value || e;
+		if (quotationLines?.length > 0) {
+			this.env
+				.showPrompt('Tất cả hàng hoá trong danh sách sẽ bị xoá khi bạn đổi loại nội dung. Bạn chắc chắn chứ?', null, 'Thông báo')
+				.then(() => {
+					// mark deleted existing persisted lines
+					const deleted = quotationLines
+						.getRawValue()
+						.filter((l) => l.Id)
+						.map((l) => l.Id);
+					if (deleted.length) {
+						this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(deleted);
+						this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
+					}
+					// clear form array
+					while (quotationLines.length) quotationLines.removeAt(0);
+					if (this.itemPurchaseQuotation) this.itemPurchaseQuotation.QuotationLines = [];
+					this.purchaseQuotationFormGroup.get('ContentType')?.setValue(newCode);
+					this.purchaseQuotationFormGroup.get('ContentType')?.markAsDirty();
+					this._currentQuotationContentType = newCode;
+					this.saveQuotation();
+				})
+				.catch(() => {
+					// revert
+					this.purchaseQuotationFormGroup.get('ContentType')?.setValue(this._currentQuotationContentType);
+				});
+		} else {
+			this.purchaseQuotationFormGroup.get('ContentType')?.setValue(newCode);
+			this.purchaseQuotationFormGroup.get('ContentType')?.markAsDirty();
+			this._currentQuotationContentType = newCode;
+			this.saveQuotation();
+		}
+	}
+
+	changeQuotationVendor(e: any) {
+		if (!this.purchaseQuotationFormGroup) return;
+		const quotationLines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		if (quotationLines?.controls.length > 0) {
+			if (e) {
+				this.env
+					.showPrompt('Tất cả hàng hoá trong danh sách khác với nhà cung cấp được chọn sẽ bị xoá. Bạn có muốn tiếp tục ?', null, 'Thông báo')
+					.then(() => {
+						// Lines having different vendor (Business Partner) will be deleted
+						const raw = quotationLines.getRawValue();
+						const deleted = raw.filter((l) => l.Id && l.IDBusinessPartner != e.Id).map((l) => l.Id);
+
+						if (deleted.length) {
+							this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(deleted);
+							this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
+						}
+
+						// Update header vendor
+						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(e.Id);
+						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
+						this._currentVendor = e;
+
+						this.saveQuotation();
+
+						if (deleted.length) {
+							for (let i = quotationLines.length - 1; i >= 0; i--) {
+								if (deleted.includes(quotationLines.at(i).get('Id')?.value)) {
+									quotationLines.removeAt(i);
+								}
+							}
+						}
+					})
+					.catch(() => {
+						// Revert vendor
+						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(this._currentVendor ? this._currentVendor.Id : null);
+					});
+			} else {
+				this._currentVendor = e;
+				this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(null);
+				this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
+				this.saveQuotation();
+			}
+		} else {
+			this._currentVendor = e;
+			this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(e ? e.Id : null);
+			this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
+			this.saveQuotation();
+		}
+	}
+
+	saveQuotation() {
+		if (!this.purchaseQuotationFormGroup) return;
+
+		if (!this.isAutoSave) return;
+
+		if (this.submitAttempt) return;
+
+		this.purchaseQuotationFormGroup.updateValueAndValidity();
+		if (!this.purchaseQuotationFormGroup.valid) {
+			let invalidControls = this.findInvalidControlsRecursive(this.purchaseQuotationFormGroup);
+			Promise.all(invalidControls.map((c) => this.env.translateResource(c))).then((values) => {
+				this.env.showMessage('Please recheck control(s): {{value}}', 'warning', values.join(' | '));
+			});
+			return;
+		}
+
+		const quotationDirty = this.getDirtyValues(this.purchaseQuotationFormGroup);
+		if (Object.keys(quotationDirty).length === 0) return;
+
+		const payload = {
+			Id: this.item.Id,
+			UDF01: this.item.UDF01,
+			Type: 'PurchaseQuotation',
+			PurchaseQuotation: quotationDirty,
+		};
+
+		this.submitAttempt = true;
+		this.pageProvider
+			.save(payload)
+			.then((result: any) => {
+				this.submitAttempt = false;
+				if (result?.PurchaseQuotation) {
+					this.purchaseQuotationFormGroup.markAsPristine();
+					this.purchaseQuotationFormGroup.patchValue(result.PurchaseQuotation);
+					this.itemPurchaseQuotation = result.PurchaseQuotation;
+					this.env.showMessage('Saving completed!', 'success');
+					if (this.itemPurchaseQuotation?.Id && !this.item.UDF01) {
+						this.item.UDF01 = this.itemPurchaseQuotation.Id;
+						this.loadedData();
+					}
+				} else {
+					this.env.showMessage('Cannot save, please try again', 'danger');
+				}
+			})
+			.catch((err) => {
+				this.submitAttempt = false;
+				this.env.showMessage(err, 'danger');
+			});
+	}
+
+	removeQuotationItem(Ids: number[]) {
+		if (!Ids || !Ids.length) return;
+		const groups = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(Ids);
+		this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
+		this.saveQuotation();
+		// Ids.forEach((id) => {
+		// 	const idx = groups.controls.findIndex((c) => c.get('Id')?.value == id);
+		// 	if (idx > -1) groups.removeAt(idx);
+		// });
+		for (let i = groups.length - 1; i >= 0; i--) {
+			const id = groups.at(i).get('Id')?.value;
+			if (Ids.includes(id)) {
+				groups.removeAt(i);
+			}
+		}
+		this.calcQuotationTotalAfterTax();
+	}
+
+	addAllProductFromVendorWithQuantity(products: any[]) {
+		if (!products || !products.length) return;
+		const linesFA = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		const existing = new Set(linesFA.getRawValue().map((r) => r.IDItem || r.Id));
+		products.forEach((p) => {
+			const key = p.IDItem || p.Id;
+			if (existing.has(key)) return;
+			linesFA.push(
+				this.formBuilder.group({
+					Id: [0],
+					IDItem: [key],
+					IDBusinessPartner: [this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.value],
+					Quantity: [p.DefaultQuantity || 1],
+					Price: [p.Price || p.LastPrice || 0],
+					TaxRate: [p.TaxRate || 0],
+					TotalDiscount: [0],
+					TotalAfterTax: [0],
+					Remark: [''],
+					_Item: [p],
+				})
+			);
+		});
+		linesFA.markAsDirty();
+		this.calcQuotationTotalAfterTax();
+		this.saveQuotation();
+	}
+
+	calcQuotationTotalAfterTax() {
+		if (this.purchaseQuotationFormGroup && this.purchaseQuotationFormGroup.get('QuotationLines')) {
+			return this.purchaseQuotationFormGroup
+				.get('QuotationLines')
+				.getRawValue()
+				.map((x) => (x.Price * x.Quantity - x.TotalDiscount) * (1 + x.TaxRate / 100))
+				.reduce((a, b) => +a + +b, 0);
+		} else {
+			return 0;
+		}
 	}
 
 	changeVendor(e) {
