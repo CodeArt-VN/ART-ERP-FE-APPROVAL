@@ -38,7 +38,7 @@
 		</div>
 	</ion-fab>
 	<div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
-
+	<div id="ng-select-table" style="position: absolute; z-index: 30005"></div>
 
 		<ion-grid *ngIf="item && pageConfig.showSpinner==false">
 			<ion-row>
@@ -263,9 +263,78 @@
 						</div>
 					</ion-list>
 
-					<ion-row *ngIf="item.Type=='PurchaseQuotation' && itemPurchaseQuotation?.QuotationLines">
-						<div class="table-contain safe-max-width">
-							<!-- responsive -->
+					<ion-list *ngIf="item.Type=='PurchaseQuotation' && itemPurchaseQuotation?.QuotationLines">
+						<ion-grid fixed>
+                            <form [formGroup]="purchaseQuotationFormGroup">
+                                <ion-row class="hr-group">
+                                    <ion-col size="12" size-sm size-xl="6">
+                                        <app-form-control
+                                            [field]="{id: 'IDBusinessPartner', label: 'Vendor', type: 'ng-select-bp', form: purchaseQuotationFormGroup, dataSource: _vendorDataSource, bindLabel: 'Name', bindValue: 'Id', clearable:true }"
+                                            (change)="changeQuotationVendor($event)"
+                                        ></app-form-control>
+                                        <app-form-control
+                                            [field]="{id :'ContentType', label:'Content type' , type:'ng-select', dataSource:contentTypeList, bindLabel:'Name', bindValue:'Code' , form:purchaseQuotationFormGroup}"
+                                            (change)="changeQuotationContentType($event)"
+                                        ></app-form-control>
+                                        <app-form-control
+                                            [field]="{id :'Remark', label:'Remark' , type:'textarea', form:purchaseQuotationFormGroup}"
+                                            (change)="saveQuotation()"
+                                        ></app-form-control>
+                                    </ion-col>
+                                    <ion-col size="12" size-sm size-xl="6">
+                                        <app-form-control
+                                            [clearable]="true"
+                                            [virtualScroll]="true"
+                                            [field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseQuotationFormGroup }"
+                                            (change)="changeQuotationRequiredDate()"
+                                        ></app-form-control>
+                                        <app-form-control
+                                            [clearable]="true"
+                                            [virtualScroll]="true"
+                                            [field]="{id:'ValidUntilDate',label:'Valid until date', type : 'datetime-local', form : purchaseQuotationFormGroup }"
+                                            (change)="changeQuotationRequiredDate()"
+                                        ></app-form-control>
+                                        <div class="c-control">
+                                            <label class="c-label">{{'Total' | translate}}</label>
+                                            <span class="c-input disable">
+                                                <b>{{calcQuotationTotalAfterTax() | number:'1.0-0'}}</b>
+                                            </span>
+                                        </div>
+                                    </ion-col>
+                                </ion-row>
+                            </form>
+                        </ion-grid>
+						<div class="row-full shadow">
+							<ion-toolbar color="primary">
+							<ion-segment scrollable="true">
+								<ion-segment-button>
+								<ion-label>{{'Product list' | translate}}</ion-label>
+								</ion-segment-button>
+							</ion-segment>
+							</ion-toolbar>
+							
+							<app-purchase-quotation-items
+							[page]="this"
+							[IDPurchaseQuotation]="item.UDF01"
+							[contentType]="purchaseQuotationFormGroup.get('ContentType')?.value"
+							[IDVendor]="purchaseQuotationFormGroup.get('IDBusinessPartner')?.value"
+							[statusLineList]="statusLineListPQ"
+							[orderLines]="itemPurchaseQuotation.QuotationLines"
+							[vendorView]="quotationVendorView"
+    						[isShowtoggleAllQuantity]="quotationShowToggleAllQty"
+							[vendorDataSource]="_vendorDataSource"
+							[requiredDate]="purchaseQuotationFormGroup.get('RequiredDate')?.value"
+							[sourceType]="purchaseQuotationFormGroup.get('SourceType')?.value"
+							(renderFormArray)="renderQuotationFormArray($event)"
+							(onChange)="saveQuotation()"
+							(onRefresh)="refresh()"
+							(removeItem)="removeQuotationItem($event)"
+							(addAllProductsFromVendor)="addAllProductFromVendorWithQuantity($event)"
+							>
+							</app-purchase-quotation-items>
+						</div>
+						<!-- <div class="table-contain safe-max-width">
+							
 							<app-data-table
 								class="box-shadow"
 								[rows]="itemPurchaseQuotation?.QuotationLines"
@@ -296,8 +365,8 @@
 									<ng-template let-i="row" datatable-cell-template> {{i.TotalAfterTax | number: '1.0-0'}} </ng-template>
 								</datatable-column>
 							</app-data-table>
-						</div>
-					</ion-row>
+						</div> -->
+					</ion-list>
 
 					<ion-list *ngIf="item?.Id">
 						<ion-list-header>
