@@ -277,6 +277,12 @@ export class RequestDetailPage extends PageBase {
 		} else if (this.item.Type == 'PurchaseQuotation') {
 			this.buildPurchaseQuotationForm();
 			this.pageConfig.canEditPurchaseRequest = this.pageConfig.canEdit;
+			if (this.env.user.IDBusinessPartner > 0 &&
+				!this.env.user.SysRoles.includes('STAFF') &&
+				this.env.user.SysRoles.includes('VENDOR')
+			) {
+				this.quotationVendorView = true;
+			}
 			Promise.all([this.contactProvider.read({ IsVendor: true, Take: 20 }), this.env.getStatus('PurchaseQuotationLine')]).then((values: any) => {
 				if (values[0] && values[0].data) {
 					this._vendorDataSource.selected.push(...values[0].data);
@@ -550,16 +556,18 @@ export class RequestDetailPage extends PageBase {
 					this.purchaseQuotationFormGroup.markAsPristine();
 					this.purchaseQuotationFormGroup.patchValue(result.PurchaseQuotation);
 					this.itemPurchaseQuotation = result.PurchaseQuotation;
-					this.env.showMessage('Saving completed!', 'success');
 					if (this.itemPurchaseQuotation?.Id && !this.item.UDF01) {
 						this.item.UDF01 = this.itemPurchaseQuotation.Id;
 						this.loadedData();
 					}
+					this.cdr.detectChanges();
+					this.env.showMessage('Saving completed!', 'success');
 				} else {
 					this.env.showMessage('Cannot save, please try again', 'danger');
 				}
 			})
 			.catch((err) => {
+				this.cdr.detectChanges();
 				this.submitAttempt = false;
 				this.env.showMessage(err, 'danger');
 			});
@@ -571,10 +579,6 @@ export class RequestDetailPage extends PageBase {
 		this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(Ids);
 		this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
 		this.saveQuotation();
-		// Ids.forEach((id) => {
-		// 	const idx = groups.controls.findIndex((c) => c.get('Id')?.value == id);
-		// 	if (idx > -1) groups.removeAt(idx);
-		// });
 		for (let i = groups.length - 1; i >= 0; i--) {
 			const id = groups.at(i).get('Id')?.value;
 			if (Ids.includes(id)) {
@@ -734,6 +738,10 @@ export class RequestDetailPage extends PageBase {
 								this.markAsPristine = true;
 								this.purchaseRequestFormGroup.patchValue(result.PurchaseRequest);
 								this.itemPurchaseRequest = result.PurchaseRequest;
+								if (this.itemPurchaseRequest?.Id && !this.item.UDF01) {
+									this.item.UDF01 = this.itemPurchaseRequest.Id;
+									this.loadedData();
+								}
 								this.cdr.detectChanges();
 								this.env.showMessage('Saving completed!', 'success');
 								this.submitAttempt = false;
