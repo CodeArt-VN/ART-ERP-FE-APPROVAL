@@ -11,7 +11,7 @@ import {
 	CRM_ContactProvider,
 	HRM_StaffProvider,
 	HRM_StaffScheduleProvider,
-	PURCHASE_RequestDetailProvider,
+	PURCHASE_OrderDetailProvider,
 	PURCHASE_RequestProvider,
 } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormGroup, FormArray } from '@angular/forms';
@@ -21,6 +21,8 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { ApproveModalPage } from '../approve-modal/approve-modal.page';
 import { environment } from 'src/environments/environment';
 import { PURCHASE_QuotationService } from '../../PURCHASE/purchase-quotation.service';
+import { PURCHASE_OrderService } from '../../PURCHASE/purchase-order-service';
+import { SaleOrderPickerModalPage } from '../../PURCHASE/sale-order-picker-modal/sale-order-picker-modal.page';
 
 @Component({
 	selector: 'app-request-detail',
@@ -40,6 +42,8 @@ export class RequestDetailPage extends PageBase {
 	isSupperApprover;
 	_currentApprover;
 	commentForm: FormGroup;
+	purchaseOrderFormGroup: FormGroup; // FormGroup PurchaseOrder
+	itemPurchaseOrder: any = {}; // orderline PurchaseOrder
 	purchaseRequestFormGroup: FormGroup; // FormGroup PurchaseRequest
 	itemPurchaseRequest: any = {}; // orderline PurchaseRequest
 	purchaseQuotationFormGroup: FormGroup; // FormGroup PurchaseRequest
@@ -75,7 +79,8 @@ export class RequestDetailPage extends PageBase {
 		public branchProvider: BRA_BranchProvider,
 		public commentProvider: APPROVAL_CommentProvider,
 		public purchaseRequestProvider: PURCHASE_RequestProvider,
-		public purchaseRequestDetailProvider: PURCHASE_RequestDetailProvider,
+		public purchaseOrderProvider: PURCHASE_OrderService,
+		public purchaseOrderDetailProvider: PURCHASE_OrderDetailProvider,
 		public purchaseQuotationProvider: PURCHASE_QuotationService,
 		public approvalTemplateService: APPROVAL_TemplateProvider,
 		public popoverCtrl: PopoverController,
@@ -109,6 +114,7 @@ export class RequestDetailPage extends PageBase {
 
 	preLoadData(event?: any): void {
 		this.query.IDStaff = this.env.user.StaffID;
+		this.branchList = lib.cloneObject(this.env.branchList);
 		this.contentTypeList = [
 			{ Code: 'Item', Name: 'Items' },
 			{ Code: 'Service', Name: 'Service' },
@@ -117,9 +123,11 @@ export class RequestDetailPage extends PageBase {
 			this.env.getType('RequestType'),
 			this.env.getStatus('ApprovalStatus'),
 			// this.env.getType('TimeOffType'),
+			this.env.getStatus('POPaymentStatus'),
 		]).then((values: any) => {
 			this.requestTypeList = values[0];
 			this.statusList = values[1];
+			this.paymentStatusList = values[2];
 			// this.timeOffTypeList = values[2];
 			super.preLoadData(event);
 		});
@@ -222,8 +230,49 @@ export class RequestDetailPage extends PageBase {
 					}
 				})
 				.finally(() => (this.isLoadedOldItem = true));
+		} else if (this.item.Type == 'PurchaseOrder') {
+			this.buildFormPO();
+			this.pageConfig.canEditPurchaseOrder = this.pageConfig.canEdit;
+			this.contactProvider.read({ IsVendor: true, Take: 20 }).then((resp) => {
+				this._vendorDataSource.selected.push(...resp['data']);
+			});
+			this.contactProvider.read({ IsStorer: true, Take: 5000 }).then((resp) => {
+				this.storerList = resp['data'];
+			});
+
+			if (this.item.UDF01 > 0) {
+				this.purchaseOrderProvider
+					.getAnItem(this.item.UDF01)
+					.then((response: any) => {
+						if (response) {
+							this.itemPurchaseOrder = response;
+							this.cdr.detectChanges();
+							if (this.itemPurchaseOrder) {
+								//this.pageConfig.canEditPrice = true;
+								if (this.itemPurchaseOrder.hasOwnProperty('IsDeleted') && this.itemPurchaseOrder.IsDeleted) this.nav('not-found', 'back');
+								this.purchaseOrderFormGroup?.patchValue(this.itemPurchaseOrder);
+								this.purchaseOrderFormGroup?.markAsPristine();
+								if (this.itemPurchaseOrder._Vendor) {
+									this._vendorDataSource.selected = [...this._vendorDataSource.selected, this.itemPurchaseOrder._Vendor];
+								}
+
+								if (!['Draft', 'Unapproved'].includes(this.itemPurchaseOrder.Status)) {
+									this.purchaseOrderFormGroup.disable();
+									this.pageConfig.canEditPurchaseOrder = false;
+								}
+							}
+						}
+					})
+					.finally(() => {
+						this._vendorDataSource.initSearch();
+					});
+			} else {
+				this._vendorDataSource.initSearch();
+			}
+			if (!this.pageConfig.canEdit) this.purchaseOrderFormGroup.disable();
+			this._currentVendor = this.purchaseOrderFormGroup.get('IDVendor').value;
 		} else if (this.item.Type == 'PurchaseRequest') {
-			this.buildPurchaseForm();
+			this.buildFormPR();
 			this.pageConfig.canEditPurchaseRequest = this.pageConfig.canEdit;
 			this.contactProvider.read({ IsVendor: true, Take: 20 }).then((resp) => {
 				this._vendorDataSource.selected.push(...resp['data']);
@@ -251,12 +300,12 @@ export class RequestDetailPage extends PageBase {
 									this.purchaseRequestFormGroup.controls['IDRequester'].markAsDirty();
 									this._staffDataSource.selected = [this.item._Staff];
 								}
-								this._currentContentType = this.itemPurchaseRequest?.ContentType;
+								this._currentContentTypePR = this.itemPurchaseRequest?.ContentType;
 								if (!['Draft', 'Unapproved'].includes(this.itemPurchaseRequest.Status)) {
 									this.purchaseRequestFormGroup.disable();
 									this.pageConfig.canEditPurchaseRequest = false;
 								}
-								this._currentContentType = this.formGroup.controls['ContentType'].value;
+								this._currentContentTypePR = this.formGroup.controls['ContentType'].value;
 							}
 						}
 					})
@@ -275,12 +324,9 @@ export class RequestDetailPage extends PageBase {
 			if (!this.pageConfig.canEdit) this.purchaseRequestFormGroup.disable();
 			this._currentVendor = this.purchaseRequestFormGroup.get('IDVendor').value;
 		} else if (this.item.Type == 'PurchaseQuotation') {
-			this.buildPurchaseQuotationForm();
-			this.pageConfig.canEditPurchaseRequest = this.pageConfig.canEdit;
-			if (this.env.user.IDBusinessPartner > 0 &&
-				!this.env.user.SysRoles.includes('STAFF') &&
-				this.env.user.SysRoles.includes('VENDOR')
-			) {
+			this.buildFormPQ();
+			this.pageConfig.canEditPurchaseQuotation = this.pageConfig.canEdit;
+			if (this.env.user.IDBusinessPartner > 0 && !this.env.user.SysRoles.includes('STAFF') && this.env.user.SysRoles.includes('VENDOR')) {
 				this.quotationVendorView = true;
 			}
 			Promise.all([this.contactProvider.read({ IsVendor: true, Take: 20 }), this.env.getStatus('PurchaseQuotationLine')]).then((values: any) => {
@@ -338,7 +384,6 @@ export class RequestDetailPage extends PageBase {
 				}
 			});
 		} else if (this.item.Type == 'TimeOff') {
-			let today = lib.dateFormat(new Date(), 'yyyy-MM-dd');
 			Promise.all([this.staffProvider.getAnItem(this.item.IDStaff)])
 				.then((values: any) => {
 					this.item.Staff = values[0];
@@ -349,11 +394,156 @@ export class RequestDetailPage extends PageBase {
 		}
 	}
 
-	buildPurchaseForm() {
+	buildFormPO() {
+		this.purchaseOrderFormGroup = this.formBuilder.group({
+			IDBranch: [this.item.IDBranch],
+			IDWarehouse: [],
+			IDStorer: new FormControl({ value: '', disabled: false }, Validators.required),
+			IDVendor: new FormControl({ value: '', disabled: false }, Validators.required),
+			Id: [0],
+			Code: [''],
+			Name: [''],
+			Remark: [''],
+			Status: new FormControl({ value: 'Draft', disabled: true }),
+			ExpectedReceiptDate: [''],
+			Type: ['Regular'],
+			PaymentStatus: new FormControl({ value: 'NotSubmittedYet', disabled: true }),
+			OrderLines: [this.formBuilder.array([])],
+			DeletedLines: [[]],
+			TotalDiscount: new FormControl({ value: '', disabled: true }),
+			TotalAfterTax: new FormControl({ value: '', disabled: true }),
+		});
+	}
+
+	savePO() {
+		if (!this.purchaseOrderFormGroup) return;
+
+		if (!this.isAutoSave) return;
+
+		if (this.submitAttempt) return;
+
+		this.purchaseOrderFormGroup.updateValueAndValidity();
+		if (!this.purchaseOrderFormGroup.valid) {
+			let invalidControls = this.findInvalidControlsRecursive(this.purchaseOrderFormGroup);
+			Promise.all(invalidControls.map((c) => this.env.translateResource(c))).then((values) => {
+				this.env.showMessage('Please recheck control(s): {{value}}', 'warning', values.join(' | '));
+			});
+			return;
+		}
+
+		const poDirty = this.getDirtyValues(this.purchaseOrderFormGroup);
+		if (Object.keys(poDirty).length === 0) return;
+
+		const payload = {
+			Id: this.item.Id,
+			UDF01: this.item.UDF01,
+			Type: 'PurchaseOrder',
+			PurchaseOrder: poDirty,
+		};
+
+		this.submitAttempt = true;
+		this.pageProvider
+			.save(payload)
+			.then((result: any) => {
+				this.submitAttempt = false;
+				if (result?.PurchaseOrder) {
+					this.purchaseOrderFormGroup.markAsPristine();
+					this.purchaseOrderFormGroup.patchValue(result.PurchaseOrder);
+					this.itemPurchaseOrder = result.PurchaseOrder;
+					if (this.itemPurchaseOrder?.Id && !this.item.UDF01) {
+						this.item.UDF01 = this.itemPurchaseOrder.Id;
+						this.loadedData();
+					}
+					this.cdr.detectChanges();
+					this.env.showMessage('Saving completed!', 'success');
+				} else {
+					this.env.showMessage('Cannot save, please try again', 'danger');
+				}
+			})
+			.catch((err) => {
+				this.cdr.detectChanges();
+				this.submitAttempt = false;
+				this.env.showMessage(err, 'danger');
+			});
+	}
+
+	renderFormArrayPO(formArray: FormArray) {
+		this.purchaseOrderFormGroup.controls.OrderLines = formArray as any;
+	}
+
+	removeItemPO(Ids: number[]) {
+		if (!Ids || !Ids.length) return;
+		this.purchaseOrderDetailProvider.delete(Ids.map((id) => ({ Id: id }))).then((resp) => {
+			const groups = this.purchaseOrderFormGroup.get('OrderLines') as FormArray;
+			for (let i = groups.length - 1; i >= 0; i--) {
+				const id = groups.at(i).get('Id')?.value;
+				if (Ids.includes(id)) {
+					groups.removeAt(i);
+				}
+			}
+			this.env.showMessage('Deleted!', 'success');
+		});
+		this.calcTotalAfterTaxPO();
+	}
+
+	calcTotalAfterTaxPO() {
+		const orderLines = this.purchaseOrderFormGroup.get('OrderLines')?.getRawValue() ?? [];
+		if (!Array.isArray(orderLines) || orderLines.length === 0) return 0;
+
+		return orderLines
+			.map((x) => {
+				const price = +x.UoMPrice || 0;
+				const qtyExpected = +x.UoMQuantityExpected || 0;
+				const qtyAdjusted = +x.QuantityAdjusted || 0;
+				const discount = +x.TotalDiscount || 0;
+				const taxRate = +x.TaxRate || 0;
+				return (price * (qtyExpected + qtyAdjusted) - discount) * (1 + taxRate / 100);
+			})
+			.reduce((a, b) => a + b, 0);
+	}
+
+	async showSaleOrderPickerModalPO() {
+		const modal = await this.modalController.create({
+			component: SaleOrderPickerModalPage,
+			componentProps: { id: this.item.Id },
+			cssClass: 'modal90',
+		});
+
+		await modal.present();
+		const { data } = await modal.onWillDismiss();
+
+		if (data && data.length) {
+			console.log(data);
+			console.log(data.map((i) => i.Id));
+
+			const loading = await this.loadingController.create({
+				cssClass: 'my-custom-class',
+				message: 'Please wait for a few moments',
+			});
+			await loading.present().then(() => {
+				let postData = { Id: this.item.Id, SOIds: data.map((i) => i.Id) };
+				this.commonService
+					.connect('POST', ApiSetting.apiDomain('PURCHASE/Order/ImportDetailFromSaleOrders/'), postData)
+					.toPromise()
+					.then((data) => {
+						if (loading) loading.dismiss();
+						this.refresh();
+						this.env.publishEvent({ Code: this.pageConfig.pageName });
+					})
+					.catch((err) => {
+						console.log(err);
+						this.env.showMessage('Cannot add product. Please try again later.', 'danger');
+						if (loading) loading.dismiss();
+					});
+			});
+		}
+	}
+
+	buildFormPR() {
 		this.purchaseRequestFormGroup = this.formBuilder.group({
 			IDBranch: [this.item.IDBranch],
 			IDRequester: [],
-			IDVendor: [],
+			IDVendor: ['', Validators.required],
 			Id: [0],
 			Code: [''],
 			Name: [''],
@@ -379,255 +569,7 @@ export class RequestDetailPage extends PageBase {
 		});
 	}
 
-	buildPurchaseQuotationForm() {
-		this.purchaseQuotationFormGroup = this.formBuilder.group({
-			IDBranch: [this.item.IDBranch || this.env.selectedBranch],
-			IDRequester: [],
-			IDRequestBranch: [],
-			IDBusinessPartner: [null, Validators.required],
-			SourceKey: [''],
-			SourceType: [''],
-			Id: [0],
-			Code: [''],
-			//Name: ['', Validators.required],
-			ForeignName: [''],
-			Remark: [''],
-			ForeignRemark: [''],
-			ContentType: ['Item', Validators.required],
-			Status: ['Draft', Validators.required],
-			RequiredDate: ['', Validators.required],
-			ValidUntilDate: ['', Validators.required],
-			PostingDate: [''],
-			DueDate: [''],
-			DocumentDate: [''],
-			IsDisabled: [''],
-			IsDeleted: [''],
-			CreatedBy: [''],
-			ModifiedBy: [''],
-			CreatedDate: [''],
-			ModifiedDate: [''],
-			QuotationLines: this.formBuilder.array([]),
-			DeletedLines: [''],
-			TotalDiscount: [''],
-			TotalAfterTax: [''],
-		});
-	}
-	renderQuotationFormArray(formArray: FormArray) {
-		this.purchaseQuotationFormGroup.controls.QuotationLines = formArray as any;
-	}
-
-	changeQuotationRequiredDate() {
-		if (!this.purchaseQuotationFormGroup) return;
-		const lines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
-		const requiredDate = this.purchaseQuotationFormGroup.get('RequiredDate')?.value;
-		if (lines && requiredDate) {
-			lines.controls.forEach((ctrl) => {
-				const rd = ctrl.get('RequiredDate');
-				if (rd && !rd.value) {
-					rd.setValue(requiredDate);
-					rd.markAsDirty();
-					ctrl.markAsDirty();
-				}
-			});
-		}
-		this.saveQuotation();
-	}
-
-	_currentQuotationContentType;
-	changeQuotationContentType(e: any) {
-		if (!this.purchaseQuotationFormGroup) return;
-		const quotationLines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
-		const newCode = e?.Code || e?.value || e;
-		if (quotationLines?.length > 0) {
-			this.env
-				.showPrompt('Tất cả hàng hoá trong danh sách sẽ bị xoá khi bạn đổi loại nội dung. Bạn chắc chắn chứ?', null, 'Thông báo')
-				.then(() => {
-					// mark deleted existing persisted lines
-					const deleted = quotationLines
-						.getRawValue()
-						.filter((l) => l.Id)
-						.map((l) => l.Id);
-					if (deleted.length) {
-						this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(deleted);
-						this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
-					}
-					// clear form array
-					while (quotationLines.length) quotationLines.removeAt(0);
-					if (this.itemPurchaseQuotation) this.itemPurchaseQuotation.QuotationLines = [];
-					this.purchaseQuotationFormGroup.get('ContentType')?.setValue(newCode);
-					this.purchaseQuotationFormGroup.get('ContentType')?.markAsDirty();
-					this._currentQuotationContentType = newCode;
-					this.saveQuotation();
-				})
-				.catch(() => {
-					// revert
-					this.purchaseQuotationFormGroup.get('ContentType')?.setValue(this._currentQuotationContentType);
-				});
-		} else {
-			this.purchaseQuotationFormGroup.get('ContentType')?.setValue(newCode);
-			this.purchaseQuotationFormGroup.get('ContentType')?.markAsDirty();
-			this._currentQuotationContentType = newCode;
-			this.saveQuotation();
-		}
-	}
-
-	changeQuotationVendor(e: any) {
-		if (!this.purchaseQuotationFormGroup) return;
-		const quotationLines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
-		if (quotationLines?.controls.length > 0) {
-			if (e) {
-				this.env
-					.showPrompt('Tất cả hàng hoá trong danh sách khác với nhà cung cấp được chọn sẽ bị xoá. Bạn có muốn tiếp tục ?', null, 'Thông báo')
-					.then(() => {
-						// Lines having different vendor (Business Partner) will be deleted
-						const raw = quotationLines.getRawValue();
-						const deleted = raw.filter((l) => l.Id && l.IDBusinessPartner != e.Id).map((l) => l.Id);
-
-						if (deleted.length) {
-							this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(deleted);
-							this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
-						}
-
-						// Update header vendor
-						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(e.Id);
-						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
-						this._currentVendor = e;
-
-						this.saveQuotation();
-
-						if (deleted.length) {
-							for (let i = quotationLines.length - 1; i >= 0; i--) {
-								if (deleted.includes(quotationLines.at(i).get('Id')?.value)) {
-									quotationLines.removeAt(i);
-								}
-							}
-						}
-					})
-					.catch(() => {
-						// Revert vendor
-						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(this._currentVendor ? this._currentVendor.Id : null);
-					});
-			} else {
-				this._currentVendor = e;
-				this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(null);
-				this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
-				this.saveQuotation();
-			}
-		} else {
-			this._currentVendor = e;
-			this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(e ? e.Id : null);
-			this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
-			this.saveQuotation();
-		}
-	}
-
-	saveQuotation() {
-		if (!this.purchaseQuotationFormGroup) return;
-
-		if (!this.isAutoSave) return;
-
-		if (this.submitAttempt) return;
-
-		this.purchaseQuotationFormGroup.updateValueAndValidity();
-		if (!this.purchaseQuotationFormGroup.valid) {
-			let invalidControls = this.findInvalidControlsRecursive(this.purchaseQuotationFormGroup);
-			Promise.all(invalidControls.map((c) => this.env.translateResource(c))).then((values) => {
-				this.env.showMessage('Please recheck control(s): {{value}}', 'warning', values.join(' | '));
-			});
-			return;
-		}
-
-		const quotationDirty = this.getDirtyValues(this.purchaseQuotationFormGroup);
-		if (Object.keys(quotationDirty).length === 0) return;
-
-		const payload = {
-			Id: this.item.Id,
-			UDF01: this.item.UDF01,
-			Type: 'PurchaseQuotation',
-			PurchaseQuotation: quotationDirty,
-		};
-
-		this.submitAttempt = true;
-		this.pageProvider
-			.save(payload)
-			.then((result: any) => {
-				this.submitAttempt = false;
-				if (result?.PurchaseQuotation) {
-					this.purchaseQuotationFormGroup.markAsPristine();
-					this.purchaseQuotationFormGroup.patchValue(result.PurchaseQuotation);
-					this.itemPurchaseQuotation = result.PurchaseQuotation;
-					if (this.itemPurchaseQuotation?.Id && !this.item.UDF01) {
-						this.item.UDF01 = this.itemPurchaseQuotation.Id;
-						this.loadedData();
-					}
-					this.cdr.detectChanges();
-					this.env.showMessage('Saving completed!', 'success');
-				} else {
-					this.env.showMessage('Cannot save, please try again', 'danger');
-				}
-			})
-			.catch((err) => {
-				this.cdr.detectChanges();
-				this.submitAttempt = false;
-				this.env.showMessage(err, 'danger');
-			});
-	}
-
-	removeQuotationItem(Ids: number[]) {
-		if (!Ids || !Ids.length) return;
-		const groups = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
-		this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(Ids);
-		this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
-		this.saveQuotation();
-		for (let i = groups.length - 1; i >= 0; i--) {
-			const id = groups.at(i).get('Id')?.value;
-			if (Ids.includes(id)) {
-				groups.removeAt(i);
-			}
-		}
-		this.calcQuotationTotalAfterTax();
-	}
-
-	addAllProductFromVendorWithQuantity(products: any[]) {
-		if (!products || !products.length) return;
-		const linesFA = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
-		const existing = new Set(linesFA.getRawValue().map((r) => r.IDItem || r.Id));
-		products.forEach((p) => {
-			const key = p.IDItem || p.Id;
-			if (existing.has(key)) return;
-			linesFA.push(
-				this.formBuilder.group({
-					Id: [0],
-					IDItem: [key],
-					IDBusinessPartner: [this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.value],
-					Quantity: [p.DefaultQuantity || 1],
-					Price: [p.Price || p.LastPrice || 0],
-					TaxRate: [p.TaxRate || 0],
-					TotalDiscount: [0],
-					TotalAfterTax: [0],
-					Remark: [''],
-					_Item: [p],
-				})
-			);
-		});
-		linesFA.markAsDirty();
-		this.calcQuotationTotalAfterTax();
-		this.saveQuotation();
-	}
-
-	calcQuotationTotalAfterTax() {
-		if (this.purchaseQuotationFormGroup && this.purchaseQuotationFormGroup.get('QuotationLines')) {
-			return this.purchaseQuotationFormGroup
-				.get('QuotationLines')
-				.getRawValue()
-				.map((x) => (x.Price * x.Quantity - x.TotalDiscount) * (1 + x.TaxRate / 100))
-				.reduce((a, b) => +a + +b, 0);
-		} else {
-			return 0;
-		}
-	}
-
-	changeVendor(e) {
+	changeVendorPR(e) {
 		let orderLines = this.purchaseRequestFormGroup.get('OrderLines') as FormArray;
 
 		if (orderLines.controls.length > 0) {
@@ -655,23 +597,32 @@ export class RequestDetailPage extends PageBase {
 						this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
 						this._currentVendor = e;
 
-						this.saveChangePurchaseRequest();
+						this.savePR();
 					})
 					.catch(() => {
 						this.purchaseRequestFormGroup.get('IDVendor').setValue(this._currentVendor?.Id);
 					});
 			} else {
 				this._currentVendor = e;
-				this.saveChangePurchaseRequest();
+				this.savePR();
 			}
 		} else {
 			this._currentVendor = e;
-			this.saveChangePurchaseRequest();
+			this.savePR();
 		}
 	}
 
-	_currentContentType;
-	changeContentType(e) {
+	changeRequiredDatePR() {
+		let orderLines = this.purchaseRequestFormGroup.get('OrderLines').value;
+		orderLines.forEach((f) => {
+			if (!f.RequiredDate) f.RequiredDate = this.purchaseRequestFormGroup.get('RequiredDate').value;
+		});
+		this.purchaseRequestFormGroup.get('OrderLines').setValue([...orderLines]);
+		this.savePR();
+	}
+
+	_currentContentTypePR;
+	changeContentTypePR(e) {
 		console.log(e);
 		let orderLines = this.purchaseRequestFormGroup.get('OrderLines') as FormArray;
 		if (orderLines.controls.length > 0) {
@@ -686,27 +637,24 @@ export class RequestDetailPage extends PageBase {
 					this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
 					orderLines.clear();
 					this.itemPurchaseRequest.OrderLines = [];
-					this.saveChangePurchaseRequest();
-					this._currentContentType = e.Code;
+					this.savePR();
+					this._currentContentTypePR = e.Code;
 					return;
 				})
 				.catch(() => {
-					this.purchaseRequestFormGroup.get('ContentType').setValue(this._currentContentType);
+					this.purchaseRequestFormGroup.get('ContentType').setValue(this._currentContentTypePR);
 				});
 		} else {
-			this._currentContentType = e.Code;
-			this.saveChangePurchaseRequest();
+			this._currentContentTypePR = e.Code;
+			this.savePR();
 		}
 	}
-	renderFormArray(e) {
+
+	renderFormArrayPR(e) {
 		this.purchaseRequestFormGroup.controls.OrderLines = e;
 	}
 
-	saveOrderBack(fg) {
-		this.saveChangePurchaseRequest();
-	}
-
-	saveChangePurchaseRequest(isSubmit = false) {
+	savePR(isSubmit = false) {
 		return new Promise((resolve, reject) => {
 			if (this.submitAttempt) reject(false);
 			if (this.isAutoSave || isSubmit) {
@@ -758,12 +706,12 @@ export class RequestDetailPage extends PageBase {
 		});
 	}
 
-	removeItem(Ids) {
+	removeItemPR(Ids) {
 		let groups = <FormArray>this.purchaseRequestFormGroup.controls.OrderLines;
 		if (Ids && Ids.length > 0) {
 			this.purchaseRequestFormGroup.get('DeletedLines').setValue(Ids);
 			this.purchaseRequestFormGroup.get('DeletedLines').markAsDirty();
-			this.saveChangePurchaseRequest().then((s) => {
+			this.savePR().then((s) => {
 				Ids.forEach((id) => {
 					let index = groups.controls.findIndex((x) => x.get('Id').value == id);
 					if (index >= 0) groups.removeAt(index);
@@ -772,12 +720,261 @@ export class RequestDetailPage extends PageBase {
 		}
 	}
 
-	calcTotalAfterTax() {
+	calcTotalAfterTaxPR() {
 		if (this.purchaseRequestFormGroup.get('OrderLines').getRawValue()) {
 			return this.purchaseRequestFormGroup
 				.get('OrderLines')
 				.getRawValue()
 				.map((x) => (x.UoMPrice * x.Quantity - x.TotalDiscount) * (1 + x.TaxRate / 100))
+				.reduce((a, b) => +a + +b, 0);
+		} else {
+			return 0;
+		}
+	}
+
+	buildFormPQ() {
+		this.purchaseQuotationFormGroup = this.formBuilder.group({
+			IDBranch: [this.item.IDBranch || this.env.selectedBranch],
+			IDRequester: [],
+			IDRequestBranch: [],
+			IDBusinessPartner: [null, Validators.required],
+			SourceKey: [''],
+			SourceType: [''],
+			Id: [0],
+			Code: [''],
+			//Name: ['', Validators.required],
+			ForeignName: [''],
+			Remark: [''],
+			ForeignRemark: [''],
+			ContentType: ['Item', Validators.required],
+			Status: ['Draft', Validators.required],
+			RequiredDate: ['', Validators.required],
+			ValidUntilDate: ['', Validators.required],
+			PostingDate: [''],
+			DueDate: [''],
+			DocumentDate: [''],
+			IsDisabled: [''],
+			IsDeleted: [''],
+			CreatedBy: [''],
+			ModifiedBy: [''],
+			CreatedDate: [''],
+			ModifiedDate: [''],
+			QuotationLines: this.formBuilder.array([]),
+			DeletedLines: [''],
+			TotalDiscount: [''],
+			TotalAfterTax: [''],
+		});
+	}
+
+	renderFormArrayPQ(formArray: FormArray) {
+		this.purchaseQuotationFormGroup.controls.QuotationLines = formArray as any;
+	}
+
+	changeRequiredDatePQ() {
+		if (!this.purchaseQuotationFormGroup) return;
+		const lines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		const requiredDate = this.purchaseQuotationFormGroup.get('RequiredDate')?.value;
+		if (lines && requiredDate) {
+			lines.controls.forEach((ctrl) => {
+				const rd = ctrl.get('RequiredDate');
+				if (rd && !rd.value) {
+					rd.setValue(requiredDate);
+					rd.markAsDirty();
+					ctrl.markAsDirty();
+				}
+			});
+		}
+		this.savePQ();
+	}
+
+	_currentContentTypePQ;
+	changeContentTypePQ(e: any) {
+		if (!this.purchaseQuotationFormGroup) return;
+		const quotationLines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		const newCode = e?.Code || e?.value || e;
+		if (quotationLines?.length > 0) {
+			this.env
+				.showPrompt('Tất cả hàng hoá trong danh sách sẽ bị xoá khi bạn đổi loại nội dung. Bạn chắc chắn chứ?', null, 'Thông báo')
+				.then(() => {
+					// mark deleted existing persisted lines
+					const deleted = quotationLines
+						.getRawValue()
+						.filter((l) => l.Id)
+						.map((l) => l.Id);
+					if (deleted.length) {
+						this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(deleted);
+						this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
+					}
+					// clear form array
+					while (quotationLines.length) quotationLines.removeAt(0);
+					if (this.itemPurchaseQuotation) this.itemPurchaseQuotation.QuotationLines = [];
+					this.purchaseQuotationFormGroup.get('ContentType')?.setValue(newCode);
+					this.purchaseQuotationFormGroup.get('ContentType')?.markAsDirty();
+					this._currentContentTypePQ = newCode;
+					this.savePQ();
+				})
+				.catch(() => {
+					// revert
+					this.purchaseQuotationFormGroup.get('ContentType')?.setValue(this._currentContentTypePQ);
+				});
+		} else {
+			this.purchaseQuotationFormGroup.get('ContentType')?.setValue(newCode);
+			this.purchaseQuotationFormGroup.get('ContentType')?.markAsDirty();
+			this._currentContentTypePQ = newCode;
+			this.savePQ();
+		}
+	}
+
+	changeVendorPQ(e: any) {
+		if (!this.purchaseQuotationFormGroup) return;
+		const quotationLines = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		if (quotationLines?.controls.length > 0) {
+			if (e) {
+				this.env
+					.showPrompt('Tất cả hàng hoá trong danh sách khác với nhà cung cấp được chọn sẽ bị xoá. Bạn có muốn tiếp tục ?', null, 'Thông báo')
+					.then(() => {
+						// Lines having different vendor (Business Partner) will be deleted
+						const raw = quotationLines.getRawValue();
+						const deleted = raw.filter((l) => l.Id && l.IDBusinessPartner != e.Id).map((l) => l.Id);
+
+						if (deleted.length) {
+							this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(deleted);
+							this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
+						}
+
+						// Update header vendor
+						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(e.Id);
+						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
+						this._currentVendor = e;
+
+						this.savePQ();
+
+						if (deleted.length) {
+							for (let i = quotationLines.length - 1; i >= 0; i--) {
+								if (deleted.includes(quotationLines.at(i).get('Id')?.value)) {
+									quotationLines.removeAt(i);
+								}
+							}
+						}
+					})
+					.catch(() => {
+						// Revert vendor
+						this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(this._currentVendor ? this._currentVendor.Id : null);
+					});
+			} else {
+				this._currentVendor = e;
+				this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(null);
+				this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
+				this.savePQ();
+			}
+		} else {
+			this._currentVendor = e;
+			this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.setValue(e ? e.Id : null);
+			this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.markAsDirty();
+			this.savePQ();
+		}
+	}
+
+	savePQ() {
+		if (!this.purchaseQuotationFormGroup) return;
+
+		if (!this.isAutoSave) return;
+
+		if (this.submitAttempt) return;
+
+		this.purchaseQuotationFormGroup.updateValueAndValidity();
+		if (!this.purchaseQuotationFormGroup.valid) {
+			let invalidControls = this.findInvalidControlsRecursive(this.purchaseQuotationFormGroup);
+			Promise.all(invalidControls.map((c) => this.env.translateResource(c))).then((values) => {
+				this.env.showMessage('Please recheck control(s): {{value}}', 'warning', values.join(' | '));
+			});
+			return;
+		}
+
+		const quotationDirty = this.getDirtyValues(this.purchaseQuotationFormGroup);
+		if (Object.keys(quotationDirty).length === 0) return;
+
+		const payload = {
+			Id: this.item.Id,
+			UDF01: this.item.UDF01,
+			Type: 'PurchaseQuotation',
+			PurchaseQuotation: quotationDirty,
+		};
+
+		this.submitAttempt = true;
+		this.pageProvider
+			.save(payload)
+			.then((result: any) => {
+				this.submitAttempt = false;
+				if (result?.PurchaseQuotation) {
+					this.purchaseQuotationFormGroup.markAsPristine();
+					this.purchaseQuotationFormGroup.patchValue(result.PurchaseQuotation);
+					this.itemPurchaseQuotation = result.PurchaseQuotation;
+					if (this.itemPurchaseQuotation?.Id && !this.item.UDF01) {
+						this.item.UDF01 = this.itemPurchaseQuotation.Id;
+						this.loadedData();
+					}
+					this.cdr.detectChanges();
+					this.env.showMessage('Saving completed!', 'success');
+				} else {
+					this.env.showMessage('Cannot save, please try again', 'danger');
+				}
+			})
+			.catch((err) => {
+				this.cdr.detectChanges();
+				this.submitAttempt = false;
+				this.env.showMessage(err, 'danger');
+			});
+	}
+
+	removeItemPQ(Ids: number[]) {
+		if (!Ids || !Ids.length) return;
+		const groups = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		this.purchaseQuotationFormGroup.get('DeletedLines')?.setValue(Ids);
+		this.purchaseQuotationFormGroup.get('DeletedLines')?.markAsDirty();
+		this.savePQ();
+		for (let i = groups.length - 1; i >= 0; i--) {
+			const id = groups.at(i).get('Id')?.value;
+			if (Ids.includes(id)) {
+				groups.removeAt(i);
+			}
+		}
+		this.calcTotalAfterTaxPQ();
+	}
+
+	addAllProductFromVendorPQ(products: any[]) {
+		if (!products || !products.length) return;
+		const linesFA = this.purchaseQuotationFormGroup.get('QuotationLines') as FormArray;
+		const existing = new Set(linesFA.getRawValue().map((r) => r.IDItem || r.Id));
+		products.forEach((p) => {
+			const key = p.IDItem || p.Id;
+			if (existing.has(key)) return;
+			linesFA.push(
+				this.formBuilder.group({
+					Id: [0],
+					IDItem: [key],
+					IDBusinessPartner: [this.purchaseQuotationFormGroup.get('IDBusinessPartner')?.value],
+					Quantity: [p.DefaultQuantity || 1],
+					Price: [p.Price || p.LastPrice || 0],
+					TaxRate: [p.TaxRate || 0],
+					TotalDiscount: [0],
+					TotalAfterTax: [0],
+					Remark: [''],
+					_Item: [p],
+				})
+			);
+		});
+		linesFA.markAsDirty();
+		this.calcTotalAfterTaxPQ();
+		this.savePQ();
+	}
+
+	calcTotalAfterTaxPQ() {
+		if (this.purchaseQuotationFormGroup && this.purchaseQuotationFormGroup.get('QuotationLines')) {
+			return this.purchaseQuotationFormGroup
+				.get('QuotationLines')
+				.getRawValue()
+				.map((x) => (x.Price * x.Quantity - x.TotalDiscount) * (1 + x.TaxRate / 100))
 				.reduce((a, b) => +a + +b, 0);
 		} else {
 			return 0;
@@ -864,8 +1061,13 @@ export class RequestDetailPage extends PageBase {
 		await modal.present();
 		const { data } = await modal.onWillDismiss();
 		if (data) {
+			Object.assign(approval, {
+				Remark: data.Remark ?? approval.Remark,
+				ForwardTo: data.ForwardTo ?? approval.ForwardTo,
+				Status: data.Status ?? approval.Status,
+			});
 			this.pageProvider.commonService
-				.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/DisapproveRequest/'), data)
+				.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/DisapproveRequest/'), [approval])
 				.toPromise()
 				.then((result: any) => {
 					this.env.publishEvent({ Code: this.pageConfig.pageName });
@@ -907,7 +1109,7 @@ export class RequestDetailPage extends PageBase {
 		if (status == 'Approved') {
 			this.submitAttempt = true;
 			this.pageProvider.commonService
-				.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/Approve'), approval)
+				.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/Approve'), [approval])
 				.toPromise()
 				.then((resp: any) => {
 					this.submitAttempt = false;
@@ -934,9 +1136,14 @@ export class RequestDetailPage extends PageBase {
 			await modal.present();
 			const { data } = await modal.onWillDismiss();
 			if (data) {
+				Object.assign(approval, {
+					Remark: data.Remark ?? approval.Remark,
+					ForwardTo: data.ForwardTo ?? approval.ForwardTo,
+					Status: data.Status ?? approval.Status,
+				});
 				this.submitAttempt = true;
 				this.pageProvider.commonService
-					.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/Approve'), data)
+					.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/Approve'), [approval])
 					.toPromise()
 					.then((resp: any) => {
 						this.submitAttempt = false;
@@ -966,6 +1173,7 @@ export class RequestDetailPage extends PageBase {
 			this.loadComment();
 		});
 	}
+
 	addNotShowProperty(index) {
 		if (this.jsonViewerConfig.notShowProperties) {
 			this.jsonViewerConfig.notShowProperties.push(this.jsonViewerConfig.showProperties[index]);
@@ -973,6 +1181,7 @@ export class RequestDetailPage extends PageBase {
 			this.jsonViewerConfig.notShowProperties = [...this.jsonViewerConfig.notShowProperties];
 		}
 	}
+
 	addShowProperty(index) {
 		if (this.jsonViewerConfig.showProperties) {
 			this.jsonViewerConfig.showProperties.push(this.jsonViewerConfig.notShowProperties[index]);
@@ -981,12 +1190,4 @@ export class RequestDetailPage extends PageBase {
 		}
 	}
 
-	changeRequiredDate() {
-		let orderLines = this.purchaseRequestFormGroup.get('OrderLines').value;
-		orderLines.forEach((f) => {
-			if (!f.RequiredDate) f.RequiredDate = this.purchaseRequestFormGroup.get('RequiredDate').value;
-		});
-		this.purchaseRequestFormGroup.get('OrderLines').setValue([...orderLines]);
-		this.saveChangePurchaseRequest();
-	}
 }
