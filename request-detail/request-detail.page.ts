@@ -73,6 +73,31 @@ export class RequestDetailPage extends PageBase {
 	quotationVendorView = false;
 	quotationShowToggleAllQty = true;
 
+	approvalRequestUDFTypes = {
+		UDF01: 'number',
+		UDF02: 'number',
+		UDF03: 'number',
+		UDF04: 'number',
+		UDF05: 'number',
+		UDF06: 'Date',
+		UDF07: 'Date',
+		UDF08: 'Date',
+		UDF09: 'string',
+		UDF10: 'string',
+		UDF11: 'string',
+		UDF12: 'string',
+		UDF13: 'string',
+		UDF14: 'string',
+		UDF15: 'string',
+		UDF16: 'string',
+		UDF17: 'number',
+		UDF18: 'number',
+		UDF19: 'number',
+		UDF20: 'number',
+		UDF21: 'number',
+		UDF22: 'number',
+	};
+
 	constructor(
 		public pageProvider: APPROVAL_RequestProvider,
 		public staffScheduleProvider: HRM_StaffScheduleProvider,
@@ -136,7 +161,6 @@ export class RequestDetailPage extends PageBase {
 	}
 
 	loadedData(event?: any): void {
-		this.mappingList = [];
 		this.item._Type = this.requestTypeList.find((d) => d.Code == this.item.Type);
 		this.item._Status = this.statusList.find((d) => d.Code == this.item.Status);
 		this.item._Approvers.forEach((i) => {
@@ -151,50 +175,12 @@ export class RequestDetailPage extends PageBase {
 			i.Date = lib.dateFormat(i.CreatedDate, 'dd/mm/yy');
 			i.Time = lib.dateFormat(i.CreatedDate, 'hh:MM');
 		});
-		const approvalRequestUDFTypes = {
-			UDF01: 'number',
-			UDF02: 'number',
-			UDF03: 'number',
-			UDF04: 'number',
-			UDF05: 'number',
-			UDF06: 'Date',
-			UDF07: 'Date',
-			UDF08: 'Date',
-			UDF09: 'string',
-			UDF10: 'string',
-			UDF11: 'string',
-			UDF12: 'string',
-			UDF13: 'string',
-			UDF14: 'string',
-			UDF15: 'string',
-			UDF16: 'string',
-			UDF17: 'number',
-			UDF18: 'number',
-			UDF19: 'number',
-			UDF20: 'number',
-			UDF21: 'number',
-			UDF22: 'number',
-		};
 		if (this.item.IDApprovalTemplate > 0) {
 			this.approvalTemplateService.getAnItem(this.item.IDApprovalTemplate).then((value) => {
 				if (value) {
 					this.approvalTemplate = value;
 					this.checkPermision();
-					var udfList = Object.keys(this.approvalTemplate).filter((d) => d.includes('IsUseUDF'));
-					udfList.forEach((d) => {
-						if (this.approvalTemplate[d]) {
-							let label = this.approvalTemplate[d.replace('IsUseUDF', 'UDFLabel')];
-							let value = this.item[d.replace('IsUseUDF', 'UDF')];
-							let type = approvalRequestUDFTypes[d.replace('IsUseUDF', 'UDF')];
-							if (type === 'Date' && value) {
-								value = lib.dateFormat(value, 'dd/mm/yy hh:MM');
-							}
-							this.mappingList.push({
-								Label: label,
-								Value: value,
-							});
-						}
-					});
+					this.updateMappingList(this.item);
 				}
 			});
 		} else {
@@ -394,6 +380,28 @@ export class RequestDetailPage extends PageBase {
 		}
 	}
 
+	updateMappingList(data) {
+		this.mappingList = [];
+		
+		if (this.approvalTemplate) {
+			var udfList = Object.keys(this.approvalTemplate).filter((d) => d.includes('IsUseUDF'));
+			udfList.forEach((d) => {
+				if (this.approvalTemplate[d]) {
+					let label = this.approvalTemplate[d.replace('IsUseUDF', 'UDFLabel')];
+					let value = data[d.replace('IsUseUDF', 'UDF')];
+					let type = this.approvalRequestUDFTypes[d.replace('IsUseUDF', 'UDF')];
+					if (type === 'Date' && value) {
+						value = lib.dateFormat(value, 'dd/mm/yy hh:MM');
+					}
+					this.mappingList.push({
+						Label: label,
+						Value: value,
+					});
+				}
+			});
+		}
+	}
+	
 	buildFormPO() {
 		this.purchaseOrderFormGroup = this.formBuilder.group({
 			IDBranch: [this.item.IDBranch],
@@ -454,6 +462,7 @@ export class RequestDetailPage extends PageBase {
 						this.item.UDF01 = this.itemPurchaseOrder.Id;
 						this.loadedData();
 					}
+					this.updateMappingList(result);
 					this.cdr.detectChanges();
 					this.env.showMessage('Saving completed!', 'success');
 				} else {
@@ -676,7 +685,6 @@ export class RequestDetailPage extends PageBase {
 						PurchaseRequest: purchaseRequest,
 					};
 
-					console.log('PurchaseForm: ', this.purchaseRequestFormGroup.getRawValue());
 					this.submitAttempt = true;
 					this.pageProvider
 						.save(obj)
@@ -690,6 +698,7 @@ export class RequestDetailPage extends PageBase {
 									this.item.UDF01 = this.itemPurchaseRequest.Id;
 									this.loadedData();
 								}
+								this.updateMappingList(result);
 								this.cdr.detectChanges();
 								this.env.showMessage('Saving completed!', 'success');
 								this.submitAttempt = false;
@@ -914,6 +923,7 @@ export class RequestDetailPage extends PageBase {
 						this.item.UDF01 = this.itemPurchaseQuotation.Id;
 						this.loadedData();
 					}
+					this.updateMappingList(result);
 					this.cdr.detectChanges();
 					this.env.showMessage('Saving completed!', 'success');
 				} else {

@@ -323,8 +323,9 @@
 
 								[orderLines]="itemPurchaseRequest.OrderLines" 
 								(renderFormArray)="renderFormArrayPR($event)"
-								(removeItem)="removeItemPR($event)">
+								(removeItem)="removeItemPR($event)"
 								(onChange)="savePR()"
+								>
 							</app-purchase-items>
 						</div>
 
