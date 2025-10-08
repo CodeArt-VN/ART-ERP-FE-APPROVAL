@@ -64,6 +64,7 @@ export class RequestPage extends PageBase {
 	preLoadData(event?: any): void {
 		this.query.SortBy = 'Id_desc';
 		this.query.IDStaff = this.env.user.StaffID;
+		this.query.canViewAllData = this.pageConfig.canViewAllData;
 
 		Promise.all([
 			this.env.getType('RequestType'),
