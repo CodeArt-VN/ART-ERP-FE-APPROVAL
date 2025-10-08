@@ -448,7 +448,7 @@ export class RequestPage extends PageBase {
 				});
 			}
 		}
-		await this.pageProvider.commonService.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/ApproveMultiple'), approvals).toPromise();
+		await this.pageProvider.commonService.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/Approve'), approvals).toPromise();
 
 		this.submitAttempt = false;
 		super.loadData(null);
@@ -480,7 +480,7 @@ export class RequestPage extends PageBase {
 				if (data.Remark) a.Remark = data.Remark;
 			});
 			this.pageProvider.commonService
-				.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/DisapproveMultipleRequest/'), approvals)
+				.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/DisapproveRequest/'), approvals)
 				.toPromise()
 				.then((result: any) => {
 					this.env.publishEvent({ Code: this.pageConfig.pageName });
