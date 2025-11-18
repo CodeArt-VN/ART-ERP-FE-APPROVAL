@@ -56,9 +56,8 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="left"
-	[ngClass]="{withFeature: pageConfig.isShowFeature, childViewActive: !pageConfig.mainPageActive}">
-	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print" vertical="top" horizontal="start" slot="fixed">
+<ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
+	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
 		<ion-list>
 			<ion-list-header lines="full">
 				<ion-label color="dark">{{'Request groups' | translate}}</ion-label>
@@ -186,8 +185,7 @@
 			</div>
 		</section>
 	</div>
-	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)"
-		[disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
+	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
 		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
 	</ion-infinite-scroll>
 </ion-content>

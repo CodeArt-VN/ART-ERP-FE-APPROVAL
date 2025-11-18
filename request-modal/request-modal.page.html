@@ -124,19 +124,11 @@
 					</div>
 				</ion-col>
 			</ion-row>
-			<ion-row>
-				<ion-col>
-					<div class="c-control ion-text-right">
-						<label class="c-label" for=""></label>
-<!-- 
-						<ion-button color="warning" (click)="submit('Pending')"
-							*ngIf="formGroup.get('Type').value != 'PurchaseRequest'">{{'submit Request For Approval' |
-							translate}}</ion-button> -->
-						<ion-button color="primary" (click)="submitForm()" fill="outline">{{'Save draft' |
-							translate}}</ion-button>
-					</div>
-				</ion-col>
-			</ion-row>
 		</ion-grid>
 	</form>
 </ion-content>
+<ion-footer>
+	<ion-toolbar>
+		<ion-button slot="end" color="primary" (click)="submitForm()" >{{'Save draft' | translate}}</ion-button>
+	</ion-toolbar>
+</ion-footer>

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { APPROVAL_RequestProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, SYS_SchemaDetailProvider, SYS_SchemaProvider } from 'src/app/services/static/services.service';
+import { APPROVAL_RequestProvider, APPROVAL_TemplateProvider, BRA_BranchProvider, HRM_LeaveTypeProvider, SYS_SchemaDetailProvider, SYS_SchemaProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { RequestModalPage } from '../request-modal/request-modal.page';
 import { ApiSetting } from 'src/app/services/static/api-setting';
@@ -40,6 +40,7 @@ export class RequestPage extends PageBase {
 	constructor(
 		public pageProvider: APPROVAL_RequestProvider,
 		public branchProvider: BRA_BranchProvider,
+		public leaveTypeProvider: HRM_LeaveTypeProvider,
 		public modalController: ModalController,
 		public popoverCtrl: PopoverController,
 		public alertCtrl: AlertController,
@@ -69,12 +70,12 @@ export class RequestPage extends PageBase {
 		Promise.all([
 			this.env.getType('RequestType'),
 			this.env.getStatus('ApprovalStatus'),
-			this.env.getType('TimeOffType'),
+			this.leaveTypeProvider.read(),
 			this.approvalTemplateService.read(this.query, this.pageConfig.forceLoadData),
 		]).then((values: any) => {
 			this.requestTypeList = values[0];
 			this.statusList = values[1];
-			this.timeOffTypeList = values[2];
+			this.timeOffTypeList = values[2].data;
 			this.approvalTemplateList = values[3].data;
 			super.preLoadData(event);
 		});
