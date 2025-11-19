@@ -7,6 +7,8 @@ import { ShareModule } from 'src/app/share.module';
 import { RequestDetailPage } from './request-detail.page';
 import { ApproveModalPage } from '../approve-modal/approve-modal.page';
 import { PurchaseItemsComponentPageModule } from '../../PURCHASE/purchase-request-detail/purchase-items/purchase-items.component.module';
+import { PurchaseQuotationItemsComponentPageModule } from '../../PURCHASE/purchase-quotation-detail/purchase-quotation-items/purchase-quotation-items.component.module';
+import { PurchaseOrderItemsComponentPageModule } from '../../PURCHASE/purchase-order-detail/purchase-order-items/purchase-order-items.component.module';
 
 const routes: Routes = [
 	{
@@ -16,7 +18,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-	imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, PurchaseItemsComponentPageModule, RouterModule.forChild(routes)],
+	imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, PurchaseOrderItemsComponentPageModule, PurchaseItemsComponentPageModule, PurchaseQuotationItemsComponentPageModule, RouterModule.forChild(routes)],
 	declarations: [RequestDetailPage, ApproveModalPage],
 })
 export class RequestDetailPageModule {}

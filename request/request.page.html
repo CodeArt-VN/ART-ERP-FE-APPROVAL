@@ -1,5 +1,15 @@
 <ion-header>
-	<app-toolbar [page]="this"></app-toolbar>
+	<app-toolbar [page]="this">
+		<ion-button tollbarSelected *ngIf="pageConfig.canForward" title="{{'Forward' | translate}}"
+			(click)="submitApproval('Forward')">
+			<ion-icon name="arrow-forward-circle" color="warning" slot="icon-only"></ion-icon>
+		</ion-button>
+		<ion-button tollbarSelected *ngIf="pageConfig.canDeny" title="{{'Deny' | translate}}"
+			(click)="submitApproval('Denied')">
+			<ion-icon name="remove-circle" color="danger" slot="icon-only"></ion-icon>
+		</ion-button>
+		
+	</app-toolbar>
 	<ion-toolbar style="--padding-start: 4px">
 		<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
 			<ion-segment-button value="All">

@@ -10,7 +10,7 @@ import { lib } from 'src/app/services/static/global-functions';
 import { environment } from 'src/environments/environment';
 import { FormBuilder } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
-import { getDateMeta } from '@fullcalendar/core/internal';
+import { ApproveModalPage } from '../approve-modal/approve-modal.page';
 
 @Component({
 	selector: 'app-request',
@@ -64,6 +64,7 @@ export class RequestPage extends PageBase {
 	preLoadData(event?: any): void {
 		this.query.SortBy = 'Id_desc';
 		this.query.IDStaff = this.env.user.StaffID;
+		this.query.canViewAllData = this.pageConfig.canViewAllData;
 
 		Promise.all([
 			this.env.getType('RequestType'),
@@ -319,6 +320,11 @@ export class RequestPage extends PageBase {
 	}
 	changeSelection(i, e = null) {
 		super.changeSelection(i, e);
+		const configs = this.selectedItems.map(item => this.getActionConfig(item));
+		this.pageConfig.canApprove = configs.length > 0 && configs.every(cfg => cfg.canApprove);
+    	this.pageConfig.canDisApprove = configs.length > 0 && configs.every(cfg => cfg.canDisApprove);
+    	this.pageConfig.canDeny = configs.length > 0 && configs.every(cfg => cfg.canDeny);
+    	this.pageConfig.canForward = configs.length > 0 && configs.every(cfg => cfg.canForward);
 		this.pageConfig.ShowSubmit = this.pageConfig.canSubmit;
 		this.pageConfig.ShowCancel = this.pageConfig.canCancel;
 		this.selectedItems?.forEach((i) => {
@@ -332,5 +338,166 @@ export class RequestPage extends PageBase {
 				this.pageConfig.ShowSubmit = false;
 			}
 		});
+	}
+
+	getActionConfig(item) {
+		const canApproveStatus = ['InProgress', 'Pending', 'Unapproved'];
+		const canDisapproveStatus = ['Approved', 'InProgress', 'Pending'];
+		const canDenyStatus = ['InProgress', 'Pending'];
+		const canForwardStatus = ['Pending'];
+
+		const currentApprover = item._Approvers?.find((a) => a.Id == this.env.user.StaffID);
+		const isSupperApprover = item._IsSuperApproval;
+
+		let config = {
+			canApprove: false,
+			canDisApprove: false,
+			canDeny: false,
+			canForward: false,
+		};
+
+		// canApprove
+		if (canApproveStatus.includes(item.Status)) {
+			if (!(item.Status == 'Unapproved' && item.Type == 'DataCorrection')) {
+				if (isSupperApprover || (currentApprover && item.ApprovalMode?.trim() != 'SequentialApprovals')) {
+					config.canApprove = true;
+				} else if (currentApprover) {
+					let approverIdx = item._Approvers.findIndex((d) => d.Id == this.env.user.StaffID);
+					if (approverIdx != 0) {
+						for (let index = approverIdx - 1; index == 0; index--) {
+							const Approver = item._Approvers[index];
+							if (Approver.Status != 'Approved') {
+								break;
+							}
+							if (index == 0) {
+								config.canApprove = true;
+							}
+						}
+					} else {
+						config.canApprove = true;
+					}
+				}
+			}
+		}
+
+		// canDisApprove
+		if (canDisapproveStatus.includes(item.Status) && (isSupperApprover || currentApprover)) {
+			if (!(item.Status == 'Approved' && item.Type == 'DataCorrection')) {
+				config.canDisApprove = true;
+			}
+		}
+
+		// canForward
+		if (canForwardStatus.includes(item.Status) && (isSupperApprover || currentApprover)) {
+			config.canForward = true;
+		}
+
+		// canDeny
+		if (canDenyStatus.includes(item.Status) && (isSupperApprover || currentApprover)) {
+			config.canDeny = true;
+		}
+		
+		if (currentApprover) {
+			switch (currentApprover.Status) {
+				case 'Approved':
+				case 'Unapproved':
+					config.canApprove = false;
+					break;
+				case 'Denied':
+					config.canDeny = false;
+					break;
+				case 'Forward':
+					config.canForward = false;
+					break;
+			}
+		}
+
+		return config;
+	}
+
+	approve(){
+		this.submitApproval('Approved');
+	}
+	async submitApproval(status: string) {
+		if (!this.pageConfig.canApprove) return;
+		if (!this.selectedItems || this.selectedItems.length === 0) return;
+
+		this.submitAttempt = true;
+		let approvals = this.selectedItems.map((item) => ({
+			IDRequest: item.Id,
+			IDApprover: this.env.user.StaffID,
+			Status: status,
+			ForwardTo: null,
+			Remark: '',
+		}));
+		if (status !== 'Approved') {
+			const modal = await this.modalController.create({
+				component: ApproveModalPage,
+				componentProps: {
+					item: approvals[0],
+				},
+				cssClass: 'my-custom-class',
+			});
+			await modal.present();
+			const { data } = await modal.onWillDismiss();
+			if (data) {
+				approvals.forEach((a) => {
+					if (data.Remark) a.Remark = data.Remark;
+					if (data.ForwardTo) a.ForwardTo = data.ForwardTo;
+					if (data.Status) a.Status = data.Status;
+				});
+			}
+		}
+		await this.pageProvider.commonService.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/Approve'), approvals).toPromise();
+
+		this.submitAttempt = false;
+		super.loadData(null);
+		this.env.publishEvent({ Code: this.pageConfig.pageName });
+	}
+
+	async disapprove() {
+		if (!this.pageConfig.canDisApprove) return;
+		if (!this.selectedItems || this.selectedItems.length === 0) return;
+
+		let approvals = this.selectedItems.map((item) => ({
+			IDRequest: item.Id,
+			IDApprover: this.env.user.StaffID,
+			Status: 'Return',
+			ForwardTo: null,
+			Remark: '',
+		}));
+		const modal = await this.modalController.create({
+			component: ApproveModalPage,
+			componentProps: {
+				item: approvals[0],
+			},
+			cssClass: 'my-custom-class',
+		});
+		await modal.present();
+		const { data } = await modal.onWillDismiss();
+		if (data) {
+			approvals.forEach((a) => {
+				if (data.Remark) a.Remark = data.Remark;
+			});
+			this.pageProvider.commonService
+				.connect('POST', ApiSetting.apiDomain('APPROVAL/Request/DisapproveRequest/'), approvals)
+				.toPromise()
+				.then((result: any) => {
+					this.env.publishEvent({ Code: this.pageConfig.pageName });
+					this.submitAttempt = false;
+
+					if (result) {
+						this.env.showMessage('Success', 'success');
+						this.refresh();
+					} else {
+						this.env.showMessage('Failure', 'warning');
+					}
+				})
+				.catch((err) => {
+					this.submitAttempt = false;
+					this.env.showMessage(err.error?.ExceptionMessage || err, 'danger');
+					console.log(err);
+				});
+		}
 	}
 }

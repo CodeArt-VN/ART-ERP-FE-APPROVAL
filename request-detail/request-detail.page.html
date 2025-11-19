@@ -38,8 +38,7 @@
 		</div>
 	</ion-fab>
 	<div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
-
-
+		<div id="ng-select-table" style="position: absolute; z-index: 30005"></div>
 		<ion-grid *ngIf="item && pageConfig.showSpinner==false">
 			<ion-row>
 				<ion-col size="12" size-xl="9">
@@ -49,6 +48,7 @@
 								<div class="giao-nhan">
 									<section class="sheet padding-10mm rpt p1">
 										<app-so-note [ID]="item.UDF01" [SOIsRemoveItemsWithZeroPriceOnOrderNote]="true"></app-so-note>
+
 									</section>
 								</div>
 							</div>
@@ -56,7 +56,7 @@
 					</ion-row>
 					<ion-row *ngIf="item.Type=='PurchaseOrder'">
 						<ion-col size="12" class="A4">
-							<div style="overflow: auto" *ngIf="item">
+							<div style="overflow: auto" *ngIf="item && purchaseOrderFormGroup">
 								<div class="giao-nhan">
 									<!-- PGNTT -->
 									<section class="sheet padding-10mm rpt p1">
@@ -66,8 +66,6 @@
 							</div>
 						</ion-col>
 					</ion-row>
-					
-					
 
 					<ion-list>
 						<ion-item *ngIf="item?._Type">
@@ -155,9 +153,8 @@
 							</ion-label>
 						</ion-item>
 					</ion-list>
-					
-					
 					<ion-list *ngIf="pageConfig.canApprove || pageConfig.canDisApprove|| pageConfig.canDeny ||pageConfig.canForward">
+
 						<ion-list-header>
 							<ion-label color="primary">{{'Approve' | translate}}</ion-label>
 						</ion-list-header>
@@ -180,56 +177,50 @@
 							</ion-grid>
 						</ion-item>
 					</ion-list>
-
-					<ion-list *ngIf="item?.Type == 'PurchaseRequest' && purchaseRequestFormGroup">
+					<ion-list *ngIf="item?.Type == 'PurchaseOrder' && purchaseOrderFormGroup">
 						<ion-grid fixed>
-							<form [formGroup]="purchaseRequestFormGroup">
+							<form [formGroup]="purchaseOrderFormGroup">
 								<ion-row class="hr-group">
 									<ion-col size="12" size-sm size-xl="6">
-										<app-form-control
-											[field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
-											(change)="changeVendor($event)"
-										>
-										</app-form-control>
-										<app-form-control
-											[field]="{id :'ContentType', label:'Content type' , type:'ng-select',dataSource:contentTypeList, bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}"
-											(change)="changeContentType($event)"
-										>
-										</app-form-control>
-										<app-form-control
-											[field]="{id :'Remark', label:'Remark' , type:'textarea',form:purchaseRequestFormGroup}"
-											(change)="saveChangePurchaseRequest()"
-										>
-										</app-form-control>
-									</ion-col>
-									<ion-col size="12" size-sm size-xl="6">
-										<app-form-control
-											[clearable]="true"
-											[virtualScroll]="true"
-											[field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseRequestFormGroup }"
-											(change)="changeRequiredDate();"
-										>
+										<app-form-control (change)="savePO()"
+											[field]="{id: 'IDStorer', label: 'Goods owner', type: 'ng-select', dataSource: storerList , bindLabel: 'Name', bindValue: 'Id', placeholder: 'Search', form: purchaseOrderFormGroup}">
 										</app-form-control>
 
+										<app-form-control (change)="savePO()"
+											[field]="{id: 'IDVendor', label: 'Vendor', type: 'ng-select-bp', dataSource: _vendorDataSource , bindLabel: 'Name', bindValue: 'Id', placeholder: 'Search', form: purchaseOrderFormGroup}">
+										</app-form-control>
+
+										<app-form-control (change)="savePO()"
+											[field]="{branchConfig: {showingType: 'Warehouse', showingMode:'showAll'}, id: 'IDWarehouse', label: 'Warehouse', type: 'ng-select-branch', dataSource: branchList, bindLabel: 'Name', bindValue: 'Id', placeholder: 'Search', form: purchaseOrderFormGroup}">
+										</app-form-control>
 										<app-form-control
-											[clearable]="true"
-											[virtualScroll]="true"
-											[field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
-											(change)="changeRequiredDate()"
-										></app-form-control>
+											[field]="{ id: 'PaymentStatus', type: 'ng-select', label: 'Payment status', dataSource: paymentStatusList, bindValue: 'Code', bindLabel: 'Name', form: purchaseOrderFormGroup }">
+										</app-form-control>
+									</ion-col>
+
+									<ion-col size="12" size-sm size-xl="6">
+										<app-form-control (change)="savePO()"
+											[field]="{id: 'Code', label: 'PO code (Vendors)', type: 'text', form: purchaseOrderFormGroup}">
+											<small label *ngIf="item.UDF01">{{'Id' | translate}}: {{item.UDF01}}</small>
+										</app-form-control>
+
+										<app-form-control [clearable]="true" [virtualScroll]="true"
+											[field]="{id:'ExpectedReceiptDate',label:'Expected receipt date', type : 'datetime-local', form : purchaseOrderFormGroup }"
+											(change)="savePO();">
+										</app-form-control>
 
 										<div class="c-control">
 											<label class="c-label" for="TotalAfterTax"
 												>{{'Value' | translate}}
 												<span
-													*ngIf="!purchaseRequestFormGroup.controls.TotalAfterTax.valid && !purchaseRequestFormGroup.controls.TotalAfterTax.pending && (purchaseRequestFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
+													*ngIf="!purchaseOrderFormGroup.controls.TotalAfterTax.valid && !purchaseOrderFormGroup.controls.TotalAfterTax.pending && (purchaseOrderFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
 													ion-text
 													color="danger"
 													>(*)</span
 												>
 											</label>
 											<span class="c-input disable">
-												<b *ngIf="purchaseRequestFormGroup.controls.OrderLines?.controls?.length>0">{{calcTotalAfterTax() | number: '1.0-0'}}</b>
+												<b *ngIf="purchaseOrderFormGroup.controls.OrderLines?.controls?.length>0">{{calcTotalAfterTaxPO() | number: '1.0-0'}}</b>
 											</span>
 										</div>
 									</ion-col>
@@ -244,15 +235,88 @@
 									</ion-segment-button>
 								</ion-segment>
 							</ion-toolbar>
-							<app-purchase-items
-								[contentType]="_currentContentType"
-								(renderFormArray)="renderFormArray($event)"
-								[canEdit]="pageConfig.canEditPurchaseRequest"
+								<app-purchase-order-items
+								[_item]="itemPurchaseOrder"
+								[page]="this"
+								[orderLines]="itemPurchaseOrder.OrderLines"
+								(renderFormArray)="renderFormArrayPO($event)"
+								(onChange)="savePO()"
+								(removeItem)="removeItemPO($event)"
+								(onShowSaleOrder)="showSaleOrderPickerModalPO()">
+								</app-purchase-order-items>
+						</div>
+
+						<div *ngIf="!isAutoSave">
+							<ion-button *ngIf="item?.Type == 'PurchaseOrder'" (click)="saveChangePurchaseOrder(true);"
+								title="{{'Submit order' | translate}}">
+								{{'Submit purchase order' || translate}}
+							</ion-button>
+						</div>
+					</ion-list>
+
+					<ion-list *ngIf="item?.Type == 'PurchaseRequest' && purchaseRequestFormGroup">
+						<ion-grid fixed>
+							<form [formGroup]="purchaseRequestFormGroup">
+								<ion-row class="hr-group">
+									<ion-col size="12" size-sm size-xl="6">
+										<app-form-control
+											[field]="{id: 'IDVendor', label: 'Select Vendor', type: 'ng-select-bp', form: purchaseRequestFormGroup,  dataSource: _vendorDataSource,  bindLabel: 'Name',  bindValue: 'Id',clearable:true }"
+											(change)="changeVendorPR($event)">
+										</app-form-control>
+										<app-form-control
+											[field]="{id :'ContentType', label:'Content type' , type:'ng-select',dataSource:contentTypeList, bindLabel:'Name',bindValue:'Code' ,form:purchaseRequestFormGroup}"
+											(change)="changeContentTypePR($event)">
+										</app-form-control>
+										<app-form-control
+											[field]="{id :'Remark', label:'Remark' , type:'textarea',form:purchaseRequestFormGroup}"
+											(change)="saveChangePurchaseRequest()">
+										</app-form-control>
+									</ion-col>
+									<ion-col size="12" size-sm size-xl="6">
+										<app-form-control [clearable]="true" [virtualScroll]="true"
+											[field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseRequestFormGroup }"
+											(change)="changeRequiredDatePR();">
+										</app-form-control>
+
+										<app-form-control [clearable]="true" [virtualScroll]="true"
+											[field]="{id:'IDRequester', label:'Requester', type : 'ng-select-staff', form : purchaseRequestFormGroup,  dataSource: _staffDataSource,  bindLabel: 'FullName',  bindValue: 'Id' }"
+											(change)="changeRequiredDatePR()"></app-form-control>
+
+										<div class="c-control">
+											<label class="c-label" for="TotalAfterTax">{{'Value' | translate}}
+												<span
+													*ngIf="!purchaseRequestFormGroup.controls.TotalAfterTax.valid && !purchaseRequestFormGroup.controls.TotalAfterTax.pending && (purchaseRequestFormGroup.controls.TotalAfterTax.dirty || submitAttempt)"
+													ion-text color="danger">(*)</span>
+											</label>
+											<span class="c-input disable">
+												<b
+													*ngIf="purchaseRequestFormGroup.controls.OrderLines?.controls?.length>0">{{calcTotalAfterTaxPR()
+													| number: '1.0-0'}}</b>
+											</span>
+										</div>
+									</ion-col>
+								</ion-row>
+							</form>
+						</ion-grid>
+						<div class="row-full shadow">
+							<ion-toolbar color="primary">
+								<ion-segment scrollable="true">
+									<ion-segment-button>
+										<ion-label>{{'Product list' | translate}}</ion-label>
+									</ion-segment-button>
+								</ion-segment>
+							</ion-toolbar>
+							<app-purchase-items 
+								[page]="this"
+								[contentType]="_currentContentTypePR"	
 								[IDVendor]="purchaseRequestFormGroup.get('IDVendor').value"
-								[orderLines]="itemPurchaseRequest.OrderLines"
-								(onChange)="saveOrderBack($event)"
-								(removeItem)="removeItem($event)"
-							>
+								[status]="purchaseRequestFormGroup.get('Status').value"
+
+								[orderLines]="itemPurchaseRequest.OrderLines" 
+								(renderFormArray)="renderFormArrayPR($event)"
+								(removeItem)="removeItemPR($event)"
+								(onChange)="savePR()"
+								>
 							</app-purchase-items>
 						</div>
 
@@ -263,41 +327,67 @@
 						</div>
 					</ion-list>
 
-					<ion-row *ngIf="item.Type=='PurchaseQuotation' && itemPurchaseQuotation?.QuotationLines">
-						<div class="table-contain safe-max-width">
-							<!-- responsive -->
-							<app-data-table
-								class="box-shadow"
-								[rows]="itemPurchaseQuotation?.QuotationLines"
-								[trackBy]="'Id'"
-								[showSpinner]="pageConfig.showSpinner"
-								[showFilter]="pageConfig.isShowSearch"
-							>
-								<datatable-column class="col-name" name="Item" property="Id">
-									<ng-template let-i="row" datatable-cell-template>
-										<span (mousedown)="$event.stopPropagation()" class="no-warp"> #{{ i._Item.Id }} </span>
-										<a [ngClass]="{ 'no-check-dirty': noCheckDirty }" class="clickable" [routerLink]="['/item/' + i.Id]" (mousedown)="$event.stopPropagation()"
-											><ion-icon name="open-outline"></ion-icon
-										></a>
-										&nbsp;
-										<span [title]="i._Item.Name">
-											<b *ngIf="i._Item.Code" (mousedown)="$event.stopPropagation()">{{ i._Item.Code }}</b>
-											{{ i._Item.Name }}
-										</span>
-									</ng-template>
-								</datatable-column>
-								<datatable-column class="col-uom" name="Unit" property="UoMName"> </datatable-column>
-								<datatable-column class="col-number" name="Quantity" property="Quantity"> </datatable-column>
-								<datatable-column class="col-number" name="Quantity required" property="QuantityRequired"> </datatable-column>
-								<datatable-column class="col-number" name="Price" property="Price">
-									<ng-template let-i="row" datatable-cell-template> {{i.Price | number: '1.0-0'}} </ng-template>
-								</datatable-column>
-								<datatable-column class="col-number bold" name="Total" property="TotalAfterTax">
-									<ng-template let-i="row" datatable-cell-template> {{i.TotalAfterTax | number: '1.0-0'}} </ng-template>
-								</datatable-column>
-							</app-data-table>
+					<ion-list *ngIf="item.Type=='PurchaseQuotation' && itemPurchaseQuotation?.QuotationLines">
+						<ion-grid fixed>
+							<form [formGroup]="purchaseQuotationFormGroup">
+								<ion-row class="hr-group">
+									<ion-col size="12" size-sm size-xl="6">
+										<app-form-control
+											[field]="{id: 'IDBusinessPartner', label: 'Vendor', type: 'ng-select-bp', form: purchaseQuotationFormGroup, dataSource: _vendorDataSource, bindLabel: 'Name', bindValue: 'Id', clearable:true }"
+											(change)="changeVendorPQ($event)"></app-form-control>
+										<app-form-control
+											[field]="{id :'ContentType', label:'Content type' , type:'ng-select', dataSource:contentTypeList, bindLabel:'Name', bindValue:'Code' , form:purchaseQuotationFormGroup}"
+											(change)="changeContentTypePQ($event)"></app-form-control>
+										<app-form-control
+											[field]="{id :'Remark', label:'Remark' , type:'textarea', form:purchaseQuotationFormGroup}"
+											(change)="savePQ()"></app-form-control>
+									</ion-col>
+									<ion-col size="12" size-sm size-xl="6">
+										<app-form-control [clearable]="true" [virtualScroll]="true"
+											[field]="{id:'RequiredDate',label:'Required date', type : 'datetime-local', form : purchaseQuotationFormGroup }"
+											(change)="changeRequiredDatePQ()"></app-form-control>
+										<app-form-control [clearable]="true" [virtualScroll]="true"
+											[field]="{id:'ValidUntilDate',label:'Valid until date', type : 'datetime-local', form : purchaseQuotationFormGroup }"
+											(change)="changeRequiredDatePQ()"></app-form-control>
+										<div class="c-control">
+											<label class="c-label">{{'Total' | translate}}</label>
+											<span class="c-input disable">
+												<b>{{calcTotalAfterTaxPQ() | number:'1.0-0'}}</b>
+											</span>
+										</div>
+									</ion-col>
+								</ion-row>
+							</form>
+						</ion-grid>
+						<div class="row-full shadow">
+							<ion-toolbar color="primary">
+								<ion-segment scrollable="true">
+									<ion-segment-button>
+										<ion-label>{{'Product list' | translate}}</ion-label>
+									</ion-segment-button>
+								</ion-segment>
+							</ion-toolbar>
+
+							<app-purchase-quotation-items 
+								[page]="this" 
+								[IDPurchaseQuotation]="item.UDF01"
+								[contentType]="purchaseQuotationFormGroup.get('ContentType')?.value"
+								[IDVendor]="purchaseQuotationFormGroup.get('IDBusinessPartner')?.value"
+								[statusLineList]="statusLineListPQ" 
+								[orderLines]="itemPurchaseQuotation.QuotationLines"
+								[vendorView]="quotationVendorView" 
+								[isShowtoggleAllQuantity]="quotationShowToggleAllQty"
+								[vendorDataSource]="_vendorDataSource"
+								[requiredDate]="purchaseQuotationFormGroup.get('RequiredDate')?.value"
+								[sourceType]="purchaseQuotationFormGroup.get('SourceType')?.value"
+								(renderFormArray)="renderFormArrayPQ($event)" 
+								(onChange)="savePQ()"
+								(onRefresh)="refresh()" 
+								(removeItem)="removeItemPQ($event)"
+								(addAllProductsFromVendor)="addAllProductFromVendorPQ($event)">
+							</app-purchase-quotation-items>
 						</div>
-					</ion-row>
+					</ion-list>
 
 					<ion-list *ngIf="item?.Id">
 						<ion-list-header>
