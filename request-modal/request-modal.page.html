@@ -129,6 +129,17 @@
 </ion-content>
 <ion-footer>
 	<ion-toolbar>
-		<ion-button slot="end" color="primary" (click)="submitForm()" >{{'Save draft' | translate}}</ion-button>
+		<div slot="start">
+			
+        </div>
+		
+		<div slot="end">
+			<ion-button [strong]="true" (click)="submitForm()" >{{'Save draft' | translate}}</ion-button>
+			
+            <ion-button fill="outline" color="warning" (click)="closeModal()" >
+                {{'Cancel' | translate}}
+            </ion-button>
+        </div>
+		
 	</ion-toolbar>
 </ion-footer>
