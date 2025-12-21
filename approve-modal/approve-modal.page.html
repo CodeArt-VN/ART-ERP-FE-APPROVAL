@@ -4,14 +4,6 @@
 			<ion-button color="dark" class="ion-hide-sm-down"> {{'Approve' | translate}} </ion-button>
 		</ion-buttons>
 		<ion-buttons slot="end">
-			<ion-button (click)="refresh()" title="{{'Refresh' | translate}}">
-				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
-			</ion-button>
-
-			<ion-button title="{{'Help' | translate}}" (click)="help()">
-				<ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
-			</ion-button>
-
 			<ion-button title="{{'Close' | translate}}" color="secondary" (click)="closeModal()">
 				<ion-icon slot="icon-only" name="close"></ion-icon>
 			</ion-button>
@@ -88,26 +80,15 @@
 </ion-content>
 <ion-footer collapse="fade">
 	<ion-toolbar>
-		<div slot="start">
-        </div>
-		
+		<div slot="start"></div>
+
 		<div slot="end">
-			<ion-button [strong]="true" *ngIf="item.Status == 'Approved'" (click)="submitForm()">
-				{{'Approve' | translate}}
-			</ion-button>
-			<ion-button [strong]="true" *ngIf="item.Status == 'Forward'" (click)="submitForm()">
-				{{'Forward' | translate}}
-			</ion-button>
-			<ion-button [strong]="true" *ngIf="item.Status == 'Denied'" (click)="submitForm()">
-				{{'Deny' | translate}}
-			</ion-button>
-			<ion-button [strong]="true" *ngIf="item.Status == 'Return'" (click)="submitForm()">
-				{{'Return' | translate}}
-			</ion-button>
-            <ion-button fill="outline" color="warning" (click)="closeModal()" >
-                {{'Cancel' | translate}}
-            </ion-button>
-        </div>
-	
+			<ion-button fill="outline" color="warning" (click)="closeModal()"> {{'Cancel' | translate}} </ion-button>
+
+			<ion-button [strong]="true" *ngIf="item.Status == 'Approved'" (click)="submitForm()"> {{'Approve' | translate}} </ion-button>
+			<ion-button [strong]="true" *ngIf="item.Status == 'Forward'" (click)="submitForm()"> {{'Forward' | translate}} </ion-button>
+			<ion-button [strong]="true" *ngIf="item.Status == 'Denied'" (click)="submitForm()"> {{'Deny' | translate}} </ion-button>
+			<ion-button [strong]="true" *ngIf="item.Status == 'Return'" (click)="submitForm()"> {{'Return' | translate}} </ion-button>
+		</div>
 	</ion-toolbar>
 </ion-footer>
