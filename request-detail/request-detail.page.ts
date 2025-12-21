@@ -1066,7 +1066,7 @@ export class RequestDetailPage extends PageBase {
 			componentProps: {
 				item: approval,
 			},
-			cssClass: 'my-custom-class',
+			cssClass: 'modal90vh',
 		});
 		await modal.present();
 		const { data } = await modal.onWillDismiss();
@@ -1141,7 +1141,7 @@ export class RequestDetailPage extends PageBase {
 				componentProps: {
 					item: approval,
 				},
-				cssClass: 'my-custom-class',
+				cssClass: 'modal90vh',
 			});
 			await modal.present();
 			const { data } = await modal.onWillDismiss();
