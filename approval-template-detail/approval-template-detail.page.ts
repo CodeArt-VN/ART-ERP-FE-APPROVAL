@@ -325,8 +325,9 @@ export class ApprovalTemplateDetailPage extends PageBase {
 	}
 
 	changeStaffSelection(e, control) {
-		e = JSON.stringify(e);
-		this.formGroup.get(control).setValue(e);
+		let staffs= e?.map(m => ({Id: m.Id, FullName: m.FullName,Code: m.Code})) || [];
+		let stringStaffs = JSON.stringify(staffs);
+		this.formGroup.get(control).setValue(stringStaffs);
 		this.formGroup.get(control).markAsDirty();
 		this.saveChange();
 	}
