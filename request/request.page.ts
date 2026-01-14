@@ -401,9 +401,9 @@ export class RequestPage extends PageBase {
 		if (currentApprover) {
 			switch (currentApprover.Status) {
 				case 'Approved':
-				case 'Unapproved':
-					config.canApprove = false;
-					break;
+				// case 'Unapproved':
+				// 	config.canApprove = false;
+				// 	break;
 				case 'Denied':
 					config.canDeny = false;
 					break;

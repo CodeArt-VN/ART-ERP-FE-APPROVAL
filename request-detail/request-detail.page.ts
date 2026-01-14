@@ -1037,9 +1037,9 @@ export class RequestDetailPage extends PageBase {
 				case 'Approved':
 					this.pageConfig.canApprove = false;
 					break;
-				case 'Unapproved':
-					this.pageConfig.canApprove = false;
-					break;
+				// case 'Unapproved':
+				// 	this.pageConfig.canApprove = false;
+				// 	break;
 				case 'Denied':
 					this.pageConfig.canDeny = false;
 					break;
