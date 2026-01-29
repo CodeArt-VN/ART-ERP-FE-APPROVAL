@@ -79,25 +79,25 @@ export class ApprovalTemplateDetailPage extends PageBase {
 
 			_SupperApproverList: [''],
 			_SupperApproverListDataSource: this.buildSelectDataSource((term) => {
-				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+				return this.staffService.search({ Take: 20, Skip: 0, Keyword: term });
 			}),
 
 
 			_FixedApproverList: [''],
 			_FixedApproverListDataSource:  this.buildSelectDataSource((term) => {
-				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+				return this.staffService.search({ Take: 20, Skip: 0, Keyword: term });
 			}),
 			
 		
 			_SelectableApproverList: [''],
 			_SelectableApproverListDataSource:  this.buildSelectDataSource((term) => {
-				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+				return this.staffService.search({ Take: 20, Skip: 0, Keyword: term });
 			}),
 			
 		
 			_FollowerList: [''],
 			_FollowerListDataSource:  this.buildSelectDataSource((term) => {
-				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+				return this.staffService.search({ Take: 20, Skip: 0, Keyword: term });
 			}),
 			
 		
