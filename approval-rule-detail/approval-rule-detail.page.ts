@@ -160,7 +160,7 @@ export class ApprovalRuleDetailPage extends PageBase {
 			ApproverList: [rule.ApproverList],
 			_approvalListIds: [approverList?.map((r) => r.Id)],
 			_approverListDataSource: this.buildSelectDataSource((term) => {
-				return this.staffService.search({ Take: 20, Skip: 0, Term: term });
+				return this.staffService.search({ Take: 20, Skip: 0, Keyword: term });
 			}),
 
 			// {
