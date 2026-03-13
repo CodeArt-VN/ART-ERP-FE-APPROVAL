@@ -384,7 +384,7 @@
 								(onChange)="savePQ()"
 								(onRefresh)="refresh()" 
 								(removeItem)="removeItemPQ($event)"
-								(addAllProductsFromVendor)="addAllProductFromVendorPQ($event)">
+								(addAllProductsFromVendor)="addAllProductFromVendorPQ($any($event))">
 							</app-purchase-quotation-items>
 						</div>
 					</ion-list>
