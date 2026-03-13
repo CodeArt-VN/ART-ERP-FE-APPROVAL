@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<app-toolbar [page]="this">
 		<ion-button tollbarSelected *ngIf="pageConfig.canForward" title="{{'Forward' | translate}}"
 			(click)="submitApproval('Forward')">
@@ -55,7 +55,7 @@
 		</ion-segment>
 	</ion-toolbar>
 </ion-header>
-<ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
+<ion-content [fullscreen]="true" appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
 	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
 		<ion-list>
 			<ion-list-header lines="full">

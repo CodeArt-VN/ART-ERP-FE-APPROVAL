@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<ion-toolbar class="no-padding">
 		<ion-buttons slot="start">
 			<ion-button color="dark" class="ion-hide-sm-down"> {{'Request' | translate}} </ion-button>
@@ -19,7 +19,7 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="ion-padding" fullscreen>
+<ion-content appScrollbarTheme class="ion-padding" [fullscreen]="true">
 	<form [formGroup]="formGroup">
 		<ion-grid fixed>
 			<ion-row>

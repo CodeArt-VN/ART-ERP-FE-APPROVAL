@@ -1,4 +1,4 @@
-<ion-header collapse="fade">
+<ion-header [translucent]="true" collapse="fade">
 	<ion-toolbar class="no-padding">
 		<ion-buttons slot="start">
 			<ion-button color="dark" class="ion-hide-sm-down"> {{'Approve' | translate}} </ion-button>
@@ -11,7 +11,7 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="ion-padding">
+<ion-content appScrollbarTheme class="ion-padding" [fullscreen]="true">
 	<form [formGroup]="formGroup">
 		<ion-grid fixed>
 			<ion-row>

@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<!-- <app-list-toolbar
 		pageTitle="Danh sách"
 		[pageConfig]="pageConfig"
@@ -16,7 +16,7 @@
 	></app-list-toolbar> -->
 	<app-toolbar [page]="this"></app-toolbar>
 </ion-header>
-<ion-content appScrollbarTheme class="scrollx">
+<ion-content [fullscreen]="true" appScrollbarTheme class="scrollx">
 	<section class="table responsive">
 		<header class="bold">
 			<div class="col-checkbox cell"></div>
