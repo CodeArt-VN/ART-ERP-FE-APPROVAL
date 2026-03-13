@@ -20,12 +20,12 @@ export class ApprovalTemplateDetailPage extends PageBase {
 	filter: any;
 	requestTypeList: any;
 	requestSubTypeList: any;
-	approvalModes: [];
+	approvalModes: any[] = [];
 	_schemaListDetail: any;
 	_schemaListMappingDetail: any;
 	schemaList: any;
 	schema: any;
-	approvalRuleList: [];
+	approvalRuleList: any[] = [];
 	countUDF = [];
 	constructor(
 		public pageProvider: APPROVAL_TemplateProvider,

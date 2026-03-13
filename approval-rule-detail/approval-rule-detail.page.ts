@@ -25,7 +25,7 @@ export class ApprovalRuleDetailPage extends PageBase {
 	schemaDetailList: any;
 	schema: any;
 	ApprovalRule: any;
-	ApprovalModes: [];
+	ApprovalModes: any[] = [];
 	approvalTemplate: any;
 	config: any;
 	requestTypeList = [];

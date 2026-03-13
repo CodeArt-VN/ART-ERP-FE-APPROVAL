@@ -1200,4 +1200,7 @@ export class RequestDetailPage extends PageBase {
 		}
 	}
 
+	//TODO: Remove empty functions
+	saveChangePurchaseOrder(_flag?: boolean) {}
+	saveChangePurchaseRequest(_flag?: boolean) {}
 }
