@@ -296,7 +296,7 @@ export class ApprovalTemplateDetailPage extends PageBase {
 			});
 	}
 	removeApprovalRule(index) {
-		this.env.showPrompt('Bạn có chắc muốn xóa không?', null, 'Xóa approval rule').then((_) => {
+		this.env.showPrompt('Are you sure you want to delete?', null, 'Delete approval rule').then((_) => {
 			let apiPath = {
 				delItem: {
 					method: 'DELETE',
