@@ -584,7 +584,7 @@ export class RequestDetailPage extends PageBase {
 		if (orderLines.controls.length > 0) {
 			if (e) {
 				this.env
-					.showPrompt('Tất cả hàng hoá trong danh sách khác với nhà cung cấp được chọn sẽ bị xoá. Bạn có muốn tiếp tục ? ', null, 'Thông báo')
+					.showPrompt('All items in the list that do not belong to the selected vendor will be deleted. Do you want to continue?', null, 'Announcement')
 					.then(() => {
 						let DeletedLines = orderLines
 							.getRawValue()
@@ -636,7 +636,7 @@ export class RequestDetailPage extends PageBase {
 		let orderLines = this.purchaseRequestFormGroup.get('OrderLines') as FormArray;
 		if (orderLines.controls.length > 0) {
 			this.env
-				.showPrompt('Tất cả hàng hoá trong danh sách sẽ bị xoá khi bạn chọn nhà cung cấp khác. Bạn chắc chắn chứ? ', null, 'Thông báo')
+				.showPrompt('All items in the list will be deleted when you select another vendor. Are you sure?', null, 'Announcement')
 				.then(() => {
 					let DeletedLines = orderLines
 						.getRawValue()
@@ -803,7 +803,7 @@ export class RequestDetailPage extends PageBase {
 		const newCode = e?.Code || e?.value || e;
 		if (quotationLines?.length > 0) {
 			this.env
-				.showPrompt('Tất cả hàng hoá trong danh sách sẽ bị xoá khi bạn đổi loại nội dung. Bạn chắc chắn chứ?', null, 'Thông báo')
+				.showPrompt('All items in the list will be deleted when you change the content type. Are you sure?', null, 'Announcement')
 				.then(() => {
 					// mark deleted existing persisted lines
 					const deleted = quotationLines
@@ -840,7 +840,7 @@ export class RequestDetailPage extends PageBase {
 		if (quotationLines?.controls.length > 0) {
 			if (e) {
 				this.env
-					.showPrompt('Tất cả hàng hoá trong danh sách khác với nhà cung cấp được chọn sẽ bị xoá. Bạn có muốn tiếp tục ?', null, 'Thông báo')
+					.showPrompt('All items in the list that do not belong to the selected vendor will be deleted. Do you want to continue?', null, 'Announcement')
 					.then(() => {
 						// Lines having different vendor (Business Partner) will be deleted
 						const raw = quotationLines.getRawValue();

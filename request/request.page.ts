@@ -250,7 +250,7 @@ export class RequestPage extends PageBase {
 			//this.selectedItems = this.selectedItems.filter(i => (i.Status == 'Pending' || i.Status == 'Unapproved'));
 			this.env
 				.showPrompt({ code: 'CANCEL_ROWS_CONFIRM_MESSAGE', value: { value: this.selectedItems.length } }, null, {
-					code: 'Duyệt {{value}} yêu cầu',
+					code: 'Approve {{value}} request',
 					value: { value: this.selectedItems.length },
 				})
 				.then((_) => {
