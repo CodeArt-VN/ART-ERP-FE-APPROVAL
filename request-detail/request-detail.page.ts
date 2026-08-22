@@ -434,7 +434,7 @@ export class RequestDetailPage extends PageBase {
 		if (!this.purchaseOrderFormGroup.valid) {
 			let invalidControls = this.findInvalidControlsRecursive(this.purchaseOrderFormGroup);
 			Promise.all(invalidControls.map((c) => this.env.translateResource(c))).then((values) => {
-				this.env.showMessage('Please recheck control(s): {{value}}', 'warning', values.join(' | '));
+				this.env.showMessage('Please recheck control(s): {value}', 'warning', values.join(' | '));
 			});
 			return;
 		}
@@ -673,7 +673,7 @@ export class RequestDetailPage extends PageBase {
 					const translationPromises = invalidControls.map((control) => this.env.translateResource(control));
 					Promise.all(translationPromises).then((values: any[]) => {
 						invalidControls = values;
-						this.env.showMessage('Please recheck control(s): {{value}}', 'warning', invalidControls.join(' | '));
+						this.env.showMessage('Please recheck control(s): {value}', 'warning', invalidControls.join(' | '));
 						reject(false);
 					});
 				} else {
@@ -895,7 +895,7 @@ export class RequestDetailPage extends PageBase {
 		if (!this.purchaseQuotationFormGroup.valid) {
 			let invalidControls = this.findInvalidControlsRecursive(this.purchaseQuotationFormGroup);
 			Promise.all(invalidControls.map((c) => this.env.translateResource(c))).then((values) => {
-				this.env.showMessage('Please recheck control(s): {{value}}', 'warning', values.join(' | '));
+				this.env.showMessage('Please recheck control(s): {value}', 'warning', values.join(' | '));
 			});
 			return;
 		}

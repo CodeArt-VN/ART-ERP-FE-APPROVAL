@@ -250,7 +250,7 @@ export class RequestPage extends PageBase {
 			//this.selectedItems = this.selectedItems.filter(i => (i.Status == 'Pending' || i.Status == 'Unapproved'));
 			this.env
 				.showPrompt({ code: 'CANCEL_ROWS_CONFIRM_MESSAGE', value: { value: this.selectedItems.length } }, null, {
-					code: 'Approve {{value}} request',
+					code: 'Approve {value} request',
 					value: { value: this.selectedItems.length },
 				})
 				.then((_) => {
@@ -307,7 +307,7 @@ export class RequestPage extends PageBase {
 							this.submitAttempt = false;
 
 							if (savedItem > 0) {
-								this.env.showMessage('{{value}} orders sent for approval', 'success', savedItem);
+								this.env.showMessage('{value} orders sent for approval', 'success', savedItem);
 							} else {
 								this.env.showMessage('Please check again, orders must have at least 1 item to be approved', 'warning');
 							}
